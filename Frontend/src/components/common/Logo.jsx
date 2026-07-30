@@ -1,6 +1,9 @@
 function Logo() {
   return (
-    <a href="#home" className="text-2xl font-bold tracking-wide">
+    <a
+      href="#home"
+      className="select-none text-2xl font-extrabold tracking-wide text-white transition duration-300 hover:text-cyan-400"
+    >
       Vivek<span className="text-cyan-400">.</span>
     </a>
   );

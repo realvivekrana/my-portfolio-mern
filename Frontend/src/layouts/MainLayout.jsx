@@ -1,11 +1,14 @@
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../components/common/Navbar";
-import Footer from "../components/common/Footer";
+import Footer from "../components/common/footer/Footer";
+import ScrollProgress from "../components/ui/ScrollProgress";
+import ScrollToTop from "../components/ui/ScrollToTop";
 
-function MainLayout() {
+const MainLayout = () => {
   return (
     <>
+      <ScrollProgress />
       <Navbar />
 
       <main>
@@ -13,8 +16,9 @@ function MainLayout() {
       </main>
 
       <Footer />
+      <ScrollToTop />
     </>
   );
-}
+};
 
 export default MainLayout;
