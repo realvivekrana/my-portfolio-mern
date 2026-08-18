@@ -1,31 +1,7 @@
 @import "tailwindcss";
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    font-family:Inter,sans-serif;
-    background:#020617;
-    color:white;
-}
-
-a{
-    text-decoration:none;
-    color:inherit;
-}
-
-ul{
-    list-style:none;
-}
-
-img{
-    width:100%;
-    display:block;
+html {
+  scroll-behavior: smooth;
 }

@@ -1,18 +1,30 @@
-import CursorGlow from "./components/common/CursorGlow";
-import ScrollProgress from "./components/common/ScrollProgress";
-import Loader from "./components/common/loader/Loader";
-import ErrorBoundary from "./ErrorBoundary";
-import AppRoutes from "./routes/AppRoutes";
+import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Home from './pages/Home';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import NotFound from './pages/NotFound';
+import ProtectedRoute from './components/admin/ProtectedRoute';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <Loader>
-        <ScrollProgress />
-        <CursorGlow />
-        <AppRoutes />
-      </Loader>
-    </ErrorBoundary>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <ToastContainer position="bottom-right" theme="dark" />
+    </>
   );
 }
 

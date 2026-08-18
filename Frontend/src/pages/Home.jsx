@@ -1,28 +1,23 @@
-import Hero from "../components/home/hero/Hero";
-import About from "../components/home/about/About";
-import Skills from "../components/home/skills/Skills";
-import Projects from "../components/home/projects/Projects";
-import GitHubSection from "../components/home/github/GitHubSection";
-import Experience from "../components/home/experience/Experience";
-import Education from "../components/home/education/Education";
-import Contact from "../components/home/contact/Contact";
+import Navbar from '../components/layout/Navbar';
+import Hero from '../components/sections/Hero';
+import About from '../components/sections/About';
+import Skills from '../components/sections/Skills';
+import Projects from '../components/sections/Projects';
+import Contact from '../components/sections/Contact';
+import Footer from '../components/layout/Footer';
 
-const Home = () => {
+function Home() {
   return (
-    <>
+    <div className="bg-gray-900">
+      <Navbar />
       <Hero />
       <About />
       <Skills />
       <Projects />
-
-      {/* New Section */}
-      <GitHubSection />
-
-      <Experience />
-      <Education />
       <Contact />
-    </>
+      <Footer />
+    </div>
   );
-};
+}
 
 export default Home;
