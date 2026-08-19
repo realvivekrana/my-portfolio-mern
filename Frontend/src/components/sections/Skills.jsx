@@ -6,21 +6,24 @@ import {
   FaNodeJs,
   FaGitAlt,
   FaGithub,
+  FaBootstrap,
 } from 'react-icons/fa';
-import { SiMongodb, SiExpress, SiTailwindcss, SiRedux } from 'react-icons/si';
+import { SiMongodb, SiExpress, SiTailwindcss, SiRedux, SiPostman } from 'react-icons/si';
 
 const skills = [
   { name: 'HTML5', icon: FaHtml5, color: 'text-orange-500' },
   { name: 'CSS3', icon: FaCss3Alt, color: 'text-blue-500' },
   { name: 'JavaScript', icon: FaJs, color: 'text-yellow-500' },
-  { name: 'React', icon: FaReact, color: 'text-cyan-500' },
-  { name: 'Node.js', icon: FaNodeJs, color: 'text-green-600' },
-  { name: 'Express', icon: SiExpress, color: 'text-gray-700 dark:text-gray-300' },
-  { name: 'MongoDB', icon: SiMongodb, color: 'text-green-500' },
+  { name: 'React.js', icon: FaReact, color: 'text-cyan-500' },
+  { name: 'Redux Toolkit', icon: SiRedux, color: 'text-purple-500' },
   { name: 'Tailwind CSS', icon: SiTailwindcss, color: 'text-sky-500' },
-  { name: 'Redux', icon: SiRedux, color: 'text-purple-500' },
+  { name: 'Bootstrap', icon: FaBootstrap, color: 'text-violet-500' },
+  { name: 'Node.js', icon: FaNodeJs, color: 'text-green-600' },
+  { name: 'Express.js', icon: SiExpress, color: 'text-gray-700 dark:text-gray-300' },
+  { name: 'MongoDB', icon: SiMongodb, color: 'text-green-500' },
   { name: 'Git', icon: FaGitAlt, color: 'text-orange-600' },
   { name: 'GitHub', icon: FaGithub, color: 'text-gray-900 dark:text-white' },
+  { name: 'Postman', icon: SiPostman, color: 'text-orange-500' },
 ];
 
 function Skills() {
