@@ -1,9 +1,9 @@
 const Admin = require('../models/Admin');
 const generateToken = require('../utils/generateToken');
 
-// @desc    Register new admin (ek baar hi use karna hai)
+// @desc    Register new admin
 // @route   POST /api/auth/register
-// @access  Public (but should be disabled/removed after first use in production)
+// @access  Public
 const registerAdmin = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -24,7 +24,11 @@ const registerAdmin = async (req, res) => {
       });
     }
 
-    const admin = await Admin.create({ username, email, password });
+    const admin = await Admin.create({
+      username,
+      email,
+      password,
+    });
 
     res.status(201).json({
       success: true,
@@ -58,7 +62,6 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // Admin dhundo email se
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
@@ -68,7 +71,6 @@ const loginAdmin = async (req, res) => {
       });
     }
 
-    // Password match check karo
     const isMatch = await admin.matchPassword(password);
 
     if (!isMatch) {
@@ -96,12 +98,55 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+// @desc    Verify admin PIN
+// @route   POST /api/auth/verify-pin
+// @access  Protected
+const verifyAdminPin = async (req, res) => {
+  try {
+    const { pin } = req.body;
+
+    if (!pin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter the admin PIN',
+      });
+    }
+
+    const adminPin = process.env.ADMIN_PIN;
+
+    if (!adminPin) {
+      return res.status(500).json({
+        success: false,
+        message: 'Admin PIN is not configured on the server',
+      });
+    }
+
+    if (String(pin) !== String(adminPin)) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid admin PIN',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'PIN verified successfully',
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // @desc    Get logged-in admin data
 // @route   GET /api/auth/me
 // @access  Protected
 const getMe = async (req, res) => {
   try {
     const admin = await Admin.findById(req.admin.id).select('-password');
+
     res.status(200).json({
       success: true,
       message: 'Admin data fetched successfully',
@@ -115,4 +160,9 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { registerAdmin, loginAdmin, getMe };
+module.exports = {
+  registerAdmin,
+  loginAdmin,
+  verifyAdminPin,
+  getMe,
+};

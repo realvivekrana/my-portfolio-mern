@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {
+  FaLock,
+  FaShieldAlt,
+  FaArrowLeft,
+} from 'react-icons/fa';
+
 import { useAuth } from '../context/AuthContext';
 
 function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -19,58 +26,136 @@ function AdminLogin() {
     }
 
     setLoading(true);
+
     try {
       await login(email, password);
+
       toast.success('Login successful!');
-      navigate('/admin/dashboard');
+
+      navigate('/admin/pin');
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed. Please try again.';
+      const message =
+        err.response?.data?.message ||
+        'Login failed. Please try again.';
+
       toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleBackToPortfolio = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center px-6 transition-colors">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6 py-10 transition-colors duration-500 dark:bg-gray-950">
+
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Login</h1>
-          <p className="text-gray-600 dark:text-gray-400">Sign in to manage your portfolio</p>
+
+        {/* Back to Portfolio */}
+
+        <button
+          type="button"
+          onClick={handleBackToPortfolio}
+          className="group mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors duration-200 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400"
+        >
+          <FaArrowLeft className="transition-transform duration-200 group-hover:-translate-x-1" />
+
+          Back to Portfolio
+        </button>
+
+        {/* Header */}
+
+        <div className="mb-8 text-center">
+
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600 shadow-sm dark:bg-indigo-500/10 dark:text-indigo-400">
+            <FaShieldAlt className="text-2xl" />
+          </div>
+
+          <h1 className="mb-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+            Admin Login
+          </h1>
+
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Sign in to manage your portfolio
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-lg space-y-6 shadow-sm dark:shadow-none">
+        {/* Login Form */}
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 rounded-3xl border border-gray-200 bg-white p-7 shadow-xl shadow-gray-200/40 dark:border-gray-800 dark:bg-gray-900 dark:shadow-none sm:p-8"
+        >
+
+          {/* Email */}
+
           <div>
-            <label htmlFor="email" className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">Email</label>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+            >
+              Email
+            </label>
+
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
+              autoComplete="email"
               placeholder="admin@example.com"
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             />
           </div>
 
+          {/* Password */}
+
           <div>
-            <label htmlFor="password" className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">Password</label>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+            >
+              Password
+            </label>
+
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 transition-colors"
+              autoComplete="current-password"
               placeholder="••••••••"
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
             />
           </div>
+
+          {/* Sign In */}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3.5 font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+
+                Signing in...
+              </>
+            ) : (
+              <>
+                <FaLock className="text-sm" />
+
+                Sign In
+              </>
+            )}
           </button>
+
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500">
+            Protected admin area
+          </p>
         </form>
       </div>
     </div>

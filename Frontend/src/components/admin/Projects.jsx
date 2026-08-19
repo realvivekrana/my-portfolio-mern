@@ -10,6 +10,12 @@ import {
 import API from '../../utils/axios';
 import Loader from '../ui/Loader';
 
+const FEATURED_TYPES = [
+  'Major Full-Stack Project',
+  'AI / React Project',
+  'MERN Business Project',
+];
+
 function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,17 +67,55 @@ function Projects() {
     };
   }, [selectedProject]);
 
-  const featuredProjects = useMemo(
-    () => projects.filter((project) => project.featured),
-    [projects]
+  /*
+    Featured section:
+    Maximum 3 projects.
+    Order:
+    1. Major Full-Stack Project
+    2. AI / React Project
+    3. MERN Business Project
+  */
+  const featuredProjects = useMemo(() => {
+    const selected = [];
+
+    FEATURED_TYPES.forEach((type) => {
+      const project = projects.find(
+        (item) =>
+          item.featured === true &&
+          item.featuredType === type
+      );
+
+      if (project) {
+        selected.push(project);
+      }
+    });
+
+    return selected.slice(0, 3);
+  }, [projects]);
+
+  const featuredProjectIds = useMemo(
+    () => new Set(featuredProjects.map((project) => project._id)),
+    [featuredProjects]
   );
 
   const regularProjects = useMemo(
-    () => projects.filter((project) => !project.featured),
-    [projects]
+    () =>
+      projects.filter(
+        (project) => !featuredProjectIds.has(project._id)
+      ),
+    [projects, featuredProjectIds]
   );
 
-  const renderProjectCard = (project, isFeatured = false) => {
+  const getFeaturedNumber = (project) => {
+    const index = FEATURED_TYPES.indexOf(project.featuredType);
+
+    return index >= 0 ? index + 1 : null;
+  };
+
+  const renderProjectCard = (
+    project,
+    isFeatured = false
+  ) => {
     const techStack = Array.isArray(project.techStack)
       ? project.techStack
       : [];
@@ -79,6 +123,8 @@ function Projects() {
     const keyFeatures = Array.isArray(project.keyFeatures)
       ? project.keyFeatures
       : [];
+
+    const featuredNumber = getFeaturedNumber(project);
 
     return (
       <article
@@ -89,11 +135,10 @@ function Projects() {
             : 'border-gray-200 dark:border-gray-800'
         }`}
       >
-        {/* Featured Badge */}
-        {isFeatured && (
-          <div className="absolute left-4 top-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-gray-950/80 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-md">
-            <FaStar className="text-yellow-400" />
-            Featured
+        {/* Featured Number */}
+        {isFeatured && featuredNumber && (
+          <div className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-gray-950/80 text-sm font-extrabold text-white shadow-lg backdrop-blur-md">
+            0{featuredNumber}
           </div>
         )}
 
@@ -108,12 +153,22 @@ function Projects() {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-indigo-950/40 dark:via-gray-900 dark:to-purple-950/30">
-              <FaCodeFallback />
+              <div className="text-5xl font-black text-indigo-300 dark:text-indigo-500/40">
+                &lt;/&gt;
+              </div>
             </div>
           )}
 
-          {/* Image Overlay */}
+          {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-950/10 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
+
+          {/* Featured Label */}
+          {isFeatured && (
+            <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-gray-950/80 px-3 py-1.5 text-xs font-bold text-white shadow-lg backdrop-blur-md">
+              <FaStar className="text-yellow-400" />
+              Featured
+            </div>
+          )}
 
           {/* Category */}
           {project.category && (
@@ -122,7 +177,7 @@ function Projects() {
             </span>
           )}
 
-          {/* View Details Overlay Button */}
+          {/* Details */}
           <button
             type="button"
             onClick={() => setSelectedProject(project)}
@@ -133,8 +188,15 @@ function Projects() {
           </button>
         </div>
 
-        {/* Project Content */}
+        {/* Content */}
         <div className="p-6">
+          {/* Featured Type */}
+          {isFeatured && project.featuredType && (
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-400">
+              {project.featuredType}
+            </p>
+          )}
+
           {/* Title */}
           <h3 className="mb-3 text-xl font-extrabold tracking-tight text-gray-900 transition-colors duration-300 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
             {project.title}
@@ -159,7 +221,7 @@ function Projects() {
             </div>
           )}
 
-          {/* Key Features Preview */}
+          {/* Key Features */}
           {keyFeatures.length > 0 && (
             <div className="mb-6">
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-gray-400 dark:text-gray-500">
@@ -183,7 +245,7 @@ function Projects() {
                 <button
                   type="button"
                   onClick={() => setSelectedProject(project)}
-                  className="mt-3 text-xs font-bold text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                  className="mt-3 text-xs font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                 >
                   + {keyFeatures.length - 3} more features
                 </button>
@@ -191,16 +253,16 @@ function Projects() {
             </div>
           )}
 
-          {/* Project Actions */}
+          {/* Buttons */}
           <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-5 dark:border-gray-800">
             {project.liveLink && (
               <a
                 href={project.liveLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/link inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/20"
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/20"
               >
-                <FaExternalLinkAlt className="text-xs transition-transform duration-300 group-hover/link:translate-x-0.5" />
+                <FaExternalLinkAlt className="text-xs" />
                 Live Demo
               </a>
             )}
@@ -210,9 +272,9 @@ function Projects() {
                 href={project.githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/link inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-900 hover:bg-gray-900 hover:text-white dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-white dark:hover:bg-white dark:hover:text-gray-900"
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-900 hover:bg-gray-900 hover:text-white dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-white dark:hover:bg-white dark:hover:text-gray-900"
               >
-                <FaGithub className="text-base transition-transform duration-300 group-hover/link:scale-110" />
+                <FaGithub className="text-base" />
                 GitHub
               </a>
             )}
@@ -237,13 +299,13 @@ function Projects() {
         id="projects"
         className="relative overflow-hidden bg-gray-50 px-6 py-24 transition-colors duration-500 dark:bg-gray-900"
       >
-        {/* Background Decoration */}
+        {/* Background */}
         <div className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-indigo-200/20 blur-3xl dark:bg-indigo-600/5" />
 
         <div className="pointer-events-none absolute -right-40 bottom-20 h-80 w-80 rounded-full bg-purple-200/20 blur-3xl dark:bg-purple-600/5" />
 
         <div className="relative mx-auto max-w-7xl">
-          {/* Section Header */}
+          {/* Header */}
           <div className="mb-16 text-center">
             <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
               My Work
@@ -284,11 +346,11 @@ function Projects() {
             </div>
           )}
 
-          {/* Empty State */}
+          {/* Empty */}
           {!loading && !error && projects.length === 0 && (
             <div className="mx-auto max-w-xl rounded-3xl border border-gray-200 bg-white px-6 py-12 text-center shadow-sm dark:border-gray-800 dark:bg-gray-950">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
-                <FaCodeFallback />
+              <div className="mx-auto mb-4 text-5xl font-black text-indigo-300 dark:text-indigo-500/40">
+                &lt;/&gt;
               </div>
 
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -305,24 +367,31 @@ function Projects() {
           {/* Projects */}
           {!loading && !error && projects.length > 0 && (
             <>
-              {/* Featured */}
+              {/* ================================================
+                  FEATURED PROJECTS
+              ================================================= */}
               {featuredProjects.length > 0 && (
                 <div className="mb-20">
-                  <div className="mb-7 flex items-end gap-4">
-                    <div>
-                      <p className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-400">
-                        Top Work
-                      </p>
-
-                      <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white">
-                        Featured Projects
-                      </h3>
+                  {/* Featured Header */}
+                  <div className="mb-8 text-center">
+                    <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-indigo-700 dark:border-indigo-500/10 dark:bg-indigo-500/10 dark:text-indigo-400">
+                      <FaStar className="text-yellow-500" />
+                      Recruiter Highlights
                     </div>
 
-                    <div className="mb-2 hidden h-px flex-1 bg-gray-200 sm:block dark:bg-gray-800" />
+                    <h3 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+                      Featured Projects
+                    </h3>
+
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-gray-500 dark:text-gray-400">
+                      My three strongest projects, selected to showcase
+                      full-stack development, AI/React skills and real-world
+                      business application development.
+                    </p>
                   </div>
 
-                  <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+                  {/* Featured Cards */}
+                  <div className="grid gap-7 lg:grid-cols-3">
                     {featuredProjects.map((project) =>
                       renderProjectCard(project, true)
                     )}
@@ -330,7 +399,9 @@ function Projects() {
                 </div>
               )}
 
-              {/* All Projects */}
+              {/* ================================================
+                  ALL PROJECTS
+              ================================================= */}
               {regularProjects.length > 0 && (
                 <div>
                   <div className="mb-7 flex items-end gap-4">
@@ -387,7 +458,9 @@ function Projects() {
         </div>
       </section>
 
-      {/* Project Details Modal */}
+      {/* ================================================
+          PROJECT DETAILS MODAL
+      ================================================= */}
       {selectedProject && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-950/80 px-4 py-6 backdrop-blur-sm"
@@ -408,7 +481,7 @@ function Projects() {
               ×
             </button>
 
-            {/* Modal Image */}
+            {/* Image */}
             <div className="relative h-56 overflow-hidden sm:h-72">
               {selectedProject.image ? (
                 <img
@@ -418,7 +491,9 @@ function Projects() {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-indigo-950/40 dark:via-gray-900 dark:to-purple-950/30">
-                  <FaCodeFallback />
+                  <div className="text-5xl font-black text-indigo-300 dark:text-indigo-500/40">
+                    &lt;/&gt;
+                  </div>
                 </div>
               )}
 
@@ -431,32 +506,34 @@ function Projects() {
               )}
             </div>
 
-            {/* Modal Content */}
+            {/* Content */}
             <div className="p-6 sm:p-8">
               <div className="mb-7">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl dark:text-white">
-                        {selectedProject.title}
-                      </h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl dark:text-white">
+                    {selectedProject.title}
+                  </h3>
 
-                      {selectedProject.featured && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400">
-                          <FaStar />
-                          Featured
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  {selectedProject.featured && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400">
+                      <FaStar />
+                      Featured
+                    </span>
+                  )}
                 </div>
+
+                {selectedProject.featuredType && (
+                  <p className="mt-2 text-xs font-bold uppercase tracking-[0.14em] text-indigo-600 dark:text-indigo-400">
+                    {selectedProject.featuredType}
+                  </p>
+                )}
 
                 <p className="mt-4 text-sm leading-7 text-gray-600 sm:text-base dark:text-gray-400">
                   {selectedProject.description}
                 </p>
               </div>
 
-              {/* Tech Stack */}
+              {/* Technologies */}
               {Array.isArray(selectedProject.techStack) &&
                 selectedProject.techStack.length > 0 && (
                   <div className="mb-8">
@@ -477,7 +554,7 @@ function Projects() {
                   </div>
                 )}
 
-              {/* Key Features */}
+              {/* Features */}
               {Array.isArray(selectedProject.keyFeatures) &&
                 selectedProject.keyFeatures.length > 0 && (
                   <div className="mb-8">
@@ -533,18 +610,6 @@ function Projects() {
         </div>
       )}
     </>
-  );
-}
-
-/*
-  Simple fallback icon component.
-  Isse kisi additional icon package ki dependency nahi chahiye.
-*/
-function FaCodeFallback() {
-  return (
-    <div className="text-5xl font-black text-indigo-300 dark:text-indigo-500/40">
-      &lt;/&gt;
-    </div>
   );
 }
 
