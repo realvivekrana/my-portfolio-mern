@@ -94,6 +94,7 @@ const fileFilter = (req, file, cb) => {
 |
 | 10 MB maximum file size.
 |
+|--------------------------------------------------------------------------
 */
 
 const upload = multer({
@@ -112,6 +113,7 @@ const upload = multer({
 |
 | Only PDF should be accepted for resume.
 |
+|--------------------------------------------------------------------------
 */
 
 const uploadResume = multer({
@@ -142,6 +144,7 @@ const uploadResume = multer({
 |
 | JPG / JPEG / PNG / WEBP
 |
+|--------------------------------------------------------------------------
 */
 
 const uploadProfileImage = multer({

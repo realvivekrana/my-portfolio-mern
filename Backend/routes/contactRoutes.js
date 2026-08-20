@@ -1,5 +1,7 @@
 const express = require('express');
+
 const router = express.Router();
+
 const {
   createContact,
   getAllContacts,
@@ -8,19 +10,91 @@ const {
   deleteContact,
 } = require('../controllers/contactController');
 
-// @route   POST /api/contact
-router.post('/', createContact);
+const {
+  protect,
+} = require('../middleware/authMiddleware');
 
-// @route   GET /api/contact
-router.get('/', getAllContacts);
+/*
+|--------------------------------------------------------------------------
+| PUBLIC
+|--------------------------------------------------------------------------
+|
+| Portfolio contact form se koi bhi visitor message send kar sakta hai.
+|
+| POST /api/contact
+|
+|--------------------------------------------------------------------------
+*/
 
-// @route   GET /api/contact/:id
-router.get('/:id', getContactById);
+router.post(
+  '/',
+  createContact
+);
 
-// @route   PUT /api/contact/:id/read
-router.put('/:id/read', markAsRead);
+/*
+|--------------------------------------------------------------------------
+| ADMIN - GET ALL MESSAGES
+|--------------------------------------------------------------------------
+|
+| GET /api/contact
+|
+| Sirf authenticated admin messages dekh sakta hai.
+|
+|--------------------------------------------------------------------------
+*/
 
-// @route   DELETE /api/contact/:id
-router.delete('/:id', deleteContact);
+router.get(
+  '/',
+  protect,
+  getAllContacts
+);
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN - GET SINGLE MESSAGE
+|--------------------------------------------------------------------------
+|
+| GET /api/contact/:id
+|
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/:id',
+  protect,
+  getContactById
+);
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN - MARK MESSAGE AS READ
+|--------------------------------------------------------------------------
+|
+| PUT /api/contact/:id/read
+|
+|--------------------------------------------------------------------------
+*/
+
+router.put(
+  '/:id/read',
+  protect,
+  markAsRead
+);
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN - DELETE MESSAGE
+|--------------------------------------------------------------------------
+|
+| DELETE /api/contact/:id
+|
+|--------------------------------------------------------------------------
+*/
+
+router.delete(
+  '/:id',
+  protect,
+  deleteContact
+);
 
 module.exports = router;

@@ -40,6 +40,10 @@ router.get('/', getPortfolio);
 |--------------------------------------------------------------------------
 */
 
-router.put('/', protect, updatePortfolio);
+router.put(
+  '/',
+  protect,
+  updatePortfolio
+);
 
 module.exports = router;

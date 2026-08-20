@@ -57,7 +57,7 @@ const deleteUploadedFile = (fileUrl) => {
 |--------------------------------------------------------------------------
 | Upload Resume
 |--------------------------------------------------------------------------
-| @route   POST /api/portfolio/resume
+| @route   POST /api/portfolio/upload/resume
 | @access  Protected Admin
 |--------------------------------------------------------------------------
 */

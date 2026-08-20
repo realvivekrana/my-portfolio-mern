@@ -102,19 +102,23 @@ const updatePortfolio = async (req, res) => {
       }
 
       if (hero.profileImage !== undefined) {
-        portfolio.hero.profileImage = hero.profileImage;
+        portfolio.hero.profileImage =
+          hero.profileImage;
       }
 
       if (hero.availability !== undefined) {
-        portfolio.hero.availability = hero.availability;
+        portfolio.hero.availability =
+          hero.availability;
       }
 
       if (hero.githubUrl !== undefined) {
-        portfolio.hero.githubUrl = hero.githubUrl;
+        portfolio.hero.githubUrl =
+          hero.githubUrl;
       }
 
       if (hero.linkedinUrl !== undefined) {
-        portfolio.hero.linkedinUrl = hero.linkedinUrl;
+        portfolio.hero.linkedinUrl =
+          hero.linkedinUrl;
       }
     }
 
@@ -154,22 +158,34 @@ const updatePortfolio = async (req, res) => {
       */
 
       if (about.currentRole) {
-        if (about.currentRole.role !== undefined) {
+        if (
+          about.currentRole.role !==
+          undefined
+        ) {
           portfolio.about.currentRole.role =
             about.currentRole.role;
         }
 
-        if (about.currentRole.company !== undefined) {
+        if (
+          about.currentRole.company !==
+          undefined
+        ) {
           portfolio.about.currentRole.company =
             about.currentRole.company;
         }
 
-        if (about.currentRole.duration !== undefined) {
+        if (
+          about.currentRole.duration !==
+          undefined
+        ) {
           portfolio.about.currentRole.duration =
             about.currentRole.duration;
         }
 
-        if (about.currentRole.description !== undefined) {
+        if (
+          about.currentRole.description !==
+          undefined
+        ) {
           portfolio.about.currentRole.description =
             about.currentRole.description;
         }
@@ -208,14 +224,18 @@ const updatePortfolio = async (req, res) => {
     */
 
     if (req.body.socialLinks) {
-      const socialLinks = req.body.socialLinks;
+      const socialLinks =
+        req.body.socialLinks;
 
       if (socialLinks.github !== undefined) {
         portfolio.socialLinks.github =
           socialLinks.github;
       }
 
-      if (socialLinks.linkedin !== undefined) {
+      if (
+        socialLinks.linkedin !==
+        undefined
+      ) {
         portfolio.socialLinks.linkedin =
           socialLinks.linkedin;
       }
@@ -236,20 +256,30 @@ const updatePortfolio = async (req, res) => {
       const resume = req.body.resume;
 
       if (resume.url !== undefined) {
-        portfolio.resume.url = resume.url;
+        portfolio.resume.url =
+          resume.url;
       }
 
-      if (resume.fileName !== undefined) {
+      if (
+        resume.fileName !==
+        undefined
+      ) {
         portfolio.resume.fileName =
           resume.fileName;
       }
 
-      if (resume.originalName !== undefined) {
+      if (
+        resume.originalName !==
+        undefined
+      ) {
         portfolio.resume.originalName =
           resume.originalName;
       }
 
-      if (resume.uploadedAt !== undefined) {
+      if (
+        resume.uploadedAt !==
+        undefined
+      ) {
         portfolio.resume.uploadedAt =
           resume.uploadedAt;
       }
@@ -265,20 +295,30 @@ const updatePortfolio = async (req, res) => {
       const seo = req.body.seo;
 
       if (seo.title !== undefined) {
-        portfolio.seo.title = seo.title;
+        portfolio.seo.title =
+          seo.title;
       }
 
-      if (seo.description !== undefined) {
+      if (
+        seo.description !==
+        undefined
+      ) {
         portfolio.seo.description =
           seo.description;
       }
 
-      if (seo.keywords !== undefined) {
+      if (
+        seo.keywords !==
+        undefined
+      ) {
         portfolio.seo.keywords =
           seo.keywords;
       }
 
-      if (seo.ogImage !== undefined) {
+      if (
+        seo.ogImage !==
+        undefined
+      ) {
         portfolio.seo.ogImage =
           seo.ogImage;
       }
@@ -291,7 +331,8 @@ const updatePortfolio = async (req, res) => {
     */
 
     if (req.body.settings) {
-      const settings = req.body.settings;
+      const settings =
+        req.body.settings;
 
       if (
         settings.showAvailabilityBadge !==
@@ -301,22 +342,34 @@ const updatePortfolio = async (req, res) => {
           settings.showAvailabilityBadge;
       }
 
-      if (settings.showGithub !== undefined) {
+      if (
+        settings.showGithub !==
+        undefined
+      ) {
         portfolio.settings.showGithub =
           settings.showGithub;
       }
 
-      if (settings.showLinkedin !== undefined) {
+      if (
+        settings.showLinkedin !==
+        undefined
+      ) {
         portfolio.settings.showLinkedin =
           settings.showLinkedin;
       }
 
-      if (settings.showResume !== undefined) {
+      if (
+        settings.showResume !==
+        undefined
+      ) {
         portfolio.settings.showResume =
           settings.showResume;
       }
 
-      if (settings.showAdminAccess !== undefined) {
+      if (
+        settings.showAdminAccess !==
+        undefined
+      ) {
         portfolio.settings.showAdminAccess =
           settings.showAdminAccess;
       }
@@ -338,11 +391,15 @@ const updatePortfolio = async (req, res) => {
       data: updatedPortfolio,
     });
   } catch (error) {
-    console.error('Update Portfolio Error:', error);
+    console.error(
+      'Update Portfolio Error:',
+      error
+    );
 
     res.status(500).json({
       success: false,
-      message: 'Failed to update portfolio content',
+      message:
+        'Failed to update portfolio content',
       error: error.message,
     });
   }
