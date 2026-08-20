@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react';
+
+import API from '../../utils/axios';
+
 import {
   FaGithub,
   FaLinkedin,
@@ -24,6 +28,100 @@ import {
 import profileImg from '../../assets/profile.jpg';
 
 function Hero() {
+  /*
+  |--------------------------------------------------------------------------
+  | Resume URL
+  |--------------------------------------------------------------------------
+  |
+  | Backend se latest uploaded resume milega.
+  |
+  | Agar backend se resume nahi milta hai,
+  | to /resume.pdf fallback rahega.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  const [resumeUrl, setResumeUrl] =
+    useState('/resume.pdf');
+
+  const [resumeFileName, setResumeFileName] =
+    useState('Vivek-Rana-Resume.pdf');
+
+  /*
+  |--------------------------------------------------------------------------
+  | Load Latest Resume From Backend
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    const loadResume = async () => {
+      try {
+        /*
+        |--------------------------------------------------------------------------
+        | Get Complete Portfolio
+        |--------------------------------------------------------------------------
+        |
+        | GET /api/portfolio
+        |
+        |--------------------------------------------------------------------------
+        */
+
+        const response =
+          await API.get('/portfolio');
+
+        const portfolio =
+          response.data?.data ||
+          response.data ||
+          {};
+
+        const resume =
+          portfolio?.resume;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check Resume
+        |--------------------------------------------------------------------------
+        */
+
+        if (resume?.url) {
+          setResumeUrl(
+            resume.url
+          );
+
+          setResumeFileName(
+            resume.originalName ||
+              resume.fileName ||
+              'Vivek-Rana-Resume.pdf'
+          );
+        }
+      } catch (error) {
+        /*
+        |--------------------------------------------------------------------------
+        | Fallback
+        |--------------------------------------------------------------------------
+        |
+        | Agar backend unavailable hai,
+        | to public/resume.pdf use hoga.
+        |
+        |--------------------------------------------------------------------------
+        */
+
+        console.warn(
+          'Using fallback resume:',
+          error
+        );
+      }
+    };
+
+    loadResume();
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Tech Stack
+  |--------------------------------------------------------------------------
+  */
+
   const techStack = [
     {
       name: 'React',
@@ -38,7 +136,8 @@ function Hero() {
     {
       name: 'Express',
       icon: <SiExpress />,
-      color: 'text-gray-700 dark:text-gray-200',
+      color:
+        'text-gray-700 dark:text-gray-200',
     },
     {
       name: 'MongoDB',
@@ -141,8 +240,8 @@ function Hero() {
               {/* Download Resume */}
 
               <a
-                href="/resume.pdf"
-                download="Vivek-Rana-Resume.pdf"
+                href={resumeUrl}
+                download={resumeFileName}
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-7 py-3.5 font-semibold text-gray-800 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-indigo-400 dark:hover:text-indigo-400 sm:w-auto"
               >
                 <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
@@ -153,7 +252,7 @@ function Hero() {
               {/* View Resume */}
 
               <a
-                href="/resume.pdf"
+                href={resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-7 py-3.5 font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900/70 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 sm:w-auto"
@@ -274,9 +373,7 @@ function Hero() {
                 </div>
               </div>
 
-              {/* =================================================
-                  PROFILE IMAGE CARD
-              ================================================== */}
+              {/* Profile Image Card */}
 
               <div className="relative h-72 w-72 overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-2 shadow-2xl shadow-indigo-500/10 sm:h-80 sm:w-80 dark:border-gray-800 dark:from-indigo-950/40 dark:via-gray-900 dark:to-purple-950/30">
                 <div className="h-full w-full overflow-hidden rounded-[1.5rem] bg-gray-100 dark:bg-gray-800">
@@ -285,7 +382,7 @@ function Hero() {
                     alt="Vivek Rana - MERN Stack Developer"
                     width="320"
                     height="320"
-                    fetchPriority="high"
+                    loading="eager"
                     decoding="async"
                     className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
                   />
@@ -315,7 +412,9 @@ function Hero() {
               {/* Decorative Dots */}
 
               <div className="absolute -bottom-8 right-0 grid grid-cols-4 gap-1.5 opacity-60">
-                {Array.from({ length: 16 }).map((_, index) => (
+                {Array.from({
+                  length: 16,
+                }).map((_, index) => (
                   <span
                     key={index}
                     className="h-1.5 w-1.5 rounded-full bg-indigo-400 dark:bg-indigo-500"
