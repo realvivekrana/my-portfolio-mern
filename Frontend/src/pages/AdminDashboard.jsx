@@ -24,6 +24,12 @@ import {
   FaUpload,
   FaDownload,
   FaExternalLinkAlt,
+  FaCertificate,
+  FaImage,
+  FaSave,
+  FaLink,
+  FaEyeSlash,
+  FaGripVertical,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
@@ -81,6 +87,40 @@ function AdminDashboard() {
 
   const [resumeUploading, setResumeUploading] =
     useState(false);
+
+
+  // =========================================================
+  // CERTIFICATE STATE
+  // =========================================================
+
+  const [certificates, setCertificates] = useState([]);
+  const [certificatesLoading, setCertificatesLoading] = useState(true);
+  const [certificateSubmitting, setCertificateSubmitting] = useState(false);
+  const [certificateUploading, setCertificateUploading] = useState(false);
+  const [showCertificateForm, setShowCertificateForm] = useState(false);
+  const [editingCertificate, setEditingCertificate] = useState(null);
+
+  const emptyCertificate = {
+    title: '',
+    issuer: '',
+    issueDate: '',
+    description: '',
+    image: '',
+    credentialUrl: '',
+    skills: '',
+    featured: false,
+    displayOrder: 0,
+    isVisible: true,
+  };
+
+  const [certificateForm, setCertificateForm] =
+    useState(emptyCertificate);
+
+  const [certificateImageFile, setCertificateImageFile] =
+    useState(null);
+
+  const [certificateImagePreview, setCertificateImagePreview] =
+    useState('');
 
 
   // =========================================================
@@ -316,6 +356,272 @@ function AdminDashboard() {
 
 
   // =========================================================
+  // FETCH CERTIFICATES
+  // =========================================================
+
+  const fetchCertificates = async () => {
+    try {
+      setCertificatesLoading(true);
+
+      const response = await API.get('/certificates/admin');
+
+      const responseData = response.data;
+
+      let certificateData = [];
+
+      if (Array.isArray(responseData)) {
+        certificateData = responseData;
+      } else if (Array.isArray(responseData?.data)) {
+        certificateData = responseData.data;
+      } else if (Array.isArray(responseData?.certificates)) {
+        certificateData = responseData.certificates;
+      }
+
+      certificateData.sort((a, b) => {
+        const orderDifference =
+          Number(a.displayOrder || 0) - Number(b.displayOrder || 0);
+
+        if (orderDifference !== 0) {
+          return orderDifference;
+        }
+
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+
+      setCertificates(certificateData);
+    } catch (error) {
+      console.error('Certificates fetch error:', error);
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to load certificates'
+      );
+    } finally {
+      setCertificatesLoading(false);
+    }
+  };
+
+
+  // =========================================================
+  // CERTIFICATE FORM HELPERS
+  // =========================================================
+
+  const resetCertificateForm = () => {
+    setCertificateForm({ ...emptyCertificate });
+    setCertificateImageFile(null);
+    setCertificateImagePreview('');
+    setEditingCertificate(null);
+  };
+
+
+  const openCertificateCreateForm = () => {
+    resetCertificateForm();
+    setShowCertificateForm(true);
+  };
+
+
+  const openCertificateEditForm = (certificate) => {
+    setEditingCertificate(certificate);
+
+    setCertificateForm({
+      title: certificate.title || '',
+      issuer: certificate.issuer || '',
+      issueDate: certificate.issueDate || '',
+      description: certificate.description || '',
+      image: certificate.image || '',
+      credentialUrl: certificate.credentialUrl || '',
+      skills: Array.isArray(certificate.skills)
+        ? certificate.skills.join(', ')
+        : '',
+      featured: Boolean(certificate.featured),
+      displayOrder: certificate.displayOrder ?? 0,
+      isVisible: certificate.isVisible !== false,
+    });
+
+    setCertificateImageFile(null);
+    setCertificateImagePreview(certificate.image || '');
+    setShowCertificateForm(true);
+  };
+
+
+  const closeCertificateForm = () => {
+    if (certificateSubmitting || certificateUploading) {
+      return;
+    }
+
+    setShowCertificateForm(false);
+    resetCertificateForm();
+  };
+
+
+  const handleCertificateFormChange = (event) => {
+    const { name, value, type, checked } = event.target;
+
+    setCertificateForm((previous) => ({
+      ...previous,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+
+  const handleCertificateImageChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a JPG, JPEG, PNG or WEBP image.');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      toast.error('Certificate image must be 5 MB or smaller.');
+      return;
+    }
+
+    setCertificateImageFile(file);
+    setCertificateImagePreview(URL.createObjectURL(file));
+  };
+
+
+  // =========================================================
+  // SAVE CERTIFICATE
+  // =========================================================
+
+  const handleCertificateSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!certificateForm.title.trim()) {
+      toast.error('Certificate title is required.');
+      return;
+    }
+
+    if (!certificateForm.issuer.trim()) {
+      toast.error('Certificate issuer is required.');
+      return;
+    }
+
+    try {
+      setCertificateSubmitting(true);
+
+      let imageUrl = certificateForm.image || '';
+
+      // Certificate image has its own protected upload endpoint.
+      if (certificateImageFile) {
+        setCertificateUploading(true);
+
+        const imageData = new FormData();
+        imageData.append('certificateImage', certificateImageFile);
+
+        const uploadResponse = await API.post(
+          '/certificates/upload-image',
+          imageData
+        );
+
+        imageUrl =
+          uploadResponse.data?.data?.image ||
+          uploadResponse.data?.data?.url ||
+          uploadResponse.data?.image ||
+          uploadResponse.data?.url ||
+          '';
+
+        if (!imageUrl) {
+          throw new Error('Certificate image URL was not returned by the server.');
+        }
+      }
+
+      const payload = {
+        title: certificateForm.title.trim(),
+        issuer: certificateForm.issuer.trim(),
+        issueDate: certificateForm.issueDate.trim(),
+        description: certificateForm.description.trim(),
+        image: imageUrl,
+        credentialUrl: certificateForm.credentialUrl.trim(),
+        skills: certificateForm.skills
+          .split(',')
+          .map((skill) => skill.trim())
+          .filter(Boolean),
+        featured: Boolean(certificateForm.featured),
+        displayOrder: Number(certificateForm.displayOrder) || 0,
+        isVisible: Boolean(certificateForm.isVisible),
+      };
+
+      if (editingCertificate?._id) {
+        await API.put(
+          `/certificates/${editingCertificate._id}`,
+          payload
+        );
+
+        toast.success('Certificate updated successfully.');
+      } else {
+        await API.post('/certificates', payload);
+
+        toast.success('Certificate added successfully.');
+      }
+
+      await fetchCertificates();
+      setShowCertificateForm(false);
+      resetCertificateForm();
+    } catch (error) {
+      console.error('Certificate save error:', error);
+
+      toast.error(
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to save certificate'
+      );
+    } finally {
+      setCertificateSubmitting(false);
+      setCertificateUploading(false);
+    }
+  };
+
+
+  // =========================================================
+  // DELETE CERTIFICATE
+  // =========================================================
+
+  const handleDeleteCertificate = async (id) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this certificate?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await API.delete(`/certificates/${id}`);
+
+      setCertificates((previous) =>
+        previous.filter((certificate) => certificate._id !== id)
+      );
+
+      toast.success('Certificate deleted successfully.');
+    } catch (error) {
+      console.error('Certificate delete error:', error);
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to delete certificate'
+      );
+    }
+  };
+
+
+  // =========================================================
   // INITIAL DATA
   // =========================================================
 
@@ -323,6 +629,7 @@ function AdminDashboard() {
     fetchProjects();
     fetchMessages();
     fetchResumeInfo();
+    fetchCertificates();
   }, []);
 
 
@@ -579,6 +886,12 @@ function AdminDashboard() {
       id: 'projects',
       label: 'Projects',
       icon: <FaFolderOpen />,
+    },
+
+    {
+      id: 'certificates',
+      label: 'Certificates',
+      icon: <FaCertificate />,
     },
 
     {
@@ -1219,6 +1532,10 @@ function AdminDashboard() {
                 {activeSection ===
                   'projects' &&
                   'Projects'}
+
+                {activeSection ===
+                  'certificates' &&
+                  'Certificates'}
 
                 {activeSection ===
                   'messages' &&
@@ -3223,6 +3540,737 @@ function AdminDashboard() {
 
                   </div>
                 )}
+
+            </section>
+          )}
+
+
+          {/* =================================================
+              CERTIFICATES
+          ================================================== */}
+
+          {activeSection ===
+            'certificates' && (
+            <section>
+
+              {/* Certificate Header */}
+
+              <div
+                className="
+                  mb-7
+                  flex
+                  flex-col
+                  justify-between
+                  gap-4
+                  sm:flex-row
+                  sm:items-center
+                "
+              >
+
+                <div>
+
+                  <p
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-semibold
+                      text-indigo-600
+                      dark:text-indigo-400
+                    "
+                  >
+                    <FaCertificate />
+                    Credentials
+                  </p>
+
+                  <h2
+                    className="
+                      mt-1
+                      text-2xl
+                      font-extrabold
+                      text-gray-900
+                      dark:text-white
+                    "
+                  >
+                    Certificates
+                  </h2>
+
+                  <p
+                    className="
+                      mt-1
+                      max-w-2xl
+                      text-sm
+                      leading-6
+                      text-gray-500
+                      dark:text-gray-400
+                    "
+                  >
+                    Add, edit, delete and control the certificates displayed
+                    on your public portfolio.
+                  </p>
+
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+
+                  <button
+                    type="button"
+                    onClick={fetchCertificates}
+                    disabled={certificatesLoading}
+                    className="
+                      inline-flex
+                      items-center
+                      justify-center
+                      gap-2
+                      rounded-xl
+                      border
+                      border-gray-200
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      transition-colors
+                      hover:bg-gray-50
+                      disabled:cursor-not-allowed
+                      disabled:opacity-60
+                      dark:border-gray-800
+                      dark:bg-gray-900
+                      dark:text-gray-300
+                      dark:hover:bg-gray-800
+                    "
+                  >
+                    <FaSpinner className={certificatesLoading ? 'animate-spin' : ''} />
+                    Refresh
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={openCertificateCreateForm}
+                    className="
+                      inline-flex
+                      items-center
+                      justify-center
+                      gap-2
+                      rounded-xl
+                      bg-indigo-600
+                      px-5
+                      py-3
+                      text-sm
+                      font-semibold
+                      text-white
+                      shadow-lg
+                      shadow-indigo-600/20
+                      transition-all
+                      hover:-translate-y-0.5
+                      hover:bg-indigo-700
+                    "
+                  >
+                    <FaPlus />
+                    Add Certificate
+                  </button>
+
+                </div>
+
+              </div>
+
+
+              {/* Certificate Statistics */}
+
+              <div className="mb-6 grid gap-4 sm:grid-cols-3">
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-gray-200
+                    bg-white
+                    p-5
+                    shadow-sm
+                    dark:border-gray-800
+                    dark:bg-gray-900
+                  "
+                >
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Total Certificates
+                  </p>
+                  <p className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                    {certificates.length}
+                  </p>
+                </div>
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-green-200
+                    bg-green-50
+                    p-5
+                    dark:border-green-500/20
+                    dark:bg-green-500/10
+                  "
+                >
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Visible
+                  </p>
+                  <p className="mt-2 text-3xl font-extrabold text-green-600 dark:text-green-400">
+                    {certificates.filter((certificate) => certificate.isVisible !== false).length}
+                  </p>
+                </div>
+
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-yellow-200
+                    bg-yellow-50
+                    p-5
+                    dark:border-yellow-500/20
+                    dark:bg-yellow-500/10
+                  "
+                >
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                    Featured
+                  </p>
+                  <p className="mt-2 text-3xl font-extrabold text-yellow-600 dark:text-yellow-400">
+                    {certificates.filter((certificate) => certificate.featured).length}
+                  </p>
+                </div>
+
+              </div>
+
+
+              {/* Certificate Form */}
+
+              {showCertificateForm && (
+                <div
+                  className="
+                    mb-7
+                    rounded-3xl
+                    border
+                    border-indigo-200
+                    bg-white
+                    p-5
+                    shadow-sm
+                    dark:border-indigo-500/20
+                    dark:bg-gray-900
+                    sm:p-7
+                  "
+                >
+
+                  <div className="mb-6 flex items-start justify-between gap-4">
+
+                    <div>
+                      <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                        {editingCertificate ? 'Edit Certificate' : 'New Certificate'}
+                      </p>
+                      <h3 className="mt-1 text-xl font-extrabold text-gray-900 dark:text-white">
+                        {editingCertificate ? 'Update certificate details' : 'Add a new certificate'}
+                      </h3>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={closeCertificateForm}
+                      disabled={certificateSubmitting || certificateUploading}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-gray-800 dark:hover:text-white"
+                      aria-label="Close certificate form"
+                    >
+                      <FaTimes />
+                    </button>
+
+                  </div>
+
+
+                  <form onSubmit={handleCertificateSubmit} className="space-y-5">
+
+                    <div className="grid gap-5 md:grid-cols-2">
+
+                      <div>
+                        <label
+                          htmlFor="certificate-title"
+                          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                          Certificate Title <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="certificate-title"
+                          name="title"
+                          type="text"
+                          value={certificateForm.title}
+                          onChange={handleCertificateFormChange}
+                          placeholder="JavaScript Certification"
+                          className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="certificate-issuer"
+                          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                          Issuing Organization <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="certificate-issuer"
+                          name="issuer"
+                          type="text"
+                          value={certificateForm.issuer}
+                          onChange={handleCertificateFormChange}
+                          placeholder="Amity University Online"
+                          className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                        />
+                      </div>
+
+                    </div>
+
+
+                    <div className="grid gap-5 md:grid-cols-2">
+
+                      <div>
+                        <label
+                          htmlFor="certificate-issue-date"
+                          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                          Issue Date
+                        </label>
+                        <input
+                          id="certificate-issue-date"
+                          name="issueDate"
+                          type="text"
+                          value={certificateForm.issueDate}
+                          onChange={handleCertificateFormChange}
+                          placeholder="August 2026"
+                          className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="certificate-credential-url"
+                          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                          Credential / Verification URL
+                        </label>
+                        <div className="relative">
+                          <FaLink className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                          <input
+                            id="certificate-credential-url"
+                            name="credentialUrl"
+                            type="url"
+                            value={certificateForm.credentialUrl}
+                            onChange={handleCertificateFormChange}
+                            placeholder="https://..."
+                            className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                          />
+                        </div>
+                      </div>
+
+                    </div>
+
+
+                    <div>
+                      <label
+                        htmlFor="certificate-description"
+                        className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        id="certificate-description"
+                        name="description"
+                        rows={4}
+                        value={certificateForm.description}
+                        onChange={handleCertificateFormChange}
+                        placeholder="Describe what this certificate represents..."
+                        className="w-full resize-y rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                      />
+                    </div>
+
+
+                    <div>
+                      <label
+                        htmlFor="certificate-skills"
+                        className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                      >
+                        Skills / Technologies
+                      </label>
+                      <input
+                        id="certificate-skills"
+                        name="skills"
+                        type="text"
+                        value={certificateForm.skills}
+                        onChange={handleCertificateFormChange}
+                        placeholder="JavaScript, ES6+, Programming"
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                      />
+                      <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                        Separate multiple skills with commas.
+                      </p>
+                    </div>
+
+
+                    {/* Certificate Image */}
+
+                    <div
+                      className="
+                        rounded-2xl
+                        border
+                        border-gray-200
+                        bg-gray-50
+                        p-4
+                        dark:border-gray-800
+                        dark:bg-gray-950
+                      "
+                    >
+
+                      <div className="mb-4 flex items-start justify-between gap-4">
+                        <div>
+                          <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+                            <FaImage className="text-indigo-500" />
+                            Certificate Image
+                          </p>
+                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            JPG, JPEG, PNG or WEBP — maximum 5 MB.
+                          </p>
+                        </div>
+
+                        {certificateImagePreview && (
+                          <span className="rounded-full bg-green-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:bg-green-500/10 dark:text-green-400">
+                            Image selected
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-[180px_1fr] sm:items-center">
+
+                        <div className="flex h-36 w-full items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+                          {certificateImagePreview ? (
+                            <img
+                              src={certificateImagePreview}
+                              alt="Certificate preview"
+                              className="h-full w-full object-contain"
+                            />
+                          ) : (
+                            <div className="text-center text-gray-400 dark:text-gray-600">
+                              <FaImage className="mx-auto text-3xl" />
+                              <p className="mt-2 text-xs">No image</p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-400 dark:hover:bg-indigo-500/20 sm:w-auto"
+                          >
+                            <FaUpload />
+                            {certificateImageFile ? 'Choose Different Image' : 'Choose Certificate Image'}
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              disabled={certificateSubmitting || certificateUploading}
+                              onChange={handleCertificateImageChange}
+                            />
+                          </label>
+
+                          {certificateImageFile && (
+                            <p className="mt-3 break-all text-xs text-gray-500 dark:text-gray-400">
+                              {certificateImageFile.name}
+                            </p>
+                          )}
+
+                          <p className="mt-2 text-xs leading-5 text-gray-400 dark:text-gray-500">
+                            Existing certificate image will stay unchanged if you do not choose a new image while editing.
+                          </p>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                    <div className="grid gap-5 md:grid-cols-2">
+
+                      <div>
+                        <label
+                          htmlFor="certificate-display-order"
+                          className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                        >
+                          Display Order
+                        </label>
+                        <input
+                          id="certificate-display-order"
+                          name="displayOrder"
+                          type="number"
+                          min="0"
+                          value={certificateForm.displayOrder}
+                          onChange={handleCertificateFormChange}
+                          className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                        />
+                      </div>
+
+                      <div className="flex flex-col justify-end gap-3 sm:flex-row sm:items-center">
+
+                        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+                          <input
+                            type="checkbox"
+                            name="featured"
+                            checked={certificateForm.featured}
+                            onChange={handleCertificateFormChange}
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Featured Certificate
+                          </span>
+                        </label>
+
+                        <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
+                          <input
+                            type="checkbox"
+                            name="isVisible"
+                            checked={certificateForm.isVisible}
+                            onChange={handleCertificateFormChange}
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Visible on Portfolio
+                          </span>
+                        </label>
+
+                      </div>
+
+                    </div>
+
+
+                    <div className="flex flex-col-reverse gap-3 border-t border-gray-200 pt-5 dark:border-gray-800 sm:flex-row sm:justify-end">
+
+                      <button
+                        type="button"
+                        onClick={closeCertificateForm}
+                        disabled={certificateSubmitting || certificateUploading}
+                        className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300 dark:hover:bg-gray-900"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="submit"
+                        disabled={certificateSubmitting || certificateUploading}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {certificateUploading ? (
+                          <>
+                            <FaSpinner className="animate-spin" />
+                            Uploading Image...
+                          </>
+                        ) : certificateSubmitting ? (
+                          <>
+                            <FaSpinner className="animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <FaSave />
+                            {editingCertificate ? 'Update Certificate' : 'Save Certificate'}
+                          </>
+                        )}
+                      </button>
+
+                    </div>
+
+                  </form>
+
+                </div>
+              )}
+
+
+              {/* Certificate List */}
+
+              {certificatesLoading ? (
+                <div
+                  className="
+                    flex
+                    min-h-64
+                    items-center
+                    justify-center
+                    rounded-3xl
+                    border
+                    border-gray-200
+                    bg-white
+                    dark:border-gray-800
+                    dark:bg-gray-900
+                  "
+                >
+                  <Loader />
+                </div>
+              ) : certificates.length === 0 ? (
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-dashed
+                    border-gray-300
+                    bg-white
+                    p-10
+                    text-center
+                    dark:border-gray-700
+                    dark:bg-gray-900
+                  "
+                >
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
+                    <FaCertificate className="text-2xl" />
+                  </div>
+
+                  <h3 className="mt-5 text-lg font-bold text-gray-900 dark:text-white">
+                    No certificates yet
+                  </h3>
+
+                  <p className="mx-auto mt-2 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                    Add your first certificate with its image and credential details.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={openCertificateCreateForm}
+                    className="mt-5 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+                  >
+                    <FaPlus />
+                    Add Certificate
+                  </button>
+                </div>
+              ) : (
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+                  {certificates.map((certificate) => (
+                    <article
+                      key={certificate._id}
+                      className="group overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900"
+                    >
+
+                      <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-950">
+                        {certificate.image ? (
+                          <img
+                            src={certificate.image}
+                            alt={certificate.title || 'Certificate'}
+                            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-gray-400 dark:text-gray-600">
+                            <div className="text-center">
+                              <FaCertificate className="mx-auto text-4xl" />
+                              <p className="mt-2 text-xs">No certificate image</p>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                          {certificate.featured && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
+                              <FaStar />
+                              Featured
+                            </span>
+                          )}
+
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold text-white shadow-lg ${
+                              certificate.isVisible === false
+                                ? 'bg-gray-600'
+                                : 'bg-green-600'
+                            }`}
+                          >
+                            {certificate.isVisible === false ? <FaEyeSlash /> : <FaEye />}
+                            {certificate.isVisible === false ? 'Hidden' : 'Visible'}
+                          </span>
+                        </div>
+
+                      </div>
+
+                      <div className="p-5">
+
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h3 className="line-clamp-2 text-lg font-extrabold text-gray-900 dark:text-white">
+                              {certificate.title}
+                            </h3>
+                            <p className="mt-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                              {certificate.issuer}
+                            </p>
+                          </div>
+
+                          <span className="shrink-0 rounded-lg bg-gray-100 px-2 py-1 text-[10px] font-bold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            #{certificate.displayOrder ?? 0}
+                          </span>
+                        </div>
+
+                        {certificate.issueDate && (
+                          <p className="mt-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                            Issued: {certificate.issueDate}
+                          </p>
+                        )}
+
+                        {certificate.description && (
+                          <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
+                            {certificate.description}
+                          </p>
+                        )}
+
+                        {Array.isArray(certificate.skills) && certificate.skills.length > 0 && (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {certificate.skills.slice(0, 5).map((skill) => (
+                              <span
+                                key={`${certificate._id}-${skill}`}
+                                className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-semibold text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-400"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="mt-5 grid grid-cols-2 gap-2">
+
+                          <button
+                            type="button"
+                            onClick={() => openCertificateEditForm(certificate)}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 px-3 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+                          >
+                            <FaEdit />
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCertificate(certificate._id)}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-50 px-3 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+                          >
+                            <FaTrash />
+                            Delete
+                          </button>
+
+                        </div>
+
+                        {certificate.credentialUrl && (
+                          <a
+                            href={certificate.credentialUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-gray-800 dark:text-gray-400 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
+                          >
+                            <FaExternalLinkAlt className="text-xs" />
+                            Verify Credential
+                          </a>
+                        )}
+
+                      </div>
+
+                    </article>
+                  ))}
+
+                </div>
+              )}
 
             </section>
           )}

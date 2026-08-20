@@ -9,6 +9,7 @@ const contactRoutes = require('./routes/contactRoutes');
 const authRoutes = require('./routes/authRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
+const certificateRoutes = require('./routes/certificateRoutes');
 
 const {
   notFound,
@@ -63,6 +64,7 @@ app.use(express.json());
 |
 | /uploads/resume-xxxx.pdf
 | /uploads/profile-image-xxxx.png
+| /uploads/certificate-xxxx.png
 |
 | Public URL example:
 |
@@ -153,6 +155,28 @@ app.use(
 app.use(
   '/api/portfolio/upload',
   portfolioUploadRoutes
+);
+
+/*
+|--------------------------------------------------------------------------
+| CERTIFICATE ROUTES
+|--------------------------------------------------------------------------
+|
+| GET    /api/certificates
+| GET    /api/certificates/featured
+| GET    /api/certificates/admin
+| GET    /api/certificates/:id
+|
+| POST   /api/certificates
+| PUT    /api/certificates/:id
+| DELETE /api/certificates/:id
+|
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  '/api/certificates',
+  certificateRoutes
 );
 
 /*

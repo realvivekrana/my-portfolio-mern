@@ -49,7 +49,8 @@ const storage = multer.diskStorage({
       .replace(/[^a-zA-Z0-9-_]/g, '-')
       .toLowerCase();
 
-    const uniqueName = `${baseName}-${Date.now()}${extension.toLowerCase()}`;
+    const uniqueName =
+      `${baseName}-${Date.now()}${extension.toLowerCase()}`;
 
     cb(null, uniqueName);
   },
@@ -57,7 +58,7 @@ const storage = multer.diskStorage({
 
 /*
 |--------------------------------------------------------------------------
-| Allowed File Types
+| General Allowed File Types
 |--------------------------------------------------------------------------
 */
 
@@ -70,12 +71,16 @@ const allowedMimeTypes = [
 
 /*
 |--------------------------------------------------------------------------
-| File Filter
+| General File Filter
 |--------------------------------------------------------------------------
 */
 
 const fileFilter = (req, file, cb) => {
-  if (allowedMimeTypes.includes(file.mimetype)) {
+  if (
+    allowedMimeTypes.includes(
+      file.mimetype
+    )
+  ) {
     cb(null, true);
   } else {
     cb(
@@ -89,7 +94,7 @@ const fileFilter = (req, file, cb) => {
 
 /*
 |--------------------------------------------------------------------------
-| Multer Configuration
+| General Upload
 |--------------------------------------------------------------------------
 |
 | 10 MB maximum file size.
@@ -111,7 +116,7 @@ const upload = multer({
 | Resume Upload
 |--------------------------------------------------------------------------
 |
-| Only PDF should be accepted for resume.
+| Only PDF should be accepted.
 |
 |--------------------------------------------------------------------------
 */
@@ -120,7 +125,10 @@ const uploadResume = multer({
   storage,
 
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/pdf') {
+    if (
+      file.mimetype ===
+      'application/pdf'
+    ) {
       cb(null, true);
     } else {
       cb(
@@ -157,7 +165,11 @@ const uploadProfileImage = multer({
       'image/webp',
     ];
 
-    if (allowedImages.includes(file.mimetype)) {
+    if (
+      allowedImages.includes(
+        file.mimetype
+      )
+    ) {
       cb(null, true);
     } else {
       cb(
@@ -174,8 +186,64 @@ const uploadProfileImage = multer({
   },
 });
 
+/*
+|--------------------------------------------------------------------------
+| Certificate Image Upload
+|--------------------------------------------------------------------------
+|
+| Certificate ke liye:
+|
+| JPG
+| JPEG
+| PNG
+| WEBP
+|
+| Maximum size: 5 MB
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadCertificateImage =
+  multer({
+    storage,
+
+    fileFilter: (req, file, cb) => {
+      const allowedImages = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+      ];
+
+      if (
+        allowedImages.includes(
+          file.mimetype
+        )
+      ) {
+        cb(null, true);
+      } else {
+        cb(
+          new Error(
+            'Only JPG, JPEG, PNG and WEBP images are allowed for certificates.'
+          ),
+          false
+        );
+      }
+    },
+
+    limits: {
+      fileSize: 5 * 1024 * 1024,
+    },
+  });
+
+/*
+|--------------------------------------------------------------------------
+| Export
+|--------------------------------------------------------------------------
+*/
+
 module.exports = {
   upload,
   uploadResume,
   uploadProfileImage,
+  uploadCertificateImage,
 };
