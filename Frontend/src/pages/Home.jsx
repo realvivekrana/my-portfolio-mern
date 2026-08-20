@@ -11,21 +11,31 @@ import Contact from '../components/sections/Contact';
 
 import Footer from '../components/layout/Footer';
 
+import AnimatedBackground from '../components/ui/AnimatedBackground';
+
 function Home() {
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-white text-gray-900 transition-colors duration-500 dark:bg-gray-950 dark:text-white">
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-white text-gray-900 transition-colors duration-500 dark:bg-gray-950 dark:text-white">
+
+      {/* =====================================================
+          GLOBAL LIVE ANIMATION
+      ====================================================== */}
+
+      <AnimatedBackground />
 
       {/* =====================================================
           NAVBAR
       ====================================================== */}
 
-      <Navbar />
+      <div className="relative z-50">
+        <Navbar />
+      </div>
 
       {/* =====================================================
           MAIN CONTENT
       ====================================================== */}
 
-      <main className="w-full overflow-x-hidden">
+      <main className="relative z-10 w-full overflow-x-hidden">
 
         {/* Hero */}
 
@@ -81,7 +91,9 @@ function Home() {
           FOOTER
       ====================================================== */}
 
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
 
     </div>
   );
