@@ -11,57 +11,92 @@ import NotFound from './pages/NotFound';
 
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
+import GlobalSpaceBackground from './components/ui/GlobalSpaceBackground';
+
 function App() {
   return (
-    <>
-      <Routes>
+    <div className="relative min-h-screen overflow-x-hidden bg-black text-white">
 
-        {/* Public Website */}
+      {/* =====================================================
+          GLOBAL COSMIC / SOLAR SYSTEM BACKGROUND
+          -----------------------------------------------------
+          Public portfolio ke liye common animated background.
+          Admin pages ko is animation se alag rakha gaya hai.
+      ====================================================== */}
 
-        <Route
-          path="/"
-          element={<Home />}
-        />
+      <GlobalSpaceBackground />
 
-        {/* Admin Login */}
+      {/* =====================================================
+          APPLICATION CONTENT
+      ====================================================== */}
 
-        <Route
-          path="/admin/login"
-          element={<AdminLogin />}
-        />
+      <div className="relative z-10">
 
-        {/* Admin PIN */}
+        <Routes>
 
-        <Route
-          path="/admin/pin"
-          element={<AdminPin />}
-        />
+          {/* =================================================
+              PUBLIC WEBSITE
+          ================================================== */}
 
-        {/* Protected Admin Dashboard */}
+          <Route
+            path="/"
+            element={<Home />}
+          />
 
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+          {/* =================================================
+              ADMIN LOGIN
+          ================================================== */}
 
-        {/* 404 */}
+          <Route
+            path="/admin/login"
+            element={<AdminLogin />}
+          />
 
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
+          {/* =================================================
+              ADMIN PIN
+          ================================================== */}
 
-      </Routes>
+          <Route
+            path="/admin/pin"
+            element={<AdminPin />}
+          />
+
+          {/* =================================================
+              PROTECTED ADMIN DASHBOARD
+          ================================================== */}
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* =================================================
+              404
+          ================================================== */}
+
+          <Route
+            path="*"
+            element={<NotFound />}
+          />
+
+        </Routes>
+
+      </div>
+
+      {/* =====================================================
+          TOAST NOTIFICATIONS
+      ====================================================== */}
 
       <ToastContainer
         position="bottom-right"
         theme="dark"
       />
-    </>
+
+    </div>
   );
 }
 
