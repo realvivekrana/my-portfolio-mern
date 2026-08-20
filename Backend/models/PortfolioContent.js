@@ -4,16 +4,17 @@ const mongoose = require('mongoose');
 |--------------------------------------------------------------------------
 | Portfolio Content Schema
 |--------------------------------------------------------------------------
-| This model stores the main editable portfolio information.
+| This model stores all editable portfolio profile information.
 |
 | Admin Dashboard
+|       ↓
+| Portfolio API
 |       ↓
 | MongoDB
 |       ↓
 | Public Portfolio
 |
-| The document uses a fixed "key" so we always have one main
-| portfolio configuration document.
+| We keep one main portfolio document using the "key" field.
 |--------------------------------------------------------------------------
 */
 
@@ -21,7 +22,7 @@ const portfolioContentSchema = new mongoose.Schema(
   {
     /*
     |--------------------------------------------------------------------------
-    | Unique Configuration Key
+    | MAIN CONFIGURATION KEY
     |--------------------------------------------------------------------------
     */
 
@@ -35,7 +36,7 @@ const portfolioContentSchema = new mongoose.Schema(
 
     /*
     |--------------------------------------------------------------------------
-    | HERO SECTION
+    | PROFILE / HERO
     |--------------------------------------------------------------------------
     */
 
@@ -86,7 +87,7 @@ const portfolioContentSchema = new mongoose.Schema(
 
     /*
     |--------------------------------------------------------------------------
-    | ABOUT SECTION
+    | ABOUT
     |--------------------------------------------------------------------------
     */
 
@@ -94,7 +95,7 @@ const portfolioContentSchema = new mongoose.Schema(
       shortDescription: {
         type: String,
         default:
-          "I'm a MERN Stack Developer focused on building modern, scalable and user-friendly web applications. I enjoy turning complex problems into clean and intuitive digital experiences.",
+          "I'm a MERN Stack Developer focused on building modern, scalable and user-friendly web applications.",
         trim: true,
       },
 
@@ -196,6 +197,30 @@ const portfolioContentSchema = new mongoose.Schema(
         default: '',
         trim: true,
       },
+
+      twitter: {
+        type: String,
+        default: '',
+        trim: true,
+      },
+
+      instagram: {
+        type: String,
+        default: '',
+        trim: true,
+      },
+
+      youtube: {
+        type: String,
+        default: '',
+        trim: true,
+      },
+
+      website: {
+        type: String,
+        default: '',
+        trim: true,
+      },
     },
 
     /*
@@ -269,7 +294,7 @@ const portfolioContentSchema = new mongoose.Schema(
 
     /*
     |--------------------------------------------------------------------------
-    | SITE SETTINGS
+    | VISIBILITY / SITE SETTINGS
     |--------------------------------------------------------------------------
     */
 
