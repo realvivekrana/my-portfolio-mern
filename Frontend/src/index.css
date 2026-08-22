@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -11,51 +12,93 @@
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 
-  --page-bg: #ffffff;
+  --font-display:
+    "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* =======================================================
+     LIGHT MODE
+  ======================================================= */
+
+  --page-bg: #f6f7f9;
   --surface: #ffffff;
-  --surface-muted: #f8fafc;
-  --surface-soft: #f1f5f9;
+  --surface-muted: #f1f3f5;
+  --surface-soft: #e9ecef;
 
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
+  --text-primary: #0a0a0a;
+  --text-secondary: #343434;
+  --text-muted: #666666;
 
-  --border: #e5e7eb;
-  --border-soft: #eef2f7;
+  --border: #d9dde3;
+  --border-soft: #e8eaee;
 
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
+  /*
+   * Strong accent colors.
+   * These are deliberately darker so colored text remains
+   * readable on a white background.
+   */
+  --accent-indigo: #111827;
+  --accent-purple: #1f2937;
+  --accent-blue: #374151;
+  --accent-cyan: #4b5563;
+  --accent-emerald: #374151;
+  --accent-green: #1f2937;
+  --accent-amber: #374151;
+  --accent-orange: #1f2937;
+  --accent-red: #111827;
+  --accent-pink: #374151;
+
+  --accent: #111827;
+  --accent-hover: #000000;
 
   --shadow-sm:
-    0 1px 2px rgba(15, 23, 42, 0.04);
+    0 1px 3px rgba(0, 0, 0, 0.06);
 
   --shadow-md:
-    0 10px 30px rgba(15, 23, 42, 0.08);
+    0 12px 32px rgba(0, 0, 0, 0.09);
 
   --shadow-lg:
-    0 20px 50px rgba(15, 23, 42, 0.12);
+    0 24px 60px rgba(0, 0, 0, 0.12);
 
   --shadow-accent:
-    0 18px 45px rgba(79, 70, 229, 0.14);
+    0 18px 45px rgba(0, 0, 0, 0.12);
 }
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
 
 .dark {
   color-scheme: dark;
 
-  --page-bg: #030712;
-  --surface: #0f172a;
-  --surface-muted: #111827;
-  --surface-soft: #172033;
+  --page-bg: #050505;
+  --surface: #111111;
+  --surface-muted: #161616;
+  --surface-soft: #1c1c1c;
 
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
 
-  --border: #1f2937;
-  --border-soft: #172033;
+  --border: #2a2a2a;
+  --border-soft: #222222;
 
-  --accent: #818cf8;
-  --accent-hover: #a5b4fc;
+  /*
+   * Lighter variants for dark backgrounds.
+   */
+  --accent-indigo: #f5f5f5;
+  --accent-purple: #d4d4d4;
+  --accent-blue: #bdbdbd;
+  --accent-cyan: #a3a3a3;
+  --accent-emerald: #d4d4d4;
+  --accent-green: #e5e5e5;
+  --accent-amber: #d4d4d4;
+  --accent-orange: #e5e5e5;
+  --accent-red: #f0f0f0;
+  --accent-pink: #d1d5db;
+
+  --accent: #f5f5f5;
+  --accent-hover: #ffffff;
 
   --shadow-sm:
     0 1px 2px rgba(0, 0, 0, 0.25);
@@ -67,7 +110,7 @@
     0 25px 60px rgba(0, 0, 0, 0.35);
 
   --shadow-accent:
-    0 20px 50px rgba(99, 102, 241, 0.12);
+    0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
 /* =========================================================
@@ -79,6 +122,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 90px;
   font-family: var(--font-sans);
+  font-size: 16px;
   background: var(--page-bg);
   color: var(--text-primary);
 
@@ -93,9 +137,11 @@ body {
   background: var(--page-bg);
   color: var(--text-primary);
   font-family: var(--font-sans);
+
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
 
   transition:
     background-color 0.4s ease,
@@ -107,30 +153,379 @@ body {
 }
 
 /* =========================================================
-   THEME TRANSITION CONTROL
+   TYPOGRAPHY
    ========================================================= */
 
-.theme-transition,
-.theme-transition * {
-  transition: none !important;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-synthesis: none;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+h1 {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+h2 {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+}
+
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+p {
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+small {
+  color: var(--text-muted);
+}
+
+label {
+  color: var(--text-secondary);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-sans);
+}
+
+.hero-title,
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  text-wrap: balance;
 }
 
 /* =========================================================
-   SELECTION
+   SAFE SEMANTIC TEXT COLORS
    ========================================================= */
 
-::selection {
-  background: rgba(79, 70, 229, 0.18);
+.text-primary {
   color: var(--text-primary);
 }
 
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-accent-indigo {
+  color: var(--accent-indigo);
+}
+
+.text-accent-purple {
+  color: var(--accent-purple);
+}
+
+.text-accent-blue {
+  color: var(--accent-blue);
+}
+
+.text-accent-cyan {
+  color: var(--accent-cyan);
+}
+
+.text-accent-emerald {
+  color: var(--accent-emerald);
+}
+
+.text-accent-green {
+  color: var(--accent-green);
+}
+
+.text-accent-amber {
+  color: var(--accent-amber);
+}
+
+.text-accent-orange {
+  color: var(--accent-orange);
+}
+
+.text-accent-red {
+  color: var(--accent-red);
+}
+
+.text-accent-pink {
+  color: var(--accent-pink);
+}
+
 /* =========================================================
-   ACCESSIBILITY
+   THEME-SPECIFIC COLORED TEXT PALETTE
+   =========================================================
+   Light mode gets dark/strong colors.
+   Dark mode gets light/bright colors.
+   Intentional text-white is never overridden.
    ========================================================= */
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+/* =========================================================
+   INDIGO
+   ========================================================= */
+
+html:not(.dark) .text-indigo-300,
+html:not(.dark) .text-indigo-400,
+html:not(.dark) .text-indigo-500,
+html:not(.dark) .text-indigo-600 {
+  color: #111827 !important;
+}
+
+.dark .text-indigo-300,
+.dark .text-indigo-400,
+.dark .text-indigo-500,
+.dark .text-indigo-600 {
+  color: #f3f4f6 !important;
+}
+
+/* =========================================================
+   PURPLE
+   ========================================================= */
+
+html:not(.dark) .text-purple-300,
+html:not(.dark) .text-purple-400,
+html:not(.dark) .text-purple-500,
+html:not(.dark) .text-purple-600 {
+  color: #1f2937 !important;
+}
+
+.dark .text-purple-300,
+.dark .text-purple-400,
+.dark .text-purple-500,
+.dark .text-purple-600 {
+  color: #e5e7eb !important;
+}
+
+/* =========================================================
+   BLUE
+   ========================================================= */
+
+html:not(.dark) .text-blue-300,
+html:not(.dark) .text-blue-400,
+html:not(.dark) .text-blue-500,
+html:not(.dark) .text-blue-600 {
+  color: #374151 !important;
+}
+
+.dark .text-blue-300,
+.dark .text-blue-400,
+.dark .text-blue-500,
+.dark .text-blue-600 {
+  color: #d1d5db !important;
+}
+
+/* =========================================================
+   CYAN
+   ========================================================= */
+
+html:not(.dark) .text-cyan-300,
+html:not(.dark) .text-cyan-400,
+html:not(.dark) .text-cyan-500,
+html:not(.dark) .text-cyan-600 {
+  color: #4b5563 !important;
+}
+
+.dark .text-cyan-300,
+.dark .text-cyan-400,
+.dark .text-cyan-500,
+.dark .text-cyan-600 {
+  color: #9ca3af !important;
+}
+
+/* =========================================================
+   EMERALD
+   ========================================================= */
+
+html:not(.dark) .text-emerald-300,
+html:not(.dark) .text-emerald-400,
+html:not(.dark) .text-emerald-500,
+html:not(.dark) .text-emerald-600 {
+  color: #374151 !important;
+}
+
+.dark .text-emerald-300,
+.dark .text-emerald-400,
+.dark .text-emerald-500,
+.dark .text-emerald-600 {
+  color: #d1d5db !important;
+}
+
+/* =========================================================
+   GREEN
+   ========================================================= */
+
+html:not(.dark) .text-green-300,
+html:not(.dark) .text-green-400,
+html:not(.dark) .text-green-500,
+html:not(.dark) .text-green-600 {
+  color: #1f2937 !important;
+}
+
+.dark .text-green-300,
+.dark .text-green-400,
+.dark .text-green-500,
+.dark .text-green-600 {
+  color: #e5e7eb !important;
+}
+
+/* =========================================================
+   AMBER / YELLOW
+   ========================================================= */
+
+html:not(.dark) .text-yellow-300,
+html:not(.dark) .text-yellow-400,
+html:not(.dark) .text-yellow-500,
+html:not(.dark) .text-yellow-600,
+html:not(.dark) .text-amber-300,
+html:not(.dark) .text-amber-400,
+html:not(.dark) .text-amber-500,
+html:not(.dark) .text-amber-600 {
+  color: #374151 !important;
+}
+
+.dark .text-yellow-300,
+.dark .text-yellow-400,
+.dark .text-yellow-500,
+.dark .text-yellow-600,
+.dark .text-amber-300,
+.dark .text-amber-400,
+.dark .text-amber-500,
+.dark .text-amber-600 {
+  color: #d1d5db !important;
+}
+
+/* =========================================================
+   ORANGE
+   ========================================================= */
+
+html:not(.dark) .text-orange-300,
+html:not(.dark) .text-orange-400,
+html:not(.dark) .text-orange-500,
+html:not(.dark) .text-orange-600 {
+  color: #1f2937 !important;
+}
+
+.dark .text-orange-300,
+.dark .text-orange-400,
+.dark .text-orange-500,
+.dark .text-orange-600 {
+  color: #e5e7eb !important;
+}
+
+/* =========================================================
+   RED
+   ========================================================= */
+
+html:not(.dark) .text-red-300,
+html:not(.dark) .text-red-400,
+html:not(.dark) .text-red-500,
+html:not(.dark) .text-red-600 {
+  color: #111827 !important;
+}
+
+.dark .text-red-300,
+.dark .text-red-400,
+.dark .text-red-500,
+.dark .text-red-600 {
+  color: #f3f4f6 !important;
+}
+
+/* =========================================================
+   PINK
+   ========================================================= */
+
+html:not(.dark) .text-pink-300,
+html:not(.dark) .text-pink-400,
+html:not(.dark) .text-pink-500,
+html:not(.dark) .text-pink-600 {
+  color: #374151 !important;
+}
+
+.dark .text-pink-300,
+.dark .text-pink-400,
+.dark .text-pink-500,
+.dark .text-pink-600 {
+  color: #d1d5db !important;
+}
+
+/* =========================================================
+   LIGHT MODE GRAY TEXT
+   ========================================================= */
+
+html:not(.dark) .text-gray-300 {
+  color: #374151 !important;
+}
+
+html:not(.dark) .text-gray-400 {
+  color: #4b5563 !important;
+}
+
+html:not(.dark) .text-gray-500 {
+  color: #4b5563 !important;
+}
+
+/* =========================================================
+   DARK MODE GRAY TEXT
+   ========================================================= */
+
+.dark .text-gray-300 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+input,
+textarea,
+select {
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border-color: var(--border);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
 }
 
 /* =========================================================
@@ -139,6 +534,33 @@ body {
 
 a {
   text-decoration: none;
+}
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+  background: rgba(17, 17, 17, 0.14);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   THEME TRANSITION
+   ========================================================= */
+
+.theme-transition,
+.theme-transition * {
+  transition: none !important;
 }
 
 /* =========================================================
@@ -154,12 +576,12 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #c7c7c7;
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #9a9a9a;
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -171,7 +593,7 @@ a {
 }
 
 /* =========================================================
-   GLOBAL CONTAINER
+   CONTAINER
    ========================================================= */
 
 .site-container {
@@ -186,12 +608,12 @@ a {
 }
 
 /* =========================================================
-   GLASS EFFECT
+   GLASS
    ========================================================= */
 
 .glass {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(226, 232, 240, 0.75);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(210, 214, 220, 0.9);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
@@ -202,8 +624,8 @@ a {
 }
 
 .dark .glass {
-  background: rgba(15, 23, 42, 0.72);
-  border-color: rgba(51, 65, 85, 0.65);
+  background: rgba(17, 17, 17, 0.78);
+  border-color: rgba(64, 64, 64, 0.72);
 }
 
 /* =========================================================
@@ -226,11 +648,11 @@ a {
 .premium-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(99, 102, 241, 0.28);
+  border-color: rgba(17, 17, 17, 0.22);
 }
 
 /* =========================================================
-   PREMIUM SHADOW UTILITIES
+   SHADOWS
    ========================================================= */
 
 .shadow-premium {
@@ -252,9 +674,9 @@ a {
 .gradient-text {
   background: linear-gradient(
     135deg,
-    #4f46e5 0%,
-    #7c3aed 50%,
-    #2563eb 100%
+    #050505 0%,
+    #2b2b2b 50%,
+    #525252 100%
   );
 
   background-clip: text;
@@ -265,9 +687,9 @@ a {
 .dark .gradient-text {
   background: linear-gradient(
     135deg,
-    #a5b4fc 0%,
-    #c4b5fd 50%,
-    #93c5fd 100%
+    #ffffff 0%,
+    #d4d4d4 50%,
+    #a3a3a3 100%
   );
 
   background-clip: text;
@@ -276,18 +698,18 @@ a {
 }
 
 /* =========================================================
-   SUBTLE BACKGROUND GRID
+   BACKGROUND GRID
    ========================================================= */
 
 .background-grid {
   background-image:
     linear-gradient(
-      rgba(148, 163, 184, 0.08) 1px,
+      rgba(17, 17, 17, 0.055) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(148, 163, 184, 0.08) 1px,
+      rgba(17, 17, 17, 0.055) 1px,
       transparent 1px
     );
 
@@ -297,18 +719,18 @@ a {
 .dark .background-grid {
   background-image:
     linear-gradient(
-      rgba(148, 163, 184, 0.035) 1px,
+      rgba(163, 163, 163, 0.035) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(148, 163, 184, 0.035) 1px,
+      rgba(163, 163, 163, 0.035) 1px,
       transparent 1px
     );
 }
 
 /* =========================================================
-   SECTION REVEAL ANIMATION
+   REVEAL
    ========================================================= */
 
 .reveal {
@@ -338,7 +760,7 @@ a {
 }
 
 /* =========================================================
-   FLOATING ANIMATION
+   FLOATING
    ========================================================= */
 
 .float-slow {
@@ -408,7 +830,7 @@ a {
 }
 
 /* =========================================================
-   BUTTON TRANSITIONS
+   BUTTONS
    ========================================================= */
 
 button,
@@ -418,6 +840,28 @@ a {
 
 button {
   font-family: inherit;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+
+  body {
+    line-height: 1.65;
+  }
+
+  h1 {
+    letter-spacing: -0.035em;
+  }
+
+  h2 {
+    letter-spacing: -0.03em;
+  }
 }
 
 /* =========================================================
