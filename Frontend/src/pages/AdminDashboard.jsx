@@ -38,6 +38,7 @@ import API from '../utils/axios';
 import ProjectForm from '../components/admin/ProjectForm';
 import ProfileManager from '../components/admin/ProfileManager';
 import ExperienceEducationManager from '../components/admin/ExperienceEducationManager';
+import AdminPasswordManager from '../components/admin/AdminPasswordManager';
 import Loader from '../components/ui/Loader';
 
 
@@ -5578,6 +5579,18 @@ function AdminDashboard() {
 
                     </div>
 
+                  </div>
+
+                  {/* =================================================
+                      CHANGE PASSWORD
+                  ================================================== */}
+
+                  <div
+                    className="
+                      xl:col-span-2
+                    "
+                  >
+                    <AdminPasswordManager />
                   </div>
 
                 </div>

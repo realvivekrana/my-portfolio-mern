@@ -131,6 +131,14 @@ app.use(
 |--------------------------------------------------------------------------
 | AUTH ROUTES
 |--------------------------------------------------------------------------
+|
+| POST /api/auth/register
+| POST /api/auth/login
+| POST /api/auth/verify-pin
+| GET  /api/auth/me
+| PUT  /api/auth/change-password
+|
+|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -160,7 +168,6 @@ app.use(
 |--------------------------------------------------------------------------
 |
 | POST /api/portfolio/upload/resume
-|
 | POST /api/portfolio/upload/profile-image
 |
 |--------------------------------------------------------------------------
@@ -198,8 +205,8 @@ app.use(
 | SETTINGS ROUTES
 |--------------------------------------------------------------------------
 |
-| All settings routes are protected by the authentication middleware
-| inside settingsRoutes.js.
+| All settings routes are protected by the authentication
+| middleware inside settingsRoutes.js.
 |
 | GET    /api/settings
 | PUT    /api/settings
@@ -219,7 +226,7 @@ app.use(
 |--------------------------------------------------------------------------
 |
 | IMPORTANT:
-| This must stay after all API routes.
+| This middleware must stay AFTER all API routes.
 |
 |--------------------------------------------------------------------------
 */

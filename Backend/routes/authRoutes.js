@@ -7,24 +7,67 @@ const {
   loginAdmin,
   verifyAdminPin,
   getMe,
+  changePassword,
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/authMiddleware');
 
-// @route   POST /api/auth/register
-// @access  Public
-router.post('/register', registerAdmin);
+// ======================================================
+// REGISTER
+// POST /api/auth/register
+// Access: Public
+// ======================================================
 
-// @route   POST /api/auth/login
-// @access  Public
-router.post('/login', loginAdmin);
+router.post(
+  '/register',
+  registerAdmin
+);
 
-// @route   POST /api/auth/verify-pin
-// @access  Protected
-router.post('/verify-pin', protect, verifyAdminPin);
+// ======================================================
+// LOGIN
+// POST /api/auth/login
+// Access: Public
+// ======================================================
 
-// @route   GET /api/auth/me
-// @access  Protected
-router.get('/me', protect, getMe);
+router.post(
+  '/login',
+  loginAdmin
+);
+
+// ======================================================
+// VERIFY ADMIN PIN
+// POST /api/auth/verify-pin
+// Access: Protected
+// ======================================================
+
+router.post(
+  '/verify-pin',
+  protect,
+  verifyAdminPin
+);
+
+// ======================================================
+// GET LOGGED-IN ADMIN
+// GET /api/auth/me
+// Access: Protected
+// ======================================================
+
+router.get(
+  '/me',
+  protect,
+  getMe
+);
+
+// ======================================================
+// CHANGE PASSWORD
+// PUT /api/auth/change-password
+// Access: Protected
+// ======================================================
+
+router.put(
+  '/change-password',
+  protect,
+  changePassword
+);
 
 module.exports = router;
