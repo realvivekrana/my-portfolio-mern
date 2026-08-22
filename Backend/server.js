@@ -10,7 +10,6 @@ const authRoutes = require('./routes/authRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
-const messageRoutes = require('./routes/messageRoutes');
 
 const {
   notFound,
@@ -107,38 +106,24 @@ app.use(
 |--------------------------------------------------------------------------
 | CONTACT ROUTES
 |--------------------------------------------------------------------------
+|
+| Contact form:
+|
+| POST /api/contact
+|
+| Admin:
+|
+| GET    /api/contact
+| GET    /api/contact/:id
+| PUT    /api/contact/:id/read
+| DELETE /api/contact/:id
+|
+|--------------------------------------------------------------------------
 */
 
 app.use(
   '/api/contact',
   contactRoutes
-);
-
-/*
-|--------------------------------------------------------------------------
-| MESSAGE ROUTES
-|--------------------------------------------------------------------------
-|
-| Public:
-|
-| POST /api/messages
-|
-| Admin:
-|
-| GET    /api/messages
-| GET    /api/messages/unread-count
-| GET    /api/messages/:id
-| PATCH  /api/messages/:id
-| PATCH  /api/messages/:id/read
-| PATCH  /api/messages/:id/unread
-| DELETE /api/messages/:id
-|
-|--------------------------------------------------------------------------
-*/
-
-app.use(
-  '/api/messages',
-  messageRoutes
 );
 
 /*

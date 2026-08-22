@@ -261,6 +261,59 @@ function AdminDashboard() {
 
 
   // =========================================================
+  // DOWNLOAD RESUME
+  // =========================================================
+
+  const handleResumeDownload = async () => {
+    if (!resumeInfo?.url) {
+      toast.error('Resume is not available.');
+      return;
+    }
+
+    try {
+      const response = await fetch(resumeInfo.url);
+
+      if (!response.ok) {
+        throw new Error(
+          `Resume download failed: ${response.status}`
+        );
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+
+      link.href = blobUrl;
+
+      link.download =
+        resumeInfo.originalName ||
+        resumeInfo.fileName ||
+        resumeInfo.filename ||
+        'Vivek-Rana-Resume.pdf';
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error(
+        'Admin resume download error:',
+        error
+      );
+
+      toast.error(
+        'Failed to download resume.'
+      );
+    }
+  };
+
+
+  // =========================================================
   // FETCH MESSAGES
   // =========================================================
 
@@ -4469,14 +4522,14 @@ function AdminDashboard() {
                           View Resume
                         </a>
 
-                        <a
-                          href={resumeInfo.url}
-                          download={resumeInfo.originalName || 'Vivek-Rana-Resume.pdf'}
+                        <button
+                          type="button"
+                          onClick={handleResumeDownload}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                         >
                           <FaDownload />
                           Download Resume
-                        </a>
+                        </button>
 
                       </>
                     )}

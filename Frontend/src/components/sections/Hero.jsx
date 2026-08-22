@@ -184,6 +184,79 @@ function Hero() {
     loadResume();
   }, []);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Download Resume
+  |--------------------------------------------------------------------------
+  |
+  | Backend PDF URL cross-origin hone ki wajah se
+  | normal <a download> browser mein PDF open kar sakta hai.
+  |
+  | Isliye PDF ko Blob ke through download karenge.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  const handleResumeDownload = async () => {
+    if (!resumeUrl) {
+      return;
+    }
+
+    try {
+      const response = await fetch(resumeUrl);
+
+      if (!response.ok) {
+        throw new Error(
+          `Resume download failed: ${response.status}`
+        );
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl =
+        window.URL.createObjectURL(blob);
+
+      const link =
+        document.createElement('a');
+
+      link.href = blobUrl;
+
+      link.download =
+        resumeFileName ||
+        'Vivek-Rana-Resume.pdf';
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error(
+        'Resume download error:',
+        error
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Fallback
+      |--------------------------------------------------------------------------
+      |
+      | Agar browser/server Blob download ko allow na kare,
+      | resume normal URL par open ho jayega.
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      window.open(
+        resumeUrl,
+        '_blank',
+        'noopener,noreferrer'
+      );
+    }
+  };
+
   return (
     <section
       id="home"
@@ -288,15 +361,23 @@ function Hero() {
                 <HiArrowRight className="text-xl transition-transform duration-300 group-hover:translate-x-1" />
               </a>
 
-              <a
-                href={resumeUrl}
-                download={resumeFileName}
+              {/* =================================================
+                  DOWNLOAD RESUME
+              ================================================== */}
+
+              <button
+                type="button"
+                onClick={handleResumeDownload}
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white/90 px-7 py-3.5 font-semibold text-gray-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-200 dark:hover:border-indigo-400 dark:hover:text-indigo-400 sm:w-auto"
               >
                 <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
 
                 Download Resume
-              </a>
+              </button>
+
+              {/* =================================================
+                  VIEW RESUME
+              ================================================== */}
 
               <a
                 href={resumeUrl}
@@ -308,6 +389,7 @@ function Hero() {
 
                 View Resume
               </a>
+
             </div>
 
             {/* Resume Note */}
@@ -449,7 +531,7 @@ function Hero() {
 
               <span className="absolute left-[28%] top-[15%] z-20 h-2 w-2 animate-[tinyBubbleThree_8s_ease-in-out_infinite] rounded-full border border-indigo-300/40 bg-indigo-200/20 backdrop-blur-sm dark:bg-indigo-400/10" />
 
-              <span className="absolute bottom-[12%] right-[28%] z-20 h-3 w-3 animate-[tinyBubbleFour_10s_ease-in-out_infinite] rounded-full border border-blue-300/40 bg-blue-200/20 backdrop-blur-sm dark:bg-blue-400/10" />
+              <span className="absolute bottom-[12%] right-[28%] z-20 h-3 w-3 animate-[tinyBubbleFour_10s_ease-in-out_infinite] rounded-full border border-blue-300/40 bg-blue-200/20 backdrop-blur-sm dark:bg-blue-500/10" />
 
               {/* =================================================
                   AVAILABILITY CARD
@@ -475,8 +557,10 @@ function Hero() {
 
                 </div>
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
 
