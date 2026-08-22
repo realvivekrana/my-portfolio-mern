@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 |--------------------------------------------------------------------------
 | Portfolio Content Schema
 |--------------------------------------------------------------------------
-| This model stores all editable portfolio profile information.
+| This model stores all editable portfolio information.
 |
 | Admin Dashboard
 |       ↓
@@ -80,7 +80,8 @@ const portfolioContentSchema = new mongoose.Schema(
 
       linkedinUrl: {
         type: String,
-        default: 'https://www.linkedin.com/in/mrvivekrana/',
+        default:
+          'https://www.linkedin.com/in/mrvivekrana/',
         trim: true,
       },
     },
@@ -188,7 +189,8 @@ const portfolioContentSchema = new mongoose.Schema(
 
       linkedin: {
         type: String,
-        default: 'https://www.linkedin.com/in/mrvivekrana/',
+        default:
+          'https://www.linkedin.com/in/mrvivekrana/',
         trim: true,
       },
 
@@ -263,7 +265,8 @@ const portfolioContentSchema = new mongoose.Schema(
     seo: {
       title: {
         type: String,
-        default: 'Vivek Rana | MERN Stack Developer',
+        default:
+          'Vivek Rana | MERN Stack Developer',
         trim: true,
       },
 
@@ -290,6 +293,277 @@ const portfolioContentSchema = new mongoose.Schema(
         default: '',
         trim: true,
       },
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPERIENCE
+    |--------------------------------------------------------------------------
+    */
+
+    experience: {
+      type: [
+        {
+          role: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          company: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          duration: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          type: {
+            type: String,
+            trim: true,
+            default: 'Full-time',
+          },
+
+          location: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          description: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          responsibilities: {
+            type: [
+              {
+                icon: {
+                  type: String,
+                  trim: true,
+                  default: 'code',
+                },
+
+                text: {
+                  type: String,
+                  trim: true,
+                  default: '',
+                },
+              },
+            ],
+
+            default: [],
+          },
+
+          technologies: {
+            type: [String],
+            default: [],
+          },
+
+          displayOrder: {
+            type: Number,
+            default: 0,
+          },
+
+          isVisible: {
+            type: Boolean,
+            default: true,
+          },
+        },
+      ],
+
+      /*
+      |--------------------------------------------------------------------------
+      | DEFAULT EXPERIENCE
+      |--------------------------------------------------------------------------
+      */
+
+      default: [
+        {
+          role: 'Frontend Developer Intern',
+
+          company: 'Athenura',
+
+          duration: 'Feb 2026 – Present',
+
+          type: 'Internship',
+
+          location: 'Remote',
+
+          description:
+            'Working on modern web interfaces and production-focused frontend experiences using React.js and modern UI development practices.',
+
+          responsibilities: [
+            {
+              icon: 'code',
+              text:
+                'Developed responsive and user-friendly React interfaces for modern web applications.',
+            },
+
+            {
+              icon: 'layer',
+              text:
+                'Built reusable and scalable UI components to maintain consistency across the application.',
+            },
+
+            {
+              icon: 'rocket',
+              text:
+                'Worked on improving website performance, usability and overall frontend experience.',
+            },
+
+            {
+              icon: 'users',
+              text:
+                'Collaborated with the development team to deliver production features and solve frontend challenges.',
+            },
+          ],
+
+          technologies: [
+            'React.js',
+            'JavaScript',
+            'HTML5',
+            'CSS3',
+            'Tailwind CSS',
+            'Git',
+            'GitHub',
+          ],
+
+          displayOrder: 0,
+
+          isVisible: true,
+        },
+      ],
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | EDUCATION
+    |--------------------------------------------------------------------------
+    */
+
+    education: {
+      type: [
+        {
+          degree: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          institution: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          duration: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          status: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          description: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          highlights: {
+            type: [String],
+            default: [],
+          },
+
+          icon: {
+            type: String,
+            trim: true,
+            default: 'book',
+          },
+
+          displayOrder: {
+            type: Number,
+            default: 0,
+          },
+
+          isVisible: {
+            type: Boolean,
+            default: true,
+          },
+        },
+      ],
+
+      /*
+      |--------------------------------------------------------------------------
+      | DEFAULT EDUCATION
+      |--------------------------------------------------------------------------
+      */
+
+      default: [
+        {
+          degree:
+            'MCA — Artificial Intelligence & Machine Learning',
+
+          institution:
+            'Amity University Online',
+
+          duration: 'Current',
+
+          status: 'Postgraduate',
+
+          description:
+            'Pursuing a Master of Computer Applications with a specialization in Artificial Intelligence and Machine Learning, while strengthening my software development and problem-solving skills.',
+
+          highlights: [
+            'Artificial Intelligence & Machine Learning',
+            'Advanced Computer Applications',
+            'Software Development',
+          ],
+
+          icon: 'brain',
+
+          displayOrder: 0,
+
+          isVisible: true,
+        },
+
+        {
+          degree:
+            'Bachelor of Computer Applications',
+
+          institution:
+            'Vinoba Bhave University',
+
+          duration: '2021 – 2024',
+
+          status: 'Completed',
+
+          description:
+            'Completed my Bachelor of Computer Applications with a strong foundation in programming, computer science fundamentals and software development.',
+
+          highlights: [
+            'Computer Applications',
+            'Programming Fundamentals',
+            'Software Development',
+          ],
+
+          icon: 'book',
+
+          displayOrder: 1,
+
+          isVisible: true,
+        },
+      ],
     },
 
     /*
@@ -325,10 +599,17 @@ const portfolioContentSchema = new mongoose.Schema(
       },
     },
   },
+
   {
     timestamps: true,
   }
 );
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT MODEL
+|--------------------------------------------------------------------------
+*/
 
 module.exports = mongoose.model(
   'PortfolioContent',

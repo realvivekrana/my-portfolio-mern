@@ -1,367 +1,554 @@
-import {
-  FaBriefcase,
-  FaCode,
-  FaLayerGroup,
-  FaRocket,
-  FaUsers,
-} from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import axios from '../../utils/axios';
 
-const experiences = [
-  {
-    role: 'Frontend Developer Intern',
-    company: 'Athenura',
-    duration: 'Feb 2026 – Present',
-    type: 'Internship',
-    location: 'Remote',
-    description:
-      'Working on modern web interfaces and production-focused frontend experiences using React.js and modern UI development practices.',
-    responsibilities: [
-      {
-        icon: <FaCode />,
-        text: 'Developed responsive and user-friendly React interfaces for modern web applications.',
-      },
-      {
-        icon: <FaLayerGroup />,
-        text: 'Built reusable and scalable UI components to maintain consistency across the application.',
-      },
-      {
-        icon: <FaRocket />,
-        text: 'Worked on improving website performance, usability and overall frontend experience.',
-      },
-      {
-        icon: <FaUsers />,
-        text: 'Collaborated with the development team to deliver production features and solve frontend challenges.',
-      },
-    ],
-    technologies: [
-      'React.js',
-      'JavaScript',
-      'HTML5',
-      'CSS3',
-      'Tailwind CSS',
-      'Git',
-      'GitHub',
-    ],
-  },
-];
+/*
+|--------------------------------------------------------------------------
+| Experience Section
+|--------------------------------------------------------------------------
+|
+| Public portfolio ke Experience section ke liye.
+|
+| Data MongoDB se:
+|
+| GET /api/portfolio
+|
+| ke through aayega.
+|
+|--------------------------------------------------------------------------
+*/
 
-function Experience() {
+const Experience = () => {
+  const [experiences, setExperiences] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState('');
+
+  /*
+  |--------------------------------------------------------------------------
+  | Fetch Experience
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    const fetchExperience =
+      async () => {
+        try {
+          setLoading(true);
+          setError('');
+
+          const response =
+            await axios.get(
+              '/portfolio'
+            );
+
+          /*
+          |--------------------------------------------------------------------------
+          | API Response
+          |--------------------------------------------------------------------------
+          */
+
+          const portfolio =
+            response?.data?.data;
+
+          const experience =
+            portfolio?.experience;
+
+          /*
+          |--------------------------------------------------------------------------
+          | Validate Array
+          |--------------------------------------------------------------------------
+          */
+
+          if (
+            Array.isArray(
+              experience
+            )
+          ) {
+            const visibleExperience =
+              experience
+                .filter(
+                  (item) =>
+                    item?.isVisible !==
+                    false
+                )
+                .sort(
+                  (a, b) =>
+                    Number(
+                      a?.displayOrder || 0
+                    ) -
+                    Number(
+                      b?.displayOrder || 0
+                    )
+                );
+
+            setExperiences(
+              visibleExperience
+            );
+          } else {
+            setExperiences([]);
+          }
+        } catch (err) {
+          console.error(
+            'Failed to fetch experience:',
+            err
+          );
+
+          setError(
+            'Unable to load experience.'
+          );
+
+          setExperiences([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+    fetchExperience();
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Loading State
+  |--------------------------------------------------------------------------
+  */
+
+  if (loading) {
+    return (
+      <section
+        id="experience"
+        className="py-20"
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            <div
+              className="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent"
+              aria-label="Loading experience"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Error State
+  |--------------------------------------------------------------------------
+  */
+
+  if (error) {
+    return (
+      <section
+        id="experience"
+        className="py-20"
+      >
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/40 dark:bg-red-950/20">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Empty State
+  |--------------------------------------------------------------------------
+  */
+
+  if (!experiences.length) {
+    return (
+      <section
+        id="experience"
+        className="py-20"
+      >
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Experience
+            </h2>
+
+            <p className="mt-3 text-gray-600 dark:text-gray-400">
+              No experience information
+              is available right now.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Render
+  |--------------------------------------------------------------------------
+  */
+
   return (
     <section
       id="experience"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:py-24"
+      className="relative overflow-hidden py-20 sm:py-24"
     >
-      {/* =====================================================
-          LOCAL COSMIC GLOW
-      ====================================================== */}
+      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-16 h-60 w-60 animate-[experienceOrbOne_16s_ease-in-out_infinite] rounded-full bg-indigo-600/10 blur-[100px] sm:-left-40 sm:top-20 sm:h-80 sm:w-80"
-      />
+        {/* --------------------------------------------------------------- */}
+        {/* Section Heading */}
+        {/* --------------------------------------------------------------- */}
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-32 bottom-16 h-60 w-60 animate-[experienceOrbTwo_20s_ease-in-out_infinite] rounded-full bg-purple-600/10 blur-[100px] sm:-right-40 sm:bottom-20 sm:h-80 sm:w-80"
-      />
+        <div className="mx-auto mb-14 max-w-3xl text-center">
+          <span className="mb-3 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+            Career
+          </span>
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/5 blur-[110px]"
-      />
-
-      <div className="relative z-10 mx-auto w-full max-w-5xl">
-
-        {/* =====================================================
-            SECTION HEADER
-        ====================================================== */}
-
-        <div className="mb-10 text-center sm:mb-14 md:mb-16">
-
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
-            <FaBriefcase className="text-sm" />
-            Career Journey
-          </p>
-
-          <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Experience &{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Work
-            </span>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">
+            Professional Experience
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_18px_rgba(99,102,241,0.5)] sm:mt-5 sm:w-16" />
-
-          <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
-            Professional experience and hands-on work that have shaped my
-            development journey.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
+            My professional journey,
+            responsibilities and the
+            technologies I have worked with.
           </p>
-
         </div>
 
-        {/* =====================================================
-            TIMELINE
-        ====================================================== */}
+        {/* --------------------------------------------------------------- */}
+        {/* Timeline */}
+        {/* --------------------------------------------------------------- */}
 
-        <div className="relative">
+        <div className="relative mx-auto max-w-5xl">
 
-          {/* ===================================================
-              DESKTOP TIMELINE LINE
-          ==================================================== */}
+          {/* Timeline Line */}
 
-          <div className="absolute bottom-0 left-6 top-0 hidden w-px bg-gradient-to-b from-indigo-500/80 via-purple-500/50 to-transparent md:block" />
+          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-gray-800 sm:left-1/2 sm:block sm:-translate-x-1/2" />
 
-          <div className="space-y-7 sm:space-y-10">
+          <div className="space-y-12">
 
-            {experiences.map((experience) => (
-              <div
-                key={`${experience.company}-${experience.role}`}
-                className="relative md:pl-20"
-              >
+            {experiences.map(
+              (experience, index) => {
+                const isEven =
+                  index % 2 === 0;
 
-                {/* =================================================
-                    DESKTOP TIMELINE DOT
-                ================================================== */}
+                return (
+                  <article
+                    key={
+                      experience._id ||
+                      `${experience.company}-${experience.role}-${index}`
+                    }
+                    className="relative"
+                  >
 
-                <div className="absolute left-0 top-8 hidden h-12 w-12 items-center justify-center rounded-2xl border border-indigo-400/20 bg-black text-white shadow-[0_0_25px_rgba(99,102,241,0.25)] md:flex">
+                    {/* --------------------------------------------------- */}
+                    {/* Timeline Dot */}
+                    {/* --------------------------------------------------- */}
 
-                  <div className="absolute inset-1 animate-pulse rounded-xl bg-indigo-500/10" />
+                    <div className="absolute left-0 top-1 hidden sm:left-1/2 sm:block sm:-translate-x-1/2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-lg dark:border-gray-950 dark:bg-blue-500">
+                        <span className="h-2.5 w-2.5 rounded-full bg-white" />
+                      </div>
+                    </div>
 
-                  <FaBriefcase className="relative z-10 text-sm text-indigo-400" />
+                    {/* --------------------------------------------------- */}
+                    {/* Mobile Layout */}
+                    {/* --------------------------------------------------- */}
 
-                </div>
+                    <div className="sm:hidden">
+                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
 
-                {/* =================================================
-                    EXPERIENCE CARD
-                ================================================== */}
+                        {/* Role */}
 
-                <article className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_45px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_55px_rgba(99,102,241,0.08)] md:hover:-translate-y-1 sm:rounded-3xl">
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            {experience.role ||
+                              'Role'}
+                          </h3>
 
-                  {/* Card Glow */}
-
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-                  {/* =================================================
-                      CARD HEADER
-                  ================================================== */}
-
-                  <div className="relative border-b border-white/[0.07] bg-black/30 p-5 sm:p-6 md:p-7">
-
-                    <div className="flex flex-col gap-5 sm:gap-6 md:flex-row md:items-start md:justify-between">
-
-                      {/* =================================================
-                          ROLE INFORMATION
-                      ================================================== */}
-
-                      <div className="min-w-0">
-
-                        {/* Mobile Icon */}
-
-                        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400 sm:h-11 sm:w-11 md:hidden">
-                          <FaBriefcase />
+                          <p className="mt-1 text-base font-semibold text-blue-600 dark:text-blue-400">
+                            {experience.company ||
+                              'Company'}
+                          </p>
                         </div>
 
-                        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-400 sm:text-xs">
-                          {experience.type}
-                        </p>
+                        {/* Duration */}
 
-                        <h3 className="break-words text-xl font-extrabold leading-tight tracking-tight text-white sm:text-2xl">
-                          {experience.role}
-                        </h3>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {experience.duration && (
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              {experience.duration}
+                            </span>
+                          )}
 
-                        <p className="mt-1.5 text-base font-bold text-gray-300 sm:text-lg">
-                          {experience.company}
-                        </p>
+                          {experience.type && (
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                              {experience.type}
+                            </span>
+                          )}
 
-                      </div>
+                          {experience.location && (
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              {experience.location}
+                            </span>
+                          )}
+                        </div>
 
-                      {/* =================================================
-                          DURATION
-                      ================================================== */}
+                        {/* Description */}
 
-                      <div className="w-full sm:w-auto md:shrink-0">
+                        {experience.description && (
+                          <p className="mt-5 text-sm leading-7 text-gray-600 dark:text-gray-400">
+                            {
+                              experience.description
+                            }
+                          </p>
+                        )}
 
-                        <span className="inline-flex max-w-full items-center rounded-full border border-indigo-400/10 bg-indigo-500/[0.08] px-3.5 py-2 text-[11px] font-bold leading-4 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.05)] sm:px-4 sm:text-xs">
-                          {experience.duration}
-                        </span>
+                        {/* Responsibilities */}
 
-                        <p className="mt-2 text-left text-xs font-medium text-gray-500 md:text-right">
-                          {experience.location}
-                        </p>
+                        {Array.isArray(
+                          experience.responsibilities
+                        ) &&
+                          experience
+                            .responsibilities
+                            .length >
+                            0 && (
+                            <div className="mt-6">
+                              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                Responsibilities
+                              </h4>
 
-                      </div>
+                              <ul className="space-y-3">
+                                {experience.responsibilities.map(
+                                  (
+                                    responsibility,
+                                    responsibilityIndex
+                                  ) => (
+                                    <li
+                                      key={
+                                        responsibilityIndex
+                                      }
+                                      className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
+                                    >
+                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
 
-                    </div>
-
-                    {/* =================================================
-                        DESCRIPTION
-                    ================================================== */}
-
-                    <p className="mt-5 text-sm leading-7 text-gray-400 sm:mt-6">
-                      {experience.description}
-                    </p>
-
-                  </div>
-
-                  {/* =================================================
-                      RESPONSIBILITIES
-                  ================================================== */}
-
-                  <div className="relative p-5 sm:p-6 md:p-7">
-
-                    <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500 sm:mb-5 sm:text-xs">
-                      Key Responsibilities
-                    </p>
-
-                    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-
-                      {experience.responsibilities.map(
-                        (responsibility) => (
-                          <div
-                            key={responsibility.text}
-                            className="group/item flex min-w-0 gap-3 rounded-xl border border-white/[0.07] bg-black/30 p-3.5 transition-all duration-300 hover:border-indigo-400/15 hover:bg-indigo-500/[0.04] hover:shadow-[0_0_25px_rgba(99,102,241,0.05)] sm:gap-4 sm:rounded-2xl sm:p-4 sm:hover:-translate-y-0.5"
-                          >
-
-                            {/* Responsibility Icon */}
-
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-sm text-indigo-400 transition-all duration-300 group-hover/item:scale-110 group-hover/item:bg-indigo-500/15 group-hover/item:shadow-[0_0_15px_rgba(99,102,241,0.15)]">
-                              {responsibility.icon}
+                                      <span>
+                                        {typeof responsibility ===
+                                        'string'
+                                          ? responsibility
+                                          : responsibility?.text ||
+                                            ''}
+                                      </span>
+                                    </li>
+                                  )
+                                )}
+                              </ul>
                             </div>
+                          )}
 
-                            {/* Responsibility Text */}
+                        {/* Technologies */}
 
-                            <p className="min-w-0 text-xs leading-6 text-gray-400 sm:text-sm">
-                              {responsibility.text}
-                            </p>
+                        {Array.isArray(
+                          experience.technologies
+                        ) &&
+                          experience
+                            .technologies
+                            .length >
+                            0 && (
+                            <div className="mt-6">
+                              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                Technologies
+                              </h4>
 
-                          </div>
-                        )
-                      )}
-
+                              <div className="flex flex-wrap gap-2">
+                                {experience.technologies.map(
+                                  (
+                                    technology,
+                                    technologyIndex
+                                  ) => (
+                                    <span
+                                      key={
+                                        technologyIndex
+                                      }
+                                      className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                    >
+                                      {
+                                        technology
+                                      }
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
                     </div>
 
-                    {/* =================================================
-                        TECHNOLOGIES
-                    ================================================== */}
+                    {/* --------------------------------------------------- */}
+                    {/* Desktop Layout */}
+                    {/* --------------------------------------------------- */}
 
-                    <div className="mt-6 border-t border-white/[0.07] pt-5 sm:mt-7 sm:pt-6">
+                    <div className="hidden sm:grid sm:grid-cols-2 sm:gap-16">
 
-                      <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500 sm:text-xs">
-                        Technologies Used
-                      </p>
+                      {/* Left Side */}
 
-                      <div className="flex flex-wrap gap-2">
+                      <div
+                        className={
+                          isEven
+                            ? 'sm:col-start-1'
+                            : 'sm:col-start-2'
+                        }
+                      >
+                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900">
 
-                        {experience.technologies.map((technology) => (
-                          <span
-                            key={technology}
-                            className="rounded-full border border-white/[0.07] bg-white/[0.025] px-3 py-1.5 text-[11px] font-semibold text-gray-400 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-400/20 hover:bg-indigo-500/[0.07] hover:text-indigo-300 hover:shadow-[0_0_15px_rgba(99,102,241,0.08)] sm:px-3.5 sm:py-2 sm:text-xs"
-                          >
-                            {technology}
-                          </span>
-                        ))}
+                          {/* Header */}
 
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                              {experience.role ||
+                                'Role'}
+                            </h3>
+
+                            <p className="mt-1 text-base font-semibold text-blue-600 dark:text-blue-400">
+                              {experience.company ||
+                                'Company'}
+                            </p>
+                          </div>
+
+                          {/* Meta */}
+
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {experience.duration && (
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                {experience.duration}
+                              </span>
+                            )}
+
+                            {experience.type && (
+                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                {experience.type}
+                              </span>
+                            )}
+
+                            {experience.location && (
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                {experience.location}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Description */}
+
+                          {experience.description && (
+                            <p className="mt-5 text-sm leading-7 text-gray-600 dark:text-gray-400">
+                              {
+                                experience.description
+                              }
+                            </p>
+                          )}
+
+                          {/* Responsibilities */}
+
+                          {Array.isArray(
+                            experience.responsibilities
+                          ) &&
+                            experience
+                              .responsibilities
+                              .length >
+                              0 && (
+                              <div className="mt-6">
+                                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                  Responsibilities
+                                </h4>
+
+                                <ul className="space-y-3">
+                                  {experience.responsibilities.map(
+                                    (
+                                      responsibility,
+                                      responsibilityIndex
+                                    ) => (
+                                      <li
+                                        key={
+                                          responsibilityIndex
+                                        }
+                                        className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
+                                      >
+                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+
+                                        <span>
+                                          {typeof responsibility ===
+                                          'string'
+                                            ? responsibility
+                                            : responsibility?.text ||
+                                              ''}
+                                        </span>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
+                          {/* Technologies */}
+
+                          {Array.isArray(
+                            experience.technologies
+                          ) &&
+                            experience
+                              .technologies
+                              .length >
+                              0 && (
+                              <div className="mt-6">
+                                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                  Technologies
+                                </h4>
+
+                                <div className="flex flex-wrap gap-2">
+                                  {experience.technologies.map(
+                                    (
+                                      technology,
+                                      technologyIndex
+                                    ) => (
+                                      <span
+                                        key={
+                                          technologyIndex
+                                        }
+                                        className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                      >
+                                        {
+                                          technology
+                                        }
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                        </div>
                       </div>
 
+                      {/* Empty Opposite Column */}
+
+                      <div
+                        className={
+                          isEven
+                            ? 'sm:col-start-2'
+                            : 'sm:col-start-1'
+                        }
+                      />
                     </div>
-
-                  </div>
-
-                </article>
-
-              </div>
-            ))}
-
+                  </article>
+                );
+              }
+            )}
           </div>
-
         </div>
-
-        {/* =====================================================
-            EXPERIENCE SUMMARY
-        ====================================================== */}
-
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-indigo-400/10 bg-gradient-to-br from-indigo-500/[0.07] via-black/40 to-purple-500/[0.06] p-5 text-center shadow-[0_0_45px_rgba(99,102,241,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
-
-          {/* Moving Glow */}
-
-          <div className="pointer-events-none absolute -left-16 top-1/2 h-32 w-32 -translate-y-1/2 animate-[experienceGlow_8s_ease-in-out_infinite] rounded-full bg-indigo-500/10 blur-3xl" />
-
-          <div className="relative z-10">
-
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.1)] sm:h-12 sm:w-12 sm:rounded-2xl">
-              <FaRocket />
-            </div>
-
-            <h3 className="mt-4 text-lg font-extrabold text-white sm:text-xl">
-              Building. Learning. Improving.
-            </h3>
-
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-7 text-gray-400">
-              I continuously work on improving my development skills by building
-              real-world projects, learning modern technologies and contributing
-              to production-focused applications.
-            </p>
-
-          </div>
-
-        </div>
-
       </div>
-
-      {/* =====================================================
-          EXPERIENCE ANIMATIONS
-      ====================================================== */}
-
-      <style>
-        {`
-          @keyframes experienceOrbOne {
-            0%,
-            100% {
-              transform: translate3d(0, 0, 0) scale(1);
-            }
-
-            50% {
-              transform: translate3d(90px, 50px, 0) scale(1.15);
-            }
-          }
-
-          @keyframes experienceOrbTwo {
-            0%,
-            100% {
-              transform: translate3d(0, 0, 0) scale(1);
-            }
-
-            50% {
-              transform: translate3d(-90px, -60px, 0) scale(1.12);
-            }
-          }
-
-          @keyframes experienceGlow {
-            0%,
-            100% {
-              transform: translateY(-50%) translateX(0);
-              opacity: 0.35;
-            }
-
-            50% {
-              transform: translateY(-50%) translateX(120px);
-              opacity: 0.8;
-            }
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-              animation-duration: 0.01ms !important;
-              animation-iteration-count: 1 !important;
-              transition-duration: 0.01ms !important;
-            }
-          }
-        `}
-      </style>
     </section>
   );
-}
+};
 
 export default Experience;

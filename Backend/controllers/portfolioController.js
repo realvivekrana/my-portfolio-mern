@@ -7,7 +7,9 @@ const PortfolioContent = require('../models/PortfolioContent');
 */
 
 const getMainPortfolio = async () => {
-  let portfolio = await PortfolioContent.findOne({ key: 'main' });
+  let portfolio = await PortfolioContent.findOne({
+    key: 'main',
+  });
 
   if (!portfolio) {
     portfolio = await PortfolioContent.create({
@@ -22,25 +24,33 @@ const getMainPortfolio = async () => {
 |--------------------------------------------------------------------------
 | GET PORTFOLIO
 |--------------------------------------------------------------------------
+| GET /api/portfolio
+|
 | Public + Admin dono ke liye portfolio data fetch karega.
 |--------------------------------------------------------------------------
 */
 
 const getPortfolio = async (req, res) => {
   try {
-    const portfolio = await getMainPortfolio();
+    const portfolio =
+      await getMainPortfolio();
 
     return res.status(200).json({
       success: true,
-      message: 'Portfolio data fetched successfully',
+      message:
+        'Portfolio data fetched successfully',
       data: portfolio,
     });
   } catch (error) {
-    console.error('Get Portfolio Error:', error);
+    console.error(
+      'Get Portfolio Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch portfolio data',
+      message:
+        'Failed to fetch portfolio data',
       error: error.message,
     });
   }
@@ -50,11 +60,16 @@ const getPortfolio = async (req, res) => {
 |--------------------------------------------------------------------------
 | UPDATE PORTFOLIO
 |--------------------------------------------------------------------------
-| Admin Dashboard se profile information update karega.
+| PUT /api/portfolio
+|
+| Admin Dashboard se portfolio information update karega.
 |--------------------------------------------------------------------------
 */
 
-const updatePortfolio = async (req, res) => {
+const updatePortfolio = async (
+  req,
+  res
+) => {
   try {
     const {
       hero,
@@ -64,9 +79,12 @@ const updatePortfolio = async (req, res) => {
       resume,
       seo,
       settings,
+      experience,
+      education,
     } = req.body;
 
-    const portfolio = await getMainPortfolio();
+    const portfolio =
+      await getMainPortfolio();
 
     /*
     |--------------------------------------------------------------------------
@@ -74,7 +92,7 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (hero) {
+    if (hero !== undefined) {
       portfolio.hero = {
         ...portfolio.hero?.toObject?.(),
         ...hero,
@@ -87,17 +105,22 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (about) {
+    if (about !== undefined) {
       portfolio.about = {
         ...portfolio.about?.toObject?.(),
         ...about,
       };
 
       /*
-      | Current Role is a nested object
+      |--------------------------------------------------------------------------
+      | CURRENT ROLE
+      |--------------------------------------------------------------------------
       */
 
-      if (about.currentRole) {
+      if (
+        about.currentRole !==
+        undefined
+      ) {
         portfolio.about.currentRole = {
           ...portfolio.about.currentRole?.toObject?.(),
           ...about.currentRole,
@@ -111,7 +134,7 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (contact) {
+    if (contact !== undefined) {
       portfolio.contact = {
         ...portfolio.contact?.toObject?.(),
         ...contact,
@@ -124,7 +147,9 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (socialLinks) {
+    if (
+      socialLinks !== undefined
+    ) {
       portfolio.socialLinks = {
         ...portfolio.socialLinks?.toObject?.(),
         ...socialLinks,
@@ -137,7 +162,7 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (resume) {
+    if (resume !== undefined) {
       portfolio.resume = {
         ...portfolio.resume?.toObject?.(),
         ...resume,
@@ -150,7 +175,7 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (seo) {
+    if (seo !== undefined) {
       portfolio.seo = {
         ...portfolio.seo?.toObject?.(),
         ...seo,
@@ -163,10 +188,340 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (settings) {
+    if (
+      settings !== undefined
+    ) {
       portfolio.settings = {
         ...portfolio.settings?.toObject?.(),
         ...settings,
+      };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPERIENCE
+    |--------------------------------------------------------------------------
+    |
+    | Experience array ko completely replace/update karega.
+    |
+    */
+
+    if (
+      experience !== undefined
+    ) {
+      if (
+        !Array.isArray(experience)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Experience must be an array',
+        });
+      }
+
+      portfolio.experience =
+        experience;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EDUCATION
+    |--------------------------------------------------------------------------
+    |
+    | Education array ko completely replace/update karega.
+    |
+    */
+
+    if (
+      education !== undefined
+    ) {
+      if (
+        !Array.isArray(education)
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Education must be an array',
+        });
+      }
+
+      portfolio.education =
+        education;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE
+    |--------------------------------------------------------------------------
+    */
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Portfolio updated successfully',
+      data: portfolio,
+    });
+  } catch (error) {
+    console.error(
+      'Update Portfolio Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update portfolio',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE EXPERIENCE
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/experience
+|
+| Admin ke Experience Manager ke liye.
+|--------------------------------------------------------------------------
+*/
+
+const updateExperience = async (
+  req,
+  res
+) => {
+  try {
+    const {
+      experience,
+    } = req.body;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Experience
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      !Array.isArray(experience)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Experience must be an array',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Portfolio
+    |--------------------------------------------------------------------------
+    */
+
+    const portfolio =
+      await getMainPortfolio();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Experience
+    |--------------------------------------------------------------------------
+    */
+
+    portfolio.experience =
+      experience;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save
+    |--------------------------------------------------------------------------
+    */
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Experience updated successfully',
+      data:
+        portfolio.experience,
+    });
+  } catch (error) {
+    console.error(
+      'Update Experience Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update experience',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE EDUCATION
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/education
+|
+| Admin ke Education Manager ke liye.
+|--------------------------------------------------------------------------
+*/
+
+const updateEducation = async (
+  req,
+  res
+) => {
+  try {
+    const {
+      education,
+    } = req.body;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Education
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      !Array.isArray(education)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Education must be an array',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Portfolio
+    |--------------------------------------------------------------------------
+    */
+
+    const portfolio =
+      await getMainPortfolio();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Education
+    |--------------------------------------------------------------------------
+    */
+
+    portfolio.education =
+      education;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save
+    |--------------------------------------------------------------------------
+    */
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Education updated successfully',
+      data:
+        portfolio.education,
+    });
+  } catch (error) {
+    console.error(
+      'Update Education Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update education',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE HERO
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/hero
+|--------------------------------------------------------------------------
+*/
+
+const updateHero = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.hero = {
+      ...portfolio.hero?.toObject?.(),
+      ...req.body,
+    };
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Hero information updated successfully',
+      data: portfolio.hero,
+    });
+  } catch (error) {
+    console.error(
+      'Update Hero Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update hero information',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE ABOUT
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/about
+|--------------------------------------------------------------------------
+*/
+
+const updateAbout = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.about = {
+      ...portfolio.about?.toObject?.(),
+      ...req.body,
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Current Role
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      req.body.currentRole !==
+      undefined
+    ) {
+      portfolio.about.currentRole = {
+        ...portfolio.about.currentRole?.toObject?.(),
+        ...req.body.currentRole,
       };
     }
 
@@ -174,15 +529,198 @@ const updatePortfolio = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Portfolio updated successfully',
-      data: portfolio,
+      message:
+        'About information updated successfully',
+      data: portfolio.about,
     });
   } catch (error) {
-    console.error('Update Portfolio Error:', error);
+    console.error(
+      'Update About Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to update portfolio',
+      message:
+        'Failed to update about information',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE CONTACT
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/contact
+|--------------------------------------------------------------------------
+*/
+
+const updateContact = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.contact = {
+      ...portfolio.contact?.toObject?.(),
+      ...req.body,
+    };
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Contact information updated successfully',
+      data: portfolio.contact,
+    });
+  } catch (error) {
+    console.error(
+      'Update Contact Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update contact information',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE SOCIAL LINKS
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/social-links
+|--------------------------------------------------------------------------
+*/
+
+const updateSocialLinks = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.socialLinks = {
+      ...portfolio.socialLinks?.toObject?.(),
+      ...req.body,
+    };
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Social links updated successfully',
+      data:
+        portfolio.socialLinks,
+    });
+  } catch (error) {
+    console.error(
+      'Update Social Links Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update social links',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE SEO
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/seo
+|--------------------------------------------------------------------------
+*/
+
+const updateSEO = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.seo = {
+      ...portfolio.seo?.toObject?.(),
+      ...req.body,
+    };
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'SEO information updated successfully',
+      data: portfolio.seo,
+    });
+  } catch (error) {
+    console.error(
+      'Update SEO Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update SEO information',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE SETTINGS
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/settings
+|--------------------------------------------------------------------------
+*/
+
+const updateSettings = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    portfolio.settings = {
+      ...portfolio.settings?.toObject?.(),
+      ...req.body,
+    };
+
+    await portfolio.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Portfolio settings updated successfully',
+      data:
+        portfolio.settings,
+    });
+  } catch (error) {
+    console.error(
+      'Update Settings Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to update portfolio settings',
       error: error.message,
     });
   }
@@ -196,9 +734,13 @@ const updatePortfolio = async (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-const updateProfileImage = async (req, res) => {
+const updateProfileImage = async (
+  req,
+  res
+) => {
   try {
-    const portfolio = await getMainPortfolio();
+    const portfolio =
+      await getMainPortfolio();
 
     /*
     |--------------------------------------------------------------------------
@@ -209,17 +751,15 @@ const updateProfileImage = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'Profile image is required',
+        message:
+          'Profile image is required',
       });
     }
 
     /*
     |--------------------------------------------------------------------------
-    | File URL
+    | Determine Image URL
     |--------------------------------------------------------------------------
-    |
-    | Multer ke according file.path / filename available ho sakta hai.
-    |
     */
 
     let imageUrl = '';
@@ -227,13 +767,15 @@ const updateProfileImage = async (req, res) => {
     if (req.file.path) {
       imageUrl = req.file.path;
     } else if (req.file.filename) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      imageUrl =
+        `/uploads/${req.file.filename}`;
     }
 
     if (!imageUrl) {
       return res.status(400).json({
         success: false,
-        message: 'Unable to determine uploaded image URL',
+        message:
+          'Unable to determine uploaded image URL',
       });
     }
 
@@ -243,21 +785,27 @@ const updateProfileImage = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    portfolio.hero.profileImage = imageUrl;
+    portfolio.hero.profileImage =
+      imageUrl;
 
     await portfolio.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Profile image updated successfully',
+      message:
+        'Profile image updated successfully',
       data: portfolio,
     });
   } catch (error) {
-    console.error('Update Profile Image Error:', error);
+    console.error(
+      'Update Profile Image Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to update profile image',
+      message:
+        'Failed to update profile image',
       error: error.message,
     });
   }
@@ -271,25 +819,35 @@ const updateProfileImage = async (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-const removeProfileImage = async (req, res) => {
+const removeProfileImage = async (
+  req,
+  res
+) => {
   try {
-    const portfolio = await getMainPortfolio();
+    const portfolio =
+      await getMainPortfolio();
 
-    portfolio.hero.profileImage = '';
+    portfolio.hero.profileImage =
+      '';
 
     await portfolio.save();
 
     return res.status(200).json({
       success: true,
-      message: 'Profile image removed successfully',
+      message:
+        'Profile image removed successfully',
       data: portfolio,
     });
   } catch (error) {
-    console.error('Remove Profile Image Error:', error);
+    console.error(
+      'Remove Profile Image Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to remove profile image',
+      message:
+        'Failed to remove profile image',
       error: error.message,
     });
   }
@@ -299,39 +857,55 @@ const removeProfileImage = async (req, res) => {
 |--------------------------------------------------------------------------
 | RESET PORTFOLIO
 |--------------------------------------------------------------------------
-| Agar future me Admin ko complete profile reset karna ho,
-| to ye endpoint useful rahega.
+| Complete portfolio ko default values par reset karega.
 |--------------------------------------------------------------------------
 */
 
-const resetPortfolio = async (req, res) => {
+const resetPortfolio = async (
+  req,
+  res
+) => {
   try {
-    const portfolio = await getMainPortfolio();
+    const portfolio =
+      await getMainPortfolio();
 
     /*
-    | Default values restore karne ke liye existing document
-    | ko delete karke fresh document create kar rahe hain.
+    |--------------------------------------------------------------------------
+    | Delete Existing Portfolio
+    |--------------------------------------------------------------------------
     */
 
     await PortfolioContent.deleteOne({
       _id: portfolio._id,
     });
 
-    const newPortfolio = await PortfolioContent.create({
-      key: 'main',
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | Create Fresh Portfolio
+    |--------------------------------------------------------------------------
+    */
+
+    const newPortfolio =
+      await PortfolioContent.create({
+        key: 'main',
+      });
 
     return res.status(200).json({
       success: true,
-      message: 'Portfolio reset successfully',
+      message:
+        'Portfolio reset successfully',
       data: newPortfolio,
     });
   } catch (error) {
-    console.error('Reset Portfolio Error:', error);
+    console.error(
+      'Reset Portfolio Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to reset portfolio',
+      message:
+        'Failed to reset portfolio',
       error: error.message,
     });
   }
@@ -339,24 +913,27 @@ const resetPortfolio = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| DELETE PORTFOLIO DATA
+| DELETE PORTFOLIO
 |--------------------------------------------------------------------------
 | Complete portfolio document delete karega.
 |--------------------------------------------------------------------------
-| Isko Admin Dashboard se directly expose karna zaroori nahi hai.
-|--------------------------------------------------------------------------
 */
 
-const deletePortfolio = async (req, res) => {
+const deletePortfolio = async (
+  req,
+  res
+) => {
   try {
-    const portfolio = await PortfolioContent.findOne({
-      key: 'main',
-    });
+    const portfolio =
+      await PortfolioContent.findOne({
+        key: 'main',
+      });
 
     if (!portfolio) {
       return res.status(404).json({
         success: false,
-        message: 'Portfolio not found',
+        message:
+          'Portfolio not found',
       });
     }
 
@@ -366,14 +943,19 @@ const deletePortfolio = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Portfolio deleted successfully',
+      message:
+        'Portfolio deleted successfully',
     });
   } catch (error) {
-    console.error('Delete Portfolio Error:', error);
+    console.error(
+      'Delete Portfolio Error:',
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete portfolio',
+      message:
+        'Failed to delete portfolio',
       error: error.message,
     });
   }
@@ -388,8 +970,20 @@ const deletePortfolio = async (req, res) => {
 module.exports = {
   getPortfolio,
   updatePortfolio,
+
+  updateExperience,
+  updateEducation,
+
+  updateHero,
+  updateAbout,
+  updateContact,
+  updateSocialLinks,
+  updateSEO,
+  updateSettings,
+
   updateProfileImage,
   removeProfileImage,
+
   resetPortfolio,
   deletePortfolio,
 };

@@ -1,4 +1,158 @@
+const fs = require('fs');
+const path = require('path');
+
 const Certificate = require('../models/Certificate');
+
+/*
+|--------------------------------------------------------------------------
+| Get Uploaded Certificate Image URL
+|--------------------------------------------------------------------------
+*/
+
+const getUploadedImageUrl = (req, filename) => {
+  const protocol = req.protocol;
+  const host = req.get('host');
+
+  return `${protocol}://${host}/uploads/${filename}`;
+};
+
+/*
+|--------------------------------------------------------------------------
+| Delete Uploaded Certificate Image
+|--------------------------------------------------------------------------
+*/
+
+const deleteUploadedImage = (imageUrl) => {
+  try {
+    if (!imageUrl || !imageUrl.includes('/uploads/')) {
+      return;
+    }
+
+    const fileName = path.basename(imageUrl);
+
+    const filePath = path.join(
+      __dirname,
+      '../uploads',
+      fileName
+    );
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (error) {
+    console.error(
+      'Failed to delete old certificate image:',
+      error.message
+    );
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Upload Certificate Image
+|--------------------------------------------------------------------------
+| @route   POST /api/certificates/upload-image
+| @access  Protected Admin
+|--------------------------------------------------------------------------
+|
+| The frontend can upload an image before the certificate itself is saved.
+| If certificateId is supplied, the existing certificate image is updated
+| immediately. Otherwise the new image URL is simply returned to the
+| frontend, which can save it with the new certificate.
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadCertificateImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a certificate image.',
+      });
+    }
+
+    const imageUrl = getUploadedImageUrl(
+      req,
+      req.file.filename
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Existing Certificate When Editing
+    |--------------------------------------------------------------------------
+    */
+
+    if (req.body.certificateId) {
+      const certificate = await Certificate.findById(
+        req.body.certificateId
+      );
+
+      if (!certificate) {
+        deleteUploadedImage(imageUrl);
+
+        return res.status(404).json({
+          success: false,
+          message: 'Certificate not found.',
+        });
+      }
+
+      const oldImage = certificate.image;
+
+      certificate.image = imageUrl;
+
+      await certificate.save();
+
+      if (oldImage && oldImage !== imageUrl) {
+        deleteUploadedImage(oldImage);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Certificate image uploaded successfully.',
+      data: {
+        image: imageUrl,
+      },
+    });
+  } catch (error) {
+    console.error(
+      'Upload Certificate Image Error:',
+      error
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remove Newly Uploaded File When Something Fails
+    |--------------------------------------------------------------------------
+    */
+
+    if (req.file) {
+      try {
+        const uploadedFilePath = path.join(
+          __dirname,
+          '../uploads',
+          req.file.filename
+        );
+
+        if (fs.existsSync(uploadedFilePath)) {
+          fs.unlinkSync(uploadedFilePath);
+        }
+      } catch (deleteError) {
+        console.error(
+          'Failed to remove uploaded certificate image:',
+          deleteError.message
+        );
+      }
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to upload certificate image.',
+      error: error.message,
+    });
+  }
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -449,6 +603,7 @@ const deleteCertificate = async (
 */
 
 module.exports = {
+  uploadCertificateImage,
   getAllCertificates,
   getAdminCertificates,
   getFeaturedCertificates,

@@ -14,7 +14,12 @@ const {
   createCertificate,
   updateCertificate,
   deleteCertificate,
+  uploadCertificateImage,
 } = require('../controllers/certificateController');
+
+const {
+  uploadCertificateImage: certificateImageUpload,
+} = require('../middleware/uploadMiddleware');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +68,28 @@ router.get(
   '/admin',
   protect,
   getAdminCertificates
+);
+
+/*
+|--------------------------------------------------------------------------
+| CERTIFICATE IMAGE UPLOAD
+|--------------------------------------------------------------------------
+|
+| POST /api/certificates/upload-image
+|
+| Protected Admin
+|
+| IMPORTANT:
+| This route must come before /:id so Express does not treat
+| "upload-image" as a certificate ID.
+|
+*/
+
+router.post(
+  '/upload-image',
+  protect,
+  certificateImageUpload.single('certificateImage'),
+  uploadCertificateImage
 );
 
 /*

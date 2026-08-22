@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import API from '../../utils/axios';
 
 import {
   FaEnvelope,
@@ -62,27 +63,28 @@ function Contact() {
 
     setStatus('sending');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Temporary frontend success flow
-    |--------------------------------------------------------------------------
-    |
-    | Backend contact API ko connect karne ke baad
-    | isi function ke andar API request add ki ja sakti hai.
-    |
-    */
+    try {
+      const response = await API.post('/contact', {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        message: formData.message.trim(),
+      });
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000)
-    );
+      if (response.data?.success) {
+        setStatus('success');
 
-    setStatus('success');
-
-    setFormData({
-      name: '',
-      email: '',
-      message: '',
-    });
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+        });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Contact form submission failed:', error);
+      setStatus('error');
+    }
   };
 
   /*
@@ -421,7 +423,7 @@ function Contact() {
                 ================================================== */}
 
                 <a
-                  href="mailto:your-email@example.com"
+                  href="mailto:vivekranaworks@gmail.com"
                   className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)]"
                 >
 
@@ -788,7 +790,7 @@ function Contact() {
             Prefer email?{' '}
 
             <a
-              href="mailto:your-email@example.com"
+              href="mailto:vivekranaworks@gmail.com"
               className="font-semibold text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
             >
               Send me a direct message

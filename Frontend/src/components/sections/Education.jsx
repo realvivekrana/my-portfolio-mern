@@ -1,333 +1,581 @@
+import { useEffect, useState } from 'react';
 import {
   FaGraduationCap,
   FaUniversity,
   FaBookOpen,
   FaBrain,
+  FaAward,
 } from 'react-icons/fa';
 
-const education = [
-  {
-    degree: 'MCA — Artificial Intelligence & Machine Learning',
-    institution: 'Amity University Online',
-    duration: 'Current',
-    status: 'Postgraduate',
-    description:
-      'Pursuing a Master of Computer Applications with a specialization in Artificial Intelligence and Machine Learning, while strengthening my software development and problem-solving skills.',
-    highlights: [
-      'Artificial Intelligence & Machine Learning',
-      'Advanced Computer Applications',
-      'Software Development',
-    ],
-    icon: <FaBrain />,
-  },
-  {
-    degree: 'Bachelor of Computer Applications',
-    institution: 'Vinoba Bhave University',
-    duration: '2021 – 2024',
-    status: 'Completed',
-    description:
-      'Completed my Bachelor of Computer Applications with a strong foundation in programming, computer science fundamentals and software development.',
-    highlights: [
-      'Computer Applications',
-      'Programming Fundamentals',
-      'Software Development',
-    ],
-    icon: <FaBookOpen />,
-  },
-];
+import API from '../../utils/axios';
 
-function Education() {
+/*
+|--------------------------------------------------------------------------
+| Education Section
+|--------------------------------------------------------------------------
+|
+| Education data MongoDB se:
+|
+| GET /api/portfolio
+|
+| ke through load hoga.
+|
+| Admin Dashboard se Education update karne par
+| public portfolio automatically updated data show karega.
+|
+|--------------------------------------------------------------------------
+*/
+
+const Education = () => {
+  const [education, setEducation] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState('');
+
+  /*
+  |--------------------------------------------------------------------------
+  | Fetch Education
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    const fetchEducation =
+      async () => {
+        try {
+          setLoading(true);
+          setError('');
+
+          const response =
+            await API.get(
+              '/portfolio'
+            );
+
+          const portfolio =
+            response?.data?.data;
+
+          const educationData =
+            portfolio?.education;
+
+          /*
+          |--------------------------------------------------------------------------
+          | Validate Education Array
+          |--------------------------------------------------------------------------
+          */
+
+          if (
+            Array.isArray(
+              educationData
+            )
+          ) {
+            const visibleEducation =
+              educationData
+                .filter(
+                  (item) =>
+                    item?.isVisible !==
+                    false
+                )
+                .sort(
+                  (a, b) =>
+                    Number(
+                      a?.displayOrder || 0
+                    ) -
+                    Number(
+                      b?.displayOrder || 0
+                    )
+                );
+
+            setEducation(
+              visibleEducation
+            );
+          } else {
+            setEducation([]);
+          }
+        } catch (err) {
+          console.error(
+            'Failed to fetch education:',
+            err
+          );
+
+          setError(
+            'Unable to load education information.'
+          );
+
+          setEducation([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+    fetchEducation();
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Get Education Icon
+  |--------------------------------------------------------------------------
+  */
+
+  const getEducationIcon = (
+    icon,
+    degree = ''
+  ) => {
+    const iconName =
+      String(icon || '').toLowerCase();
+
+    const degreeName =
+      String(degree || '').toLowerCase();
+
+    if (
+      iconName.includes('brain') ||
+      degreeName.includes('artificial') ||
+      degreeName.includes('machine learning')
+    ) {
+      return <FaBrain />;
+    }
+
+    if (
+      iconName.includes('university') ||
+      degreeName.includes('university')
+    ) {
+      return <FaUniversity />;
+    }
+
+    if (
+      iconName.includes('award') ||
+      degreeName.includes('master') ||
+      degreeName.includes('mca')
+    ) {
+      return <FaAward />;
+    }
+
+    return <FaBookOpen />;
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Loading State
+  |--------------------------------------------------------------------------
+  */
+
+  if (loading) {
+    return (
+      <section
+        id="education"
+        className="relative overflow-hidden py-20 sm:py-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center">
+            <div
+              className="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent"
+              aria-label="Loading education"
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Error State
+  |--------------------------------------------------------------------------
+  */
+
+  if (error) {
+    return (
+      <section
+        id="education"
+        className="relative overflow-hidden py-20 sm:py-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-900/40 dark:bg-red-950/20">
+            <FaGraduationCap className="mx-auto text-3xl text-red-500 dark:text-red-400" />
+
+            <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
+              Education
+            </h2>
+
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Empty State
+  |--------------------------------------------------------------------------
+  */
+
+  if (!education.length) {
+    return (
+      <section
+        id="education"
+        className="relative overflow-hidden py-20 sm:py-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <FaGraduationCap className="mx-auto text-4xl text-blue-600 dark:text-blue-400" />
+
+            <h2 className="mt-5 text-2xl font-bold text-gray-900 dark:text-white">
+              Education
+            </h2>
+
+            <p className="mt-3 text-gray-600 dark:text-gray-400">
+              No education information is
+              available right now.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Main Section
+  |--------------------------------------------------------------------------
+  */
+
   return (
     <section
       id="education"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      className="relative overflow-hidden py-20 sm:py-24"
     >
-      {/* =====================================================
-          LOCAL COSMIC GLOW
-      ====================================================== */}
+      {/* --------------------------------------------------------------- */}
+      {/* Background Decoration */}
+      {/* --------------------------------------------------------------- */}
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[educationOrbOne_16s_ease-in-out_infinite] rounded-full bg-indigo-600/10 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -left-40 top-20 h-80 w-80 rounded-full bg-blue-500/5 blur-[100px]"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-32 bottom-20 h-60 w-60 animate-[educationOrbTwo_20s_ease-in-out_infinite] rounded-full bg-purple-600/10 blur-[100px] sm:-right-40 sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -right-40 bottom-20 h-80 w-80 rounded-full bg-purple-500/5 blur-[100px]"
       />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/5 blur-[110px]"
-      />
+      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div className="relative z-10 mx-auto max-w-5xl">
+        {/* --------------------------------------------------------------- */}
+        {/* Section Heading */}
+        {/* --------------------------------------------------------------- */}
 
-        {/* =====================================================
-            SECTION HEADER
-        ====================================================== */}
+        <div className="mx-auto mb-14 max-w-3xl text-center sm:mb-16">
 
-        <div className="mb-10 text-center sm:mb-14 md:mb-16">
+          <span className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+            <FaGraduationCap />
 
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
-            <FaGraduationCap className="text-sm" />
+            Education
+          </span>
+
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">
             Academic Journey
-          </p>
-
-          <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Education &{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Learning
-            </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_18px_rgba(99,102,241,0.5)] sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-400" />
 
-          <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
-            My academic background and the knowledge that continues to shape
-            my journey as a software developer.
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
+            My academic background and the
+            knowledge that has helped shape my
+            development journey.
           </p>
 
         </div>
 
-        {/* =====================================================
-            EDUCATION TIMELINE
-        ====================================================== */}
+        {/* --------------------------------------------------------------- */}
+        {/* Education Timeline */}
+        {/* --------------------------------------------------------------- */}
 
-        <div className="relative">
+        <div className="relative mx-auto max-w-5xl">
 
-          {/* ===================================================
-              TIMELINE LINE
-          ==================================================== */}
+          {/* Timeline */}
 
-          <div className="absolute bottom-10 left-6 top-10 hidden w-px bg-gradient-to-b from-indigo-500 via-purple-500 to-transparent md:block" />
+          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-gray-800 sm:left-1/2 sm:block sm:-translate-x-1/2" />
 
-          <div className="space-y-7 sm:space-y-8">
+          <div className="space-y-10 sm:space-y-14">
 
-            {education.map((item) => (
-              <article
-                key={`${item.degree}-${item.institution}`}
-                className="relative md:pl-20"
-              >
+            {education.map(
+              (item, index) => {
+                const isEven =
+                  index % 2 === 0;
 
-                {/* =================================================
-                    DESKTOP TIMELINE ICON
-                ================================================== */}
+                return (
+                  <article
+                    key={
+                      item?._id ||
+                      `${item?.degree}-${item?.institution}-${index}`
+                    }
+                    className="relative"
+                  >
 
-                <div className="absolute left-0 top-7 hidden h-12 w-12 items-center justify-center rounded-2xl border border-indigo-400/20 bg-black text-indigo-400 shadow-[0_0_25px_rgba(99,102,241,0.25)] md:flex">
+                    {/* ===================================================
+                        TIMELINE DOT
+                    ==================================================== */}
 
-                  <div className="absolute inset-1 rounded-xl bg-indigo-500/10" />
+                    <div className="absolute left-0 top-1 hidden sm:left-1/2 sm:block sm:-translate-x-1/2">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-blue-600 text-white shadow-lg dark:border-gray-950 dark:bg-blue-500">
 
-                  <span className="relative z-10">
-                    {item.icon}
-                  </span>
+                        {getEducationIcon(
+                          item?.icon,
+                          item?.degree
+                        )}
 
-                </div>
+                      </div>
+                    </div>
 
-                {/* =================================================
-                    EDUCATION CARD
-                ================================================== */}
+                    {/* ===================================================
+                        MOBILE CARD
+                    ==================================================== */}
 
-                <div className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_45px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_55px_rgba(99,102,241,0.08)] md:hover:-translate-y-1 sm:rounded-3xl">
+                    <div className="sm:hidden">
 
-                  {/* Card Glow */}
+                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
 
-                  <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                        {/* Icon */}
 
-                  {/* =================================================
-                      CARD TOP
-                  ================================================== */}
+                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600 dark:bg-blue-950/30 dark:text-blue-400">
 
-                  <div className="relative border-b border-white/[0.07] bg-black/30 p-5 sm:p-6 md:p-7">
-
-                    <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start sm:gap-6">
-
-                      {/* =================================================
-                          DEGREE INFORMATION
-                      ================================================== */}
-
-                      <div className="min-w-0">
-
-                        {/* Mobile Icon */}
-
-                        <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400 md:hidden">
-                          {item.icon}
-                        </div>
-
-                        {/* Status */}
-
-                        <div className="mb-3 flex flex-wrap items-center gap-2">
-
-                          <span className="rounded-full border border-indigo-400/10 bg-indigo-500/[0.08] px-3 py-1 text-xs font-bold text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.05)]">
-                            {item.status}
-                          </span>
+                          {getEducationIcon(
+                            item?.icon,
+                            item?.degree
+                          )}
 
                         </div>
 
                         {/* Degree */}
 
-                        <h3 className="break-words text-xl font-extrabold leading-tight tracking-tight text-white sm:text-2xl">
-                          {item.degree}
+                        <h3 className="text-xl font-bold leading-snug text-gray-900 dark:text-white">
+                          {item?.degree ||
+                            'Degree'}
                         </h3>
 
                         {/* Institution */}
 
-                        <div className="mt-3 flex min-w-0 items-start gap-2 text-sm font-semibold text-gray-400">
+                        <p className="mt-2 text-base font-semibold text-blue-600 dark:text-blue-400">
+                          {item?.institution ||
+                            'Institution'}
+                        </p>
 
-                          <FaUniversity className="mt-0.5 shrink-0 text-indigo-400" />
+                        {/* Meta */}
 
-                          <span className="min-w-0 break-words">
-                            {item.institution}
-                          </span>
+                        <div className="mt-4 flex flex-wrap gap-2">
+
+                          {item?.duration && (
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              {item.duration}
+                            </span>
+                          )}
+
+                          {item?.status && (
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                              {item.status}
+                            </span>
+                          )}
+
+                        </div>
+
+                        {/* Description */}
+
+                        {item?.description && (
+                          <p className="mt-5 text-sm leading-7 text-gray-600 dark:text-gray-400">
+                            {item.description}
+                          </p>
+                        )}
+
+                        {/* Highlights */}
+
+                        {Array.isArray(
+                          item?.highlights
+                        ) &&
+                          item.highlights
+                            .length > 0 && (
+                            <div className="mt-6">
+
+                              <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                Highlights
+                              </h4>
+
+                              <ul className="space-y-3">
+
+                                {item.highlights.map(
+                                  (
+                                    highlight,
+                                    highlightIndex
+                                  ) => (
+                                    <li
+                                      key={
+                                        highlightIndex
+                                      }
+                                      className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
+                                    >
+                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+
+                                      <span>
+                                        {
+                                          highlight
+                                        }
+                                      </span>
+                                    </li>
+                                  )
+                                )}
+
+                              </ul>
+
+                            </div>
+                          )}
+
+                      </div>
+
+                    </div>
+
+                    {/* ===================================================
+                        DESKTOP CARD
+                    ==================================================== */}
+
+                    <div className="hidden sm:grid sm:grid-cols-2 sm:gap-16">
+
+                      {/* Card */}
+
+                      <div
+                        className={
+                          isEven
+                            ? 'sm:col-start-1'
+                            : 'sm:col-start-2'
+                        }
+                      >
+
+                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900">
+
+                          {/* Icon */}
+
+                          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-blue-600 dark:bg-blue-950/30 dark:text-blue-400">
+
+                            {getEducationIcon(
+                              item?.icon,
+                              item?.degree
+                            )}
+
+                          </div>
+
+                          {/* Degree */}
+
+                          <h3 className="text-xl font-bold leading-snug text-gray-900 dark:text-white">
+                            {item?.degree ||
+                              'Degree'}
+                          </h3>
+
+                          {/* Institution */}
+
+                          <p className="mt-2 text-base font-semibold text-blue-600 dark:text-blue-400">
+                            {item?.institution ||
+                              'Institution'}
+                          </p>
+
+                          {/* Meta */}
+
+                          <div className="mt-4 flex flex-wrap gap-2">
+
+                            {item?.duration && (
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                {item.duration}
+                              </span>
+                            )}
+
+                            {item?.status && (
+                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                {item.status}
+                              </span>
+                            )}
+
+                          </div>
+
+                          {/* Description */}
+
+                          {item?.description && (
+                            <p className="mt-5 text-sm leading-7 text-gray-600 dark:text-gray-400">
+                              {item.description}
+                            </p>
+                          )}
+
+                          {/* Highlights */}
+
+                          {Array.isArray(
+                            item?.highlights
+                          ) &&
+                            item.highlights
+                              .length > 0 && (
+                              <div className="mt-6">
+
+                                <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-900 dark:text-white">
+                                  Highlights
+                                </h4>
+
+                                <ul className="space-y-3">
+
+                                  {item.highlights.map(
+                                    (
+                                      highlight,
+                                      highlightIndex
+                                    ) => (
+                                      <li
+                                        key={
+                                          highlightIndex
+                                        }
+                                        className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
+                                      >
+                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+
+                                        <span>
+                                          {
+                                            highlight
+                                          }
+                                        </span>
+                                      </li>
+                                    )
+                                  )}
+
+                                </ul>
+
+                              </div>
+                            )}
 
                         </div>
 
                       </div>
 
-                      {/* =================================================
-                          DURATION
-                      ================================================== */}
+                      {/* Empty Opposite Column */}
 
-                      <div className="shrink-0">
-
-                        <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs font-bold text-gray-400">
-                          {item.duration}
-                        </span>
-
-                      </div>
+                      <div
+                        className={
+                          isEven
+                            ? 'sm:col-start-2'
+                            : 'sm:col-start-1'
+                        }
+                      />
 
                     </div>
 
-                    {/* =================================================
-                        DESCRIPTION
-                    ================================================== */}
-
-                    <p className="mt-5 text-sm leading-7 text-gray-400">
-                      {item.description}
-                    </p>
-
-                  </div>
-
-                  {/* =================================================
-                      ACADEMIC HIGHLIGHTS
-                  ================================================== */}
-
-                  <div className="relative p-5 sm:p-6 md:p-7">
-
-                    <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500 sm:text-xs">
-                      Academic Focus
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-
-                      {item.highlights.map((highlight) => (
-                        <span
-                          key={highlight}
-                          className="rounded-full border border-white/[0.07] bg-white/[0.025] px-3 py-1.5 text-xs font-semibold text-gray-400 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-400/20 hover:bg-indigo-500/[0.07] hover:text-indigo-300 hover:shadow-[0_0_15px_rgba(99,102,241,0.08)] sm:px-3.5 sm:py-2"
-                        >
-                          {highlight}
-                        </span>
-                      ))}
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </article>
-            ))}
-
-          </div>
-
-        </div>
-
-        {/* =====================================================
-            EDUCATION SUMMARY
-        ====================================================== */}
-
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-indigo-400/10 bg-gradient-to-br from-indigo-500/[0.07] via-black/40 to-purple-500/[0.06] p-5 text-center shadow-[0_0_45px_rgba(99,102,241,0.04)] backdrop-blur-md sm:mt-10 sm:rounded-3xl sm:p-7 md:p-8">
-
-          {/* Moving Cosmic Glow */}
-
-          <div className="pointer-events-none absolute -left-16 top-1/2 h-32 w-32 -translate-y-1/2 animate-[educationGlow_8s_ease-in-out_infinite] rounded-full bg-indigo-500/10 blur-3xl" />
-
-          <div className="relative z-10">
-
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.1)] sm:h-12 sm:w-12 sm:rounded-2xl">
-              <FaGraduationCap />
-            </div>
-
-            <h3 className="mt-4 text-lg font-extrabold text-white sm:text-xl">
-              Continuous Learning
-            </h3>
-
-            <p className="mx-auto mt-2 max-w-2xl text-sm leading-7 text-gray-400">
-              Beyond formal education, I continuously learn through practical
-              projects, development practice and exploring modern technologies
-              to stay current with the evolving software industry.
-            </p>
+                  </article>
+                );
+              }
+            )}
 
           </div>
 
         </div>
 
       </div>
-
-      {/* =====================================================
-          EDUCATION ANIMATIONS
-      ====================================================== */}
-
-      <style>
-        {`
-          @keyframes educationOrbOne {
-            0%,
-            100% {
-              transform: translate3d(0, 0, 0) scale(1);
-            }
-
-            50% {
-              transform: translate3d(90px, 50px, 0) scale(1.15);
-            }
-          }
-
-          @keyframes educationOrbTwo {
-            0%,
-            100% {
-              transform: translate3d(0, 0, 0) scale(1);
-            }
-
-            50% {
-              transform: translate3d(-90px, -60px, 0) scale(1.12);
-            }
-          }
-
-          @keyframes educationGlow {
-            0%,
-            100% {
-              transform: translateY(-50%) translateX(0);
-              opacity: 0.35;
-            }
-
-            50% {
-              transform: translateY(-50%) translateX(120px);
-              opacity: 0.8;
-            }
-          }
-
-          @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-              animation-duration: 0.01ms !important;
-              animation-iteration-count: 1 !important;
-              transition-duration: 0.01ms !important;
-            }
-          }
-        `}
-      </style>
     </section>
   );
-}
+};
 
 export default Education;
