@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react';
 import {
   FaBars,
   FaTimes,
-  FaDownload,
-  FaGithub,
-  FaLinkedinIn,
   FaMoon,
   FaSun,
   FaLock,
@@ -253,32 +250,6 @@ function Navbar() {
           ================================================== */}
 
           <div className="hidden items-center gap-1.5 lg:flex">
-            {/* GitHub */}
-
-            <a
-              href="https://github.com/realvivekrana"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              title="GitHub"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-all duration-300 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
-            >
-              <FaGithub className="text-base" />
-            </a>
-
-            {/* LinkedIn */}
-
-            <a
-              href="https://www.linkedin.com/in/mrvivekrana/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              title="LinkedIn"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-all duration-300 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
-            >
-              <FaLinkedinIn className="text-base" />
-            </a>
-
             {/* Theme Toggle */}
 
             <button
@@ -312,20 +283,7 @@ function Navbar() {
               className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
               <FaLock className="text-xs" />
-
               <span>Admin</span>
-            </a>
-
-            {/* Resume */}
-
-            <a
-              href="/resume.pdf"
-              download
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gray-900 px-3.5 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-600/20 dark:bg-white dark:text-gray-900 dark:hover:bg-indigo-500 dark:hover:text-white xl:px-4"
-            >
-              <FaDownload className="text-xs" />
-
-              <span>Resume</span>
             </a>
           </div>
 
@@ -407,73 +365,31 @@ function Navbar() {
             <div className="my-3 h-px bg-gray-200 dark:bg-gray-800" />
 
             {/* =================================================
-                SOCIAL + THEME
+                THEME
             ================================================== */}
 
-            <div className="grid grid-cols-3 gap-2">
-              {/* GitHub */}
-
-              <a
-                href="https://github.com/realvivekrana"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
-              >
-                <FaGithub />
-
-                <span className="hidden sm:inline">
-                  GitHub
-                </span>
-              </a>
-
-              {/* LinkedIn */}
-
-              <a
-                href="https://www.linkedin.com/in/mrvivekrana/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
-              >
-                <FaLinkedinIn />
-
-                <span className="hidden sm:inline">
-                  LinkedIn
-                </span>
-              </a>
-
-              {/* Theme */}
-
-              <button
-                type="button"
-                onClick={handleThemeToggle}
-                aria-label={
-                  isDark
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode'
-                }
-                className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-gray-100 active:scale-[0.98] dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900"
-              >
-                {isDark ? (
-                  <>
-                    <FaSun className="text-yellow-400" />
-
-                    <span className="hidden sm:inline">
-                      Light
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <FaMoon />
-
-                    <span className="hidden sm:inline">
-                      Dark
-                    </span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleThemeToggle}
+              aria-label={
+                isDark
+                  ? 'Switch to light mode'
+                  : 'Switch to dark mode'
+              }
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+            >
+              {isDark ? (
+                <>
+                  <FaSun className="text-yellow-400" />
+                  <span>Switch to Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <FaMoon />
+                  <span>Switch to Dark Mode</span>
+                </>
+              )}
+            </button>
 
             {/* =================================================
                 ADMIN ACCESS
@@ -485,25 +401,7 @@ function Navbar() {
               className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.99] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
               <FaLock className="text-xs" />
-
               Admin Access
-            </a>
-
-            {/* =================================================
-                MOBILE RESUME
-            ================================================== */}
-
-            <a
-              href="/resume.pdf"
-              download
-              onClick={() =>
-                setIsMobileMenuOpen(false)
-              }
-              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:bg-indigo-700 active:scale-[0.99]"
-            >
-              <FaDownload className="text-xs" />
-
-              Download Resume
             </a>
           </div>
         </div>

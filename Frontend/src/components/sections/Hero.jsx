@@ -43,8 +43,26 @@ function Hero() {
   |--------------------------------------------------------------------------
   */
 
+  /*
+  |--------------------------------------------------------------------------
+  | Public Resume URL
+  |--------------------------------------------------------------------------
+  |
+  | The backend protects direct /uploads/... access.
+  | Public portfolio users must use the public-resume endpoint.
+  |
+  |--------------------------------------------------------------------------
+  */
+  const publicResumeBaseURL =
+    API.defaults.baseURL || '';
+
+  const publicResumeUrl =
+    `${publicResumeBaseURL.endsWith('/')
+      ? publicResumeBaseURL.slice(0, -1)
+      : publicResumeBaseURL}/portfolio/upload/public-resume`;
+
   const [resumeUrl, setResumeUrl] =
-    useState('/resume.pdf');
+    useState(publicResumeUrl);
 
   const [resumeFileName, setResumeFileName] =
     useState('Vivek-Rana-Resume.pdf');
@@ -162,10 +180,15 @@ function Hero() {
         const resume =
           portfolio?.resume;
 
-        if (resume?.url) {
-          setResumeUrl(
-            resume.url
-          );
+        if (resume) {
+          /*
+           * Do NOT use resume.url here.
+           *
+           * resume.url points to the protected /uploads/... path.
+           * The public portfolio must always use the public-resume
+           * endpoint instead.
+           */
+          setResumeUrl(publicResumeUrl);
 
           setResumeFileName(
             resume.originalName ||
@@ -250,7 +273,7 @@ function Hero() {
       */
 
       window.open(
-        resumeUrl,
+        publicResumeUrl,
         '_blank',
         'noopener,noreferrer'
       );
@@ -380,7 +403,7 @@ function Hero() {
               ================================================== */}
 
               <a
-                href={resumeUrl}
+                href={publicResumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50/90 px-7 py-3.5 font-semibold text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 sm:w-auto"

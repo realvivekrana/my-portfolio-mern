@@ -5,13 +5,23 @@ const PortfolioContent = require('../models/PortfolioContent');
 
 /*
 |--------------------------------------------------------------------------
-| Get Uploaded File URL
+| Uploads Directory
 |--------------------------------------------------------------------------
 */
 
-const getFileUrl = (req, filename) => {
-  const protocol = req.protocol;
+const uploadsDirectory = path.join(
+  __dirname,
+  '../uploads'
+);
 
+/*
+|--------------------------------------------------------------------------
+| Get Public File URL
+|--------------------------------------------------------------------------
+*/
+
+const getPublicFileUrl = (req, filename) => {
+  const protocol = req.protocol;
   const host = req.get('host');
 
   return `${protocol}://${host}/uploads/${filename}`;
@@ -19,12 +29,7 @@ const getFileUrl = (req, filename) => {
 
 /*
 |--------------------------------------------------------------------------
-| Delete Existing File
-|--------------------------------------------------------------------------
-|
-| Old resume/profile image ko replace karte waqt purani file
-| server se remove karne ke liye.
-|
+| Delete Existing Uploaded File
 |--------------------------------------------------------------------------
 */
 
@@ -37,8 +42,7 @@ const deleteUploadedFile = (fileUrl) => {
     const fileName = path.basename(fileUrl);
 
     const filePath = path.join(
-      __dirname,
-      '../uploads',
+      uploadsDirectory,
       fileName
     );
 
@@ -55,6 +59,116 @@ const deleteUploadedFile = (fileUrl) => {
 
 /*
 |--------------------------------------------------------------------------
+| Delete File By Filename
+|--------------------------------------------------------------------------
+*/
+
+const deleteUploadedFileByName = (filename) => {
+  try {
+    if (!filename) {
+      return;
+    }
+
+    const safeFileName =
+      path.basename(filename);
+
+    const filePath = path.join(
+      uploadsDirectory,
+      safeFileName
+    );
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (error) {
+    console.error(
+      'Failed to delete uploaded file:',
+      error.message
+    );
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| SEND RESUME FILE
+|--------------------------------------------------------------------------
+|
+| Common helper used by public/admin resume endpoints.
+|
+|--------------------------------------------------------------------------
+*/
+
+const sendResumeFile = async (
+  req,
+  res,
+  portfolio
+) => {
+  if (
+    !portfolio ||
+    !portfolio.resume ||
+    !portfolio.resume.fileName
+  ) {
+    return res.status(404).json({
+      success: false,
+      message:
+        'No resume has been uploaded yet.',
+    });
+  }
+
+  const fileName = path.basename(
+    portfolio.resume.fileName
+  );
+
+  const filePath = path.join(
+    uploadsDirectory,
+    fileName
+  );
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({
+      success: false,
+      message:
+        'Resume file not found on server.',
+    });
+  }
+
+  const originalName =
+    portfolio.resume.originalName ||
+    'Resume.pdf';
+
+  res.setHeader(
+    'Content-Type',
+    'application/pdf'
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `inline; filename="${originalName.replace(
+      /"/g,
+      ''
+    )}"`
+  );
+
+  res.setHeader(
+    'Cache-Control',
+    'private, no-store, no-cache, must-revalidate'
+  );
+
+  res.setHeader(
+    'Pragma',
+    'no-cache'
+  );
+
+  res.setHeader(
+    'Expires',
+    '0'
+  );
+
+  return res.sendFile(filePath);
+};
+
+/*
+|--------------------------------------------------------------------------
 | Upload Resume
 |--------------------------------------------------------------------------
 | @route   POST /api/portfolio/upload/resume
@@ -64,76 +178,60 @@ const deleteUploadedFile = (fileUrl) => {
 
 const uploadResume = async (req, res) => {
   try {
-    /*
-    |--------------------------------------------------------------------------
-    | Check File
-    |--------------------------------------------------------------------------
-    */
-
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'Please select a PDF resume file.',
+        message:
+          'Please select a PDF resume file.',
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Find Portfolio
-    |--------------------------------------------------------------------------
-    */
+    const isPdf =
+      req.file.mimetype ===
+        'application/pdf' ||
+      path
+        .extname(req.file.originalname || '')
+        .toLowerCase() === '.pdf';
+
+    if (!isPdf) {
+      deleteUploadedFileByName(
+        req.file.filename
+      );
+
+      return res.status(400).json({
+        success: false,
+        message:
+          'Only PDF resume files are allowed.',
+      });
+    }
 
     let portfolio =
       await PortfolioContent.findOne({
         key: 'main',
       });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Create Portfolio If Missing
-    |--------------------------------------------------------------------------
-    */
-
     if (!portfolio) {
-      portfolio = await PortfolioContent.create({
-        key: 'main',
-      });
+      portfolio =
+        await PortfolioContent.create({
+          key: 'main',
+        });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Previous Resume
-    |--------------------------------------------------------------------------
-    */
+    let oldResumeFileName = null;
 
     if (
       portfolio.resume &&
-      portfolio.resume.url &&
-      portfolio.resume.url.includes('/uploads/')
+      portfolio.resume.fileName
     ) {
-      deleteUploadedFile(
-        portfolio.resume.url
-      );
+      oldResumeFileName =
+        portfolio.resume.fileName;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Generate New Resume URL
+    | Save New Resume
     |--------------------------------------------------------------------------
     */
-
-    const resumeUrl = getFileUrl(
-      req,
-      req.file.filename
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Resume Information
-    |--------------------------------------------------------------------------
-    */
-
-    portfolio.resume.url = resumeUrl;
 
     portfolio.resume.fileName =
       req.file.filename;
@@ -146,24 +244,54 @@ const uploadResume = async (req, res) => {
 
     /*
     |--------------------------------------------------------------------------
-    | Save
+    | IMPORTANT
+    |--------------------------------------------------------------------------
+    |
+    | Public URL is no longer stored as the resume URL.
+    |
+    | Resume is accessed through:
+    |
+    | /api/portfolio/resume/public
+    |
     |--------------------------------------------------------------------------
     */
+
+    portfolio.resume.url =
+      '/api/portfolio/resume/public';
 
     await portfolio.save();
 
     /*
     |--------------------------------------------------------------------------
-    | Response
+    | Delete Old Resume
     |--------------------------------------------------------------------------
     */
 
-    res.status(200).json({
+    if (
+      oldResumeFileName &&
+      oldResumeFileName !== req.file.filename
+    ) {
+      deleteUploadedFileByName(
+        oldResumeFileName
+      );
+    }
+
+    return res.status(200).json({
       success: true,
       message:
         'Resume uploaded successfully.',
       data: {
-        resume: portfolio.resume,
+        resume: {
+          exists: true,
+          fileName:
+            portfolio.resume.fileName,
+          originalName:
+            portfolio.resume.originalName,
+          uploadedAt:
+            portfolio.resume.uploadedAt,
+          url:
+            '/api/portfolio/resume/public',
+        },
       },
     });
   } catch (error) {
@@ -172,39 +300,13 @@ const uploadResume = async (req, res) => {
       error
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Newly Uploaded File If Database Update Fails
-    |--------------------------------------------------------------------------
-    */
-
-    if (req.file) {
-      try {
-        const uploadedFilePath =
-          path.join(
-            __dirname,
-            '../uploads',
-            req.file.filename
-          );
-
-        if (
-          fs.existsSync(
-            uploadedFilePath
-          )
-        ) {
-          fs.unlinkSync(
-            uploadedFilePath
-          );
-        }
-      } catch (deleteError) {
-        console.error(
-          'Failed to remove uploaded file:',
-          deleteError.message
-        );
-      }
+    if (req.file?.filename) {
+      deleteUploadedFileByName(
+        req.file.filename
+      );
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message:
         'Failed to upload resume.',
@@ -215,9 +317,234 @@ const uploadResume = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
+| GET PUBLIC RESUME
+|--------------------------------------------------------------------------
+| @route   GET /api/portfolio/resume/public
+| @access  Public
+|--------------------------------------------------------------------------
+|
+| Public portfolio:
+|   → Resume accessible
+|
+| Private portfolio:
+|   → Resume blocked
+|
+|--------------------------------------------------------------------------
+*/
+
+const getPublicResume = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await PortfolioContent.findOne({
+        key: 'main',
+      });
+
+    if (!portfolio) {
+      return res.status(404).json({
+        success: false,
+        message:
+          'Portfolio not found.',
+      });
+    }
+
+    const visibility =
+      portfolio.settings?.portfolioVisibility ||
+      'public';
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRIVATE PORTFOLIO
+    |--------------------------------------------------------------------------
+    */
+
+    if (visibility === 'private') {
+      return res.status(403).json({
+        success: false,
+        message:
+          'Resume is currently private.',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PUBLIC PORTFOLIO
+    |--------------------------------------------------------------------------
+    */
+
+    return sendResumeFile(
+      req,
+      res,
+      portfolio
+    );
+  } catch (error) {
+    console.error(
+      'Get Public Resume Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to load public resume.',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| GET PROTECTED RESUME
+|--------------------------------------------------------------------------
+| @route   GET /api/portfolio/upload/resume
+| @access  Protected Admin
+|--------------------------------------------------------------------------
+*/
+
+const getProtectedResume = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await PortfolioContent.findOne({
+        key: 'main',
+      });
+
+    return sendResumeFile(
+      req,
+      res,
+      portfolio
+    );
+  } catch (error) {
+    console.error(
+      'Get Protected Resume Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to load resume.',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| GET RESUME INFO
+|--------------------------------------------------------------------------
+| @route   GET /api/portfolio/upload/resume/info
+| @access  Protected Admin
+|--------------------------------------------------------------------------
+*/
+
+const getResumeInfo = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await PortfolioContent.findOne({
+        key: 'main',
+      });
+
+    if (
+      !portfolio ||
+      !portfolio.resume ||
+      !portfolio.resume.fileName
+    ) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          exists: false,
+          resume: null,
+        },
+      });
+    }
+
+    const fileName = path.basename(
+      portfolio.resume.fileName
+    );
+
+    const filePath = path.join(
+      uploadsDirectory,
+      fileName
+    );
+
+    const exists =
+      fs.existsSync(filePath);
+
+    let size = 0;
+
+    if (exists) {
+      const stats =
+        fs.statSync(filePath);
+
+      size = stats.size;
+    }
+
+    let sizeFormatted = '0 KB';
+
+    if (size >= 1024 * 1024) {
+      sizeFormatted =
+        `${(
+          size /
+          (1024 * 1024)
+        ).toFixed(2)} MB`;
+    } else if (size >= 1024) {
+      sizeFormatted =
+        `${(
+          size /
+          1024
+        ).toFixed(2)} KB`;
+    } else {
+      sizeFormatted =
+        `${size} bytes`;
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        exists,
+        resume: {
+          fileName:
+            portfolio.resume.fileName,
+          originalName:
+            portfolio.resume.originalName ||
+            'Resume.pdf',
+          uploadedAt:
+            portfolio.resume.uploadedAt,
+          size,
+          sizeFormatted,
+          url:
+            '/api/portfolio/upload/resume',
+        },
+      },
+    });
+  } catch (error) {
+    console.error(
+      'Get Resume Info Error:',
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message:
+        'Failed to fetch resume information.',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
 | Upload Profile Image
 |--------------------------------------------------------------------------
-| @route   POST /api/portfolio/profile-image
+| @route   POST /api/portfolio/upload/profile-image
 | @access  Protected Admin
 |--------------------------------------------------------------------------
 */
@@ -227,12 +554,6 @@ const uploadProfileImage = async (
   res
 ) => {
   try {
-    /*
-    |--------------------------------------------------------------------------
-    | Check File
-    |--------------------------------------------------------------------------
-    */
-
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -241,34 +562,17 @@ const uploadProfileImage = async (
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Find Portfolio
-    |--------------------------------------------------------------------------
-    */
-
     let portfolio =
       await PortfolioContent.findOne({
         key: 'main',
       });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Create Portfolio If Missing
-    |--------------------------------------------------------------------------
-    */
-
     if (!portfolio) {
-      portfolio = await PortfolioContent.create({
-        key: 'main',
-      });
+      portfolio =
+        await PortfolioContent.create({
+          key: 'main',
+        });
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Previous Profile Image
-    |--------------------------------------------------------------------------
-    */
 
     if (
       portfolio.hero &&
@@ -282,41 +586,18 @@ const uploadProfileImage = async (
       );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Generate Image URL
-    |--------------------------------------------------------------------------
-    */
-
-    const imageUrl = getFileUrl(
-      req,
-      req.file.filename
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Profile Image
-    |--------------------------------------------------------------------------
-    */
+    const imageUrl =
+      getPublicFileUrl(
+        req,
+        req.file.filename
+      );
 
     portfolio.hero.profileImage =
       imageUrl;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Save
-    |--------------------------------------------------------------------------
-    */
-
     await portfolio.save();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message:
         'Profile image uploaded successfully.',
@@ -331,39 +612,13 @@ const uploadProfileImage = async (
       error
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Newly Uploaded File If Something Fails
-    |--------------------------------------------------------------------------
-    */
-
-    if (req.file) {
-      try {
-        const uploadedFilePath =
-          path.join(
-            __dirname,
-            '../uploads',
-            req.file.filename
-          );
-
-        if (
-          fs.existsSync(
-            uploadedFilePath
-          )
-        ) {
-          fs.unlinkSync(
-            uploadedFilePath
-          );
-        }
-      } catch (deleteError) {
-        console.error(
-          'Failed to remove uploaded image:',
-          deleteError.message
-        );
-      }
+    if (req.file?.filename) {
+      deleteUploadedFileByName(
+        req.file.filename
+      );
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message:
         'Failed to upload profile image.',
@@ -374,11 +629,14 @@ const uploadProfileImage = async (
 
 /*
 |--------------------------------------------------------------------------
-| Export
+| EXPORTS
 |--------------------------------------------------------------------------
 */
 
 module.exports = {
   uploadResume,
+  getPublicResume,
+  getProtectedResume,
+  getResumeInfo,
   uploadProfileImage,
 };

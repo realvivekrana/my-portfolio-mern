@@ -26,19 +26,118 @@ const getMainPortfolio = async () => {
 |--------------------------------------------------------------------------
 | GET /api/portfolio
 |
-| Public + Admin dono ke liye portfolio data fetch karega.
+| Public:
+|   Public portfolio -> complete data
+|   Private portfolio -> private response
+|
+| Admin:
+|   Public/private dono condition mein complete portfolio access.
 |--------------------------------------------------------------------------
 */
 
 const getPortfolio = async (req, res) => {
   try {
-    const portfolio =
-      await getMainPortfolio();
+    const portfolio = await getMainPortfolio();
+
+    /*
+    |--------------------------------------------------------------------------
+    | PORTFOLIO VISIBILITY
+    |--------------------------------------------------------------------------
+    */
+
+    const visibility =
+      portfolio.settings?.portfolioVisibility ||
+      'public';
+
+    /*
+    |--------------------------------------------------------------------------
+    | OPTIONAL ADMIN AUTHENTICATION
+    |--------------------------------------------------------------------------
+    |
+    | /api/portfolio public route hai, isliye protect middleware directly
+    | route par nahi laga sakte.
+    |
+    | Agar Authorization Bearer token available hai to yahan manually
+    | verify karke check karenge ki request admin ki hai ya nahi.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    let isAdmin = false;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer ')
+    ) {
+      try {
+        const token =
+          req.headers.authorization.split(' ')[1];
+
+        const jwt = require('jsonwebtoken');
+        const Admin = require('../models/Admin');
+
+        const decoded = jwt.verify(
+          token,
+          process.env.JWT_SECRET
+        );
+
+        const admin = await Admin.findById(
+          decoded.id
+        ).select('_id');
+
+        if (admin) {
+          isAdmin = true;
+        }
+      } catch (authError) {
+        /*
+        |--------------------------------------------------------------------------
+        | Invalid / Expired Token
+        |--------------------------------------------------------------------------
+        |
+        | Public request ko fail nahi karenge.
+        | Is request ko normal visitor treat karenge.
+        |
+        |--------------------------------------------------------------------------
+        */
+
+        isAdmin = false;
+      }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRIVATE PORTFOLIO
+    |--------------------------------------------------------------------------
+    |
+    | Agar portfolio private hai aur visitor admin nahi hai,
+    | to complete portfolio data expose nahi karenge.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      visibility === 'private' &&
+      !isAdmin
+    ) {
+      return res.status(200).json({
+        success: true,
+        message: 'Portfolio is currently private',
+        data: {
+          isPrivate: true,
+          portfolioVisibility: 'private',
+        },
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PUBLIC / ADMIN RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     return res.status(200).json({
       success: true,
-      message:
-        'Portfolio data fetched successfully',
+      message: 'Portfolio data fetched successfully',
       data: portfolio,
     });
   } catch (error) {
@@ -49,8 +148,7 @@ const getPortfolio = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message:
-        'Failed to fetch portfolio data',
+      message: 'Failed to fetch portfolio data',
       error: error.message,
     });
   }
@@ -66,10 +164,7 @@ const getPortfolio = async (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-const updatePortfolio = async (
-  req,
-  res
-) => {
+const updatePortfolio = async (req, res) => {
   try {
     const {
       hero,
@@ -118,8 +213,7 @@ const updatePortfolio = async (
       */
 
       if (
-        about.currentRole !==
-        undefined
+        about.currentRole !== undefined
       ) {
         portfolio.about.currentRole = {
           ...portfolio.about.currentRole?.toObject?.(),
@@ -147,9 +241,7 @@ const updatePortfolio = async (
     |--------------------------------------------------------------------------
     */
 
-    if (
-      socialLinks !== undefined
-    ) {
+    if (socialLinks !== undefined) {
       portfolio.socialLinks = {
         ...portfolio.socialLinks?.toObject?.(),
         ...socialLinks,
@@ -188,9 +280,7 @@ const updatePortfolio = async (
     |--------------------------------------------------------------------------
     */
 
-    if (
-      settings !== undefined
-    ) {
+    if (settings !== undefined) {
       portfolio.settings = {
         ...portfolio.settings?.toObject?.(),
         ...settings,
@@ -201,17 +291,10 @@ const updatePortfolio = async (
     |--------------------------------------------------------------------------
     | EXPERIENCE
     |--------------------------------------------------------------------------
-    |
-    | Experience array ko completely replace/update karega.
-    |
     */
 
-    if (
-      experience !== undefined
-    ) {
-      if (
-        !Array.isArray(experience)
-      ) {
+    if (experience !== undefined) {
+      if (!Array.isArray(experience)) {
         return res.status(400).json({
           success: false,
           message:
@@ -227,17 +310,10 @@ const updatePortfolio = async (
     |--------------------------------------------------------------------------
     | EDUCATION
     |--------------------------------------------------------------------------
-    |
-    | Education array ko completely replace/update karega.
-    |
     */
 
-    if (
-      education !== undefined
-    ) {
-      if (
-        !Array.isArray(education)
-      ) {
+    if (education !== undefined) {
+      if (!Array.isArray(education)) {
         return res.status(400).json({
           success: false,
           message:
@@ -283,8 +359,6 @@ const updatePortfolio = async (
 | UPDATE EXPERIENCE
 |--------------------------------------------------------------------------
 | PUT /api/portfolio/experience
-|
-| Admin ke Experience Manager ke liye.
 |--------------------------------------------------------------------------
 */
 
@@ -297,15 +371,7 @@ const updateExperience = async (
       experience,
     } = req.body;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validate Experience
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      !Array.isArray(experience)
-    ) {
+    if (!Array.isArray(experience)) {
       return res.status(400).json({
         success: false,
         message:
@@ -313,29 +379,11 @@ const updateExperience = async (
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Get Portfolio
-    |--------------------------------------------------------------------------
-    */
-
     const portfolio =
       await getMainPortfolio();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Experience
-    |--------------------------------------------------------------------------
-    */
-
     portfolio.experience =
       experience;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Save
-    |--------------------------------------------------------------------------
-    */
 
     await portfolio.save();
 
@@ -366,8 +414,6 @@ const updateExperience = async (
 | UPDATE EDUCATION
 |--------------------------------------------------------------------------
 | PUT /api/portfolio/education
-|
-| Admin ke Education Manager ke liye.
 |--------------------------------------------------------------------------
 */
 
@@ -380,15 +426,7 @@ const updateEducation = async (
       education,
     } = req.body;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validate Education
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      !Array.isArray(education)
-    ) {
+    if (!Array.isArray(education)) {
       return res.status(400).json({
         success: false,
         message:
@@ -396,29 +434,11 @@ const updateEducation = async (
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Get Portfolio
-    |--------------------------------------------------------------------------
-    */
-
     const portfolio =
       await getMainPortfolio();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Education
-    |--------------------------------------------------------------------------
-    */
-
     portfolio.education =
       education;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Save
-    |--------------------------------------------------------------------------
-    */
 
     await portfolio.save();
 
@@ -471,7 +491,8 @@ const updateHero = async (
       success: true,
       message:
         'Hero information updated successfully',
-      data: portfolio.hero,
+      data:
+        portfolio.hero,
     });
   } catch (error) {
     console.error(
@@ -511,7 +532,7 @@ const updateAbout = async (
 
     /*
     |--------------------------------------------------------------------------
-    | Current Role
+    | CURRENT ROLE
     |--------------------------------------------------------------------------
     */
 
@@ -531,7 +552,8 @@ const updateAbout = async (
       success: true,
       message:
         'About information updated successfully',
-      data: portfolio.about,
+      data:
+        portfolio.about,
     });
   } catch (error) {
     console.error(
@@ -575,7 +597,8 @@ const updateContact = async (
       success: true,
       message:
         'Contact information updated successfully',
-      data: portfolio.contact,
+      data:
+        portfolio.contact,
     });
   } catch (error) {
     console.error(
@@ -664,7 +687,8 @@ const updateSEO = async (
       success: true,
       message:
         'SEO information updated successfully',
-      data: portfolio.seo,
+      data:
+        portfolio.seo,
     });
   } catch (error) {
     console.error(
@@ -687,6 +711,17 @@ const updateSEO = async (
 |--------------------------------------------------------------------------
 | PUT /api/portfolio/settings
 |--------------------------------------------------------------------------
+|
+| Supported:
+|
+| portfolioVisibility
+| showAvailabilityBadge
+| showGithub
+| showLinkedin
+| showResume
+| showAdminAccess
+|
+|--------------------------------------------------------------------------
 */
 
 const updateSettings = async (
@@ -697,10 +732,149 @@ const updateSettings = async (
     const portfolio =
       await getMainPortfolio();
 
-    portfolio.settings = {
-      ...portfolio.settings?.toObject?.(),
-      ...req.body,
+    const {
+      portfolioVisibility,
+      showAvailabilityBadge,
+      showGithub,
+      showLinkedin,
+      showResume,
+      showAdminAccess,
+    } = req.body;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Portfolio Visibility
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      portfolioVisibility !==
+        undefined &&
+      !['public', 'private'].includes(
+        portfolioVisibility
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Portfolio visibility must be either public or private',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Existing Settings
+    |--------------------------------------------------------------------------
+    */
+
+    const existingSettings =
+      portfolio.settings?.toObject?.() ||
+      {};
+
+    /*
+    |--------------------------------------------------------------------------
+    | Build Updated Settings
+    |--------------------------------------------------------------------------
+    */
+
+    const updatedSettings = {
+      ...existingSettings,
     };
+
+    /*
+    |--------------------------------------------------------------------------
+    | Portfolio Visibility
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      portfolioVisibility !==
+      undefined
+    ) {
+      updatedSettings.portfolioVisibility =
+        portfolioVisibility;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Availability Badge
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      showAvailabilityBadge !==
+      undefined
+    ) {
+      updatedSettings.showAvailabilityBadge =
+        Boolean(
+          showAvailabilityBadge
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      showGithub !==
+      undefined
+    ) {
+      updatedSettings.showGithub =
+        Boolean(showGithub);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LinkedIn
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      showLinkedin !==
+      undefined
+    ) {
+      updatedSettings.showLinkedin =
+        Boolean(showLinkedin);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resume
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      showResume !==
+      undefined
+    ) {
+      updatedSettings.showResume =
+        Boolean(showResume);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Access
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      showAdminAccess !==
+      undefined
+    ) {
+      updatedSettings.showAdminAccess =
+        Boolean(showAdminAccess);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE SETTINGS
+    |--------------------------------------------------------------------------
+    */
+
+    portfolio.settings =
+      updatedSettings;
 
     await portfolio.save();
 
@@ -730,7 +904,7 @@ const updateSettings = async (
 |--------------------------------------------------------------------------
 | UPDATE PROFILE IMAGE
 |--------------------------------------------------------------------------
-| Profile image upload hone ke baad image URL MongoDB me save karega.
+| POST /api/portfolio/profile-image
 |--------------------------------------------------------------------------
 */
 
@@ -744,7 +918,7 @@ const updateProfileImage = async (
 
     /*
     |--------------------------------------------------------------------------
-    | File Check
+    | FILE CHECK
     |--------------------------------------------------------------------------
     */
 
@@ -758,7 +932,7 @@ const updateProfileImage = async (
 
     /*
     |--------------------------------------------------------------------------
-    | Determine Image URL
+    | IMAGE URL
     |--------------------------------------------------------------------------
     */
 
@@ -766,7 +940,9 @@ const updateProfileImage = async (
 
     if (req.file.path) {
       imageUrl = req.file.path;
-    } else if (req.file.filename) {
+    } else if (
+      req.file.filename
+    ) {
       imageUrl =
         `/uploads/${req.file.filename}`;
     }
@@ -781,7 +957,7 @@ const updateProfileImage = async (
 
     /*
     |--------------------------------------------------------------------------
-    | Save Image
+    | SAVE IMAGE
     |--------------------------------------------------------------------------
     */
 
@@ -794,7 +970,8 @@ const updateProfileImage = async (
       success: true,
       message:
         'Profile image updated successfully',
-      data: portfolio,
+      data:
+        portfolio,
     });
   } catch (error) {
     console.error(
@@ -815,7 +992,7 @@ const updateProfileImage = async (
 |--------------------------------------------------------------------------
 | REMOVE PROFILE IMAGE
 |--------------------------------------------------------------------------
-| MongoDB se profile image URL remove karega.
+| DELETE /api/portfolio/profile-image
 |--------------------------------------------------------------------------
 */
 
@@ -836,7 +1013,8 @@ const removeProfileImage = async (
       success: true,
       message:
         'Profile image removed successfully',
-      data: portfolio,
+      data:
+        portfolio,
     });
   } catch (error) {
     console.error(
@@ -857,7 +1035,7 @@ const removeProfileImage = async (
 |--------------------------------------------------------------------------
 | RESET PORTFOLIO
 |--------------------------------------------------------------------------
-| Complete portfolio ko default values par reset karega.
+| POST /api/portfolio/reset
 |--------------------------------------------------------------------------
 */
 
@@ -871,7 +1049,7 @@ const resetPortfolio = async (
 
     /*
     |--------------------------------------------------------------------------
-    | Delete Existing Portfolio
+    | DELETE EXISTING
     |--------------------------------------------------------------------------
     */
 
@@ -881,7 +1059,7 @@ const resetPortfolio = async (
 
     /*
     |--------------------------------------------------------------------------
-    | Create Fresh Portfolio
+    | CREATE FRESH PORTFOLIO
     |--------------------------------------------------------------------------
     */
 
@@ -894,7 +1072,8 @@ const resetPortfolio = async (
       success: true,
       message:
         'Portfolio reset successfully',
-      data: newPortfolio,
+      data:
+        newPortfolio,
     });
   } catch (error) {
     console.error(
@@ -915,7 +1094,7 @@ const resetPortfolio = async (
 |--------------------------------------------------------------------------
 | DELETE PORTFOLIO
 |--------------------------------------------------------------------------
-| Complete portfolio document delete karega.
+| DELETE /api/portfolio
 |--------------------------------------------------------------------------
 */
 

@@ -14,7 +14,8 @@ function getInitialTheme() {
     return false;
   }
 
-  const savedTheme = localStorage.getItem(THEME_KEY);
+  const savedTheme =
+    localStorage.getItem(THEME_KEY);
 
   if (savedTheme === 'dark') {
     return true;
@@ -30,37 +31,48 @@ function getInitialTheme() {
 }
 
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(getInitialTheme);
+  const [isDark, setIsDark] =
+    useState(getInitialTheme);
 
   useEffect(() => {
-    const root = document.documentElement;
+    const root =
+      document.documentElement;
 
     /*
-      Disable transitions temporarily while applying the
-      initial theme. This prevents unwanted animation/flicker
-      when the page first loads.
+    |----------------------------------------------------------------------
+    | Apply Theme
+    |----------------------------------------------------------------------
+    |
+    | Important:
+    | We DO NOT disable CSS transitions here.
+    | This allows the public portfolio to smoothly transition between
+    | dark and light mode instead of flashing abruptly.
+    |
     */
-    root.classList.add('theme-transition');
 
     if (isDark) {
       root.classList.add('dark');
-      localStorage.setItem(THEME_KEY, 'dark');
+      root.style.colorScheme = 'dark';
+
+      localStorage.setItem(
+        THEME_KEY,
+        'dark'
+      );
     } else {
       root.classList.remove('dark');
-      localStorage.setItem(THEME_KEY, 'light');
+      root.style.colorScheme = 'light';
+
+      localStorage.setItem(
+        THEME_KEY,
+        'light'
+      );
     }
-
-    const transitionTimer = setTimeout(() => {
-      root.classList.remove('theme-transition');
-    }, 50);
-
-    return () => {
-      clearTimeout(transitionTimer);
-    };
   }, [isDark]);
 
   const toggleTheme = () => {
-    setIsDark((previous) => !previous);
+    setIsDark(
+      (previous) => !previous
+    );
   };
 
   const value = {
@@ -69,14 +81,17 @@ export function ThemeProvider({ children }) {
   };
 
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider
+      value={value}
+    >
       {children}
     </ThemeContext.Provider>
   );
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext);
+  const context =
+    useContext(ThemeContext);
 
   if (!context) {
     throw new Error(

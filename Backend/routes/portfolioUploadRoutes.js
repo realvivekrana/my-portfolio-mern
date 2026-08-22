@@ -4,6 +4,9 @@ const router = express.Router();
 
 const {
   uploadResume,
+  getPublicResume,
+  getProtectedResume,
+  getResumeInfo,
   uploadProfileImage,
 } = require('../controllers/portfolioUploadController');
 
@@ -18,23 +21,56 @@ const {
 
 /*
 |--------------------------------------------------------------------------
-| Upload Resume
+| PUBLIC RESUME
 |--------------------------------------------------------------------------
 |
-| POST /api/portfolio/upload/resume
+| GET /api/portfolio/upload/public-resume
 |
-| Flow:
+| Public portfolio:
+|   → Resume available
 |
-| Admin
-|   ↓
-| JWT Authentication
-|   ↓
-| Multer PDF Upload
-|   ↓
-| Resume Controller
-|   ↓
-| MongoDB
+| Private portfolio:
+|   → Resume blocked
 |
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/public-resume',
+  getPublicResume
+);
+
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ADMIN RESUME
+|--------------------------------------------------------------------------
+|
+| GET /api/portfolio/upload/resume
+|
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/resume',
+  protect,
+  getProtectedResume
+);
+
+/*
+|--------------------------------------------------------------------------
+| RESUME INFORMATION
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/resume/info',
+  protect,
+  getResumeInfo
+);
+
+/*
+|--------------------------------------------------------------------------
+| UPLOAD RESUME
 |--------------------------------------------------------------------------
 */
 
@@ -47,23 +83,7 @@ router.post(
 
 /*
 |--------------------------------------------------------------------------
-| Upload Profile Image
-|--------------------------------------------------------------------------
-|
-| POST /api/portfolio/upload/profile-image
-|
-| Flow:
-|
-| Admin
-|   ↓
-| JWT Authentication
-|   ↓
-| Multer Image Upload
-|   ↓
-| Profile Image Controller
-|   ↓
-| MongoDB
-|
+| UPLOAD PROFILE IMAGE
 |--------------------------------------------------------------------------
 */
 

@@ -40,6 +40,8 @@
 }
 
 .dark {
+  color-scheme: dark;
+
   --page-bg: #030712;
   --surface: #0f172a;
   --surface-muted: #111827;
@@ -73,6 +75,7 @@
    ========================================================= */
 
 html {
+  color-scheme: light;
   scroll-behavior: smooth;
   scroll-padding-top: 90px;
   font-family: var(--font-sans);

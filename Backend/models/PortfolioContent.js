@@ -573,6 +573,26 @@ const portfolioContentSchema = new mongoose.Schema(
     */
 
     settings: {
+      /*
+      |--------------------------------------------------------------------------
+      | PORTFOLIO VISIBILITY
+      |--------------------------------------------------------------------------
+      |
+      | Public:
+      | Portfolio normal visitors ko visible rahega.
+      |
+      | Private:
+      | Portfolio public visitors ke liye hidden rahega.
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      portfolioVisibility: {
+        type: String,
+        enum: ['public', 'private'],
+        default: 'public',
+      },
+
       showAvailabilityBadge: {
         type: Boolean,
         default: true,

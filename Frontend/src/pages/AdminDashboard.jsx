@@ -111,6 +111,29 @@ function AdminDashboard() {
 
 
   // =========================================================
+  // PORTFOLIO VISIBILITY STATE
+  // =========================================================
+
+  const defaultPortfolioSettings = {
+    portfolioVisibility: 'public',
+    showAvailabilityBadge: true,
+    showGithub: true,
+    showLinkedin: true,
+    showResume: true,
+    showAdminAccess: false,
+  };
+
+  const [portfolioSettings, setPortfolioSettings] =
+    useState(defaultPortfolioSettings);
+
+  const [portfolioSettingsLoading, setPortfolioSettingsLoading] =
+    useState(false);
+
+  const [portfolioSettingsSaving, setPortfolioSettingsSaving] =
+    useState(false);
+
+
+  // =========================================================
   // RESUME STATE
   // =========================================================
 
@@ -184,6 +207,107 @@ function AdminDashboard() {
     } finally {
       setProjectsLoading(false);
     }
+  };
+
+
+  // =========================================================
+  // FETCH PORTFOLIO SETTINGS
+  // =========================================================
+
+  const fetchPortfolioSettings = async () => {
+    try {
+      setPortfolioSettingsLoading(true);
+
+      const response = await API.get('/portfolio');
+
+      const portfolio =
+        response.data?.data || response.data || {};
+
+      setPortfolioSettings({
+        ...defaultPortfolioSettings,
+        ...(portfolio?.settings || {}),
+      });
+    } catch (error) {
+      console.error(
+        'Portfolio settings fetch error:',
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to load portfolio settings'
+      );
+    } finally {
+      setPortfolioSettingsLoading(false);
+    }
+  };
+
+
+  // =========================================================
+  // UPDATE PORTFOLIO SETTING
+  // =========================================================
+
+  const updatePortfolioSetting = (
+    key,
+    value
+  ) => {
+    setPortfolioSettings((previous) => ({
+      ...previous,
+      [key]: value,
+    }));
+  };
+
+
+  // =========================================================
+  // SAVE PORTFOLIO SETTINGS
+  // =========================================================
+
+  const savePortfolioSettings = async () => {
+    try {
+      setPortfolioSettingsSaving(true);
+
+      const response = await API.put(
+        '/portfolio/settings',
+        portfolioSettings
+      );
+
+      const savedSettings =
+        response.data?.data || {};
+
+      setPortfolioSettings({
+        ...defaultPortfolioSettings,
+        ...savedSettings,
+      });
+
+      toast.success(
+        'Portfolio settings saved successfully.'
+      );
+    } catch (error) {
+      console.error(
+        'Portfolio settings save error:',
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to save portfolio settings'
+      );
+    } finally {
+      setPortfolioSettingsSaving(false);
+    }
+  };
+
+
+  // =========================================================
+  // PUBLIC RESUME URL
+  // =========================================================
+
+  const getPublicResumeUrl = () => {
+    const baseURL = API.defaults.baseURL || '';
+
+    return `${baseURL.endsWith('/')
+      ? baseURL.slice(0, -1)
+      : baseURL}/portfolio/upload/public-resume`;
   };
 
 
@@ -845,6 +969,7 @@ function AdminDashboard() {
     fetchResumeInfo();
     fetchCertificates();
     fetchSettings(true);
+    fetchPortfolioSettings();
   }, []);
 
 
@@ -4716,7 +4841,7 @@ function AdminDashboard() {
                       <>
 
                         <a
-                          href={resumeInfo.url}
+                          href={getPublicResumeUrl()}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
@@ -4726,7 +4851,7 @@ function AdminDashboard() {
                         </a>
 
                         <a
-                          href={resumeInfo.url}
+                          href={getPublicResumeUrl()}
                           download={resumeInfo.originalName || 'Vivek-Rana-Resume.pdf'}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                         >
@@ -5582,8 +5707,511 @@ function AdminDashboard() {
                   </div>
 
                   {/* =================================================
+                      PORTFOLIO SETTINGS
+                  ================================================== */}
+
+                  <div
+                    className="
+                      rounded-3xl
+                      border
+                      border-gray-200
+                      bg-white
+                      p-6
+                      shadow-sm
+                      dark:border-gray-800
+                      dark:bg-gray-900
+                      xl:col-span-2
+                    "
+                  >
+                    <div
+                      className="
+                        flex
+                        flex-col
+                        gap-4
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                      "
+                    >
+                      <div>
+                        <p
+                          className="
+                            text-sm
+                            font-semibold
+                            text-indigo-600
+                            dark:text-indigo-400
+                          "
+                        >
+                          Portfolio
+                        </p>
+
+                        <h3
+                          className="
+                            mt-1
+                            text-xl
+                            font-extrabold
+                            text-gray-900
+                            dark:text-white
+                          "
+                        >
+                          Portfolio Settings
+                        </h3>
+
+                        <p
+                          className="
+                            mt-1
+                            max-w-2xl
+                            text-sm
+                            leading-6
+                            text-gray-500
+                            dark:text-gray-400
+                          "
+                        >
+                          Control portfolio visibility, resume access,
+                          social links and other public-facing options.
+                        </p>
+                      </div>
+
+                      <span
+                        className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${
+                          portfolioSettings.portfolioVisibility === 'private'
+                            ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+                            : 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
+                        }`}
+                      >
+                        {portfolioSettings.portfolioVisibility === 'private'
+                          ? '🔒 Private'
+                          : '🌐 Public'}
+                      </span>
+                    </div>
+
+                    {portfolioSettingsLoading ? (
+                      <div className="mt-6 flex min-h-32 items-center justify-center">
+                        <Loader />
+                      </div>
+                    ) : (
+                      <div className="mt-6 space-y-6">
+
+                        {/* VISIBILITY */}
+
+                        <div
+                          className="
+                            rounded-2xl
+                            border
+                            border-gray-200
+                            bg-gray-50
+                            p-5
+                            dark:border-gray-800
+                            dark:bg-gray-950
+                          "
+                        >
+                          <div className="mb-4">
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                              Portfolio Visibility
+                            </h4>
+
+                            <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                              Choose whether visitors can access your public portfolio.
+                            </p>
+                          </div>
+
+                          <div className="grid gap-3 md:grid-cols-2">
+
+                            <label
+                              className={`
+                                flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all
+                                ${
+                                  portfolioSettings.portfolioVisibility === 'public'
+                                    ? 'border-green-300 bg-green-50 dark:border-green-500/30 dark:bg-green-500/10'
+                                    : 'border-gray-200 bg-white hover:border-indigo-300 dark:border-gray-800 dark:bg-gray-900'
+                                }
+                              `}
+                            >
+                              <input
+                                type="radio"
+                                name="portfolioVisibility"
+                                value="public"
+                                checked={
+                                  portfolioSettings.portfolioVisibility === 'public'
+                                }
+                                onChange={() =>
+                                  updatePortfolioSetting(
+                                    'portfolioVisibility',
+                                    'public'
+                                  )
+                                }
+                                className="mt-1 h-4 w-4"
+                              />
+
+                              <span>
+                                <span className="block text-sm font-bold text-gray-900 dark:text-white">
+                                  Public
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Visitors can access the portfolio normally.
+                                </span>
+                              </span>
+                            </label>
+
+                            <label
+                              className={`
+                                flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all
+                                ${
+                                  portfolioSettings.portfolioVisibility === 'private'
+                                    ? 'border-red-300 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10'
+                                    : 'border-gray-200 bg-white hover:border-indigo-300 dark:border-gray-800 dark:bg-gray-900'
+                                }
+                              `}
+                            >
+                              <input
+                                type="radio"
+                                name="portfolioVisibility"
+                                value="private"
+                                checked={
+                                  portfolioSettings.portfolioVisibility === 'private'
+                                }
+                                onChange={() =>
+                                  updatePortfolioSetting(
+                                    'portfolioVisibility',
+                                    'private'
+                                  )
+                                }
+                                className="mt-1 h-4 w-4"
+                              />
+
+                              <span>
+                                <span className="block text-sm font-bold text-gray-900 dark:text-white">
+                                  Private
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Hide the public portfolio from visitors.
+                                </span>
+                              </span>
+                            </label>
+
+                          </div>
+                        </div>
+
+                        {/* PUBLIC FEATURES */}
+
+                        <div
+                          className="
+                            rounded-2xl
+                            border
+                            border-gray-200
+                            bg-white
+                            p-5
+                            dark:border-gray-800
+                            dark:bg-gray-900
+                          "
+                        >
+                          <div className="mb-4">
+                            <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                              Public Portfolio Features
+                            </h4>
+
+                            <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                              Choose which optional elements should appear on the public portfolio.
+                            </p>
+                          </div>
+
+                          <div className="grid gap-3 md:grid-cols-2">
+
+                            {/* Availability Badge */}
+
+                            <label
+                              className="
+                                flex cursor-pointer items-center justify-between gap-4
+                                rounded-2xl border border-gray-200 p-4
+                                transition-all hover:border-indigo-300 hover:bg-indigo-50/40
+                                dark:border-gray-800 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/5
+                              "
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                  Availability Badge
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Show your available-for-work status.
+                                </span>
+                              </span>
+
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Boolean(
+                                    portfolioSettings.showAvailabilityBadge
+                                  )
+                                }
+                                onChange={(event) =>
+                                  updatePortfolioSetting(
+                                    'showAvailabilityBadge',
+                                    event.target.checked
+                                  )
+                                }
+                                className="h-5 w-5 shrink-0 accent-indigo-600"
+                              />
+                            </label>
+
+                            {/* GitHub */}
+
+                            <label
+                              className="
+                                flex cursor-pointer items-center justify-between gap-4
+                                rounded-2xl border border-gray-200 p-4
+                                transition-all hover:border-indigo-300 hover:bg-indigo-50/40
+                                dark:border-gray-800 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/5
+                              "
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                  GitHub Link
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Show GitHub links on the portfolio.
+                                </span>
+                              </span>
+
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Boolean(
+                                    portfolioSettings.showGithub
+                                  )
+                                }
+                                onChange={(event) =>
+                                  updatePortfolioSetting(
+                                    'showGithub',
+                                    event.target.checked
+                                  )
+                                }
+                                className="h-5 w-5 shrink-0 accent-indigo-600"
+                              />
+                            </label>
+
+                            {/* LinkedIn */}
+
+                            <label
+                              className="
+                                flex cursor-pointer items-center justify-between gap-4
+                                rounded-2xl border border-gray-200 p-4
+                                transition-all hover:border-indigo-300 hover:bg-indigo-50/40
+                                dark:border-gray-800 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/5
+                              "
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                  LinkedIn Link
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Show LinkedIn links on the portfolio.
+                                </span>
+                              </span>
+
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Boolean(
+                                    portfolioSettings.showLinkedin
+                                  )
+                                }
+                                onChange={(event) =>
+                                  updatePortfolioSetting(
+                                    'showLinkedin',
+                                    event.target.checked
+                                  )
+                                }
+                                className="h-5 w-5 shrink-0 accent-indigo-600"
+                              />
+                            </label>
+
+                            {/* Resume */}
+
+                            <label
+                              className="
+                                flex cursor-pointer items-center justify-between gap-4
+                                rounded-2xl border border-gray-200 p-4
+                                transition-all hover:border-indigo-300 hover:bg-indigo-50/40
+                                dark:border-gray-800 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/5
+                              "
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                  Resume
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Allow visitors to view/download your resume when the portfolio is public.
+                                </span>
+                              </span>
+
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Boolean(
+                                    portfolioSettings.showResume
+                                  )
+                                }
+                                onChange={(event) =>
+                                  updatePortfolioSetting(
+                                    'showResume',
+                                    event.target.checked
+                                  )
+                                }
+                                className="h-5 w-5 shrink-0 accent-indigo-600"
+                              />
+                            </label>
+
+                            {/* Admin Access */}
+
+                            <label
+                              className="
+                                flex cursor-pointer items-center justify-between gap-4
+                                rounded-2xl border border-gray-200 p-4
+                                transition-all hover:border-indigo-300 hover:bg-indigo-50/40
+                                dark:border-gray-800 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/5
+                                md:col-span-2
+                              "
+                            >
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-gray-900 dark:text-white">
+                                  Admin Access Link
+                                </span>
+
+                                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                  Show the admin access entry on the public portfolio.
+                                  Keep this disabled for better security.
+                                </span>
+                              </span>
+
+                              <input
+                                type="checkbox"
+                                checked={
+                                  Boolean(
+                                    portfolioSettings.showAdminAccess
+                                  )
+                                }
+                                onChange={(event) =>
+                                  updatePortfolioSetting(
+                                    'showAdminAccess',
+                                    event.target.checked
+                                  )
+                                }
+                                className="h-5 w-5 shrink-0 accent-indigo-600"
+                              />
+                            </label>
+
+                          </div>
+                        </div>
+
+                        {/* RESUME STATUS */}
+
+                        <div
+                          className={`
+                            rounded-2xl border p-5
+                            ${
+                              portfolioSettings.portfolioVisibility === 'private'
+                                ? 'border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/10'
+                                : portfolioSettings.showResume
+                                  ? 'border-green-200 bg-green-50 dark:border-green-500/20 dark:bg-green-500/10'
+                                  : 'border-yellow-200 bg-yellow-50 dark:border-yellow-500/20 dark:bg-yellow-500/10'
+                            }
+                          `}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div
+                              className={`
+                                flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                                ${
+                                  portfolioSettings.portfolioVisibility === 'private'
+                                    ? 'bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+                                    : portfolioSettings.showResume
+                                      ? 'bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-400'
+                                      : 'bg-yellow-100 text-yellow-600 dark:bg-yellow-500/10 dark:text-yellow-400'
+                                }
+                              `}
+                            >
+                              <FaFilePdf />
+                            </div>
+
+                            <div>
+                              <p
+                                className={`
+                                  text-sm font-bold
+                                  ${
+                                    portfolioSettings.portfolioVisibility === 'private'
+                                      ? 'text-red-700 dark:text-red-400'
+                                      : portfolioSettings.showResume
+                                        ? 'text-green-700 dark:text-green-400'
+                                        : 'text-yellow-700 dark:text-yellow-400'
+                                  }
+                                `}
+                              >
+                                {portfolioSettings.portfolioVisibility === 'private'
+                                  ? 'Resume is protected by Private mode'
+                                  : portfolioSettings.showResume
+                                    ? 'Resume is enabled for the public portfolio'
+                                    : 'Resume is hidden from the public portfolio'}
+                              </p>
+
+                              <p className="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-400">
+                                {portfolioSettings.portfolioVisibility === 'private'
+                                  ? 'Visitors cannot access the public portfolio or resume.'
+                                  : portfolioSettings.showResume
+                                    ? 'Visitors can use View and Download Resume when a resume has been uploaded.'
+                                    : 'Visitors will not see the resume section even though the portfolio is public.'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SAVE */}
+
+                        <div className="flex justify-end border-t border-gray-200 pt-5 dark:border-gray-800">
+                          <button
+                            type="button"
+                            onClick={savePortfolioSettings}
+                            disabled={
+                              portfolioSettingsSaving ||
+                              portfolioSettingsLoading
+                            }
+                            className="
+                              inline-flex items-center justify-center gap-2
+                              rounded-xl bg-indigo-600 px-5 py-3
+                              text-sm font-semibold text-white
+                              shadow-lg shadow-indigo-600/20
+                              transition-all hover:-translate-y-0.5 hover:bg-indigo-700
+                              disabled:cursor-not-allowed disabled:opacity-50
+                            "
+                          >
+                            {portfolioSettingsSaving ? (
+                              <>
+                                <FaSpinner className="animate-spin" />
+                                Saving Portfolio Settings...
+                              </>
+                            ) : (
+                              <>
+                                <FaSave />
+                                Save Portfolio Settings
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                      </div>
+                    )}
+                  </div>
+
+
+                  {/* =================================================
                       CHANGE PASSWORD
                   ================================================== */}
+
 
                   <div
                     className="

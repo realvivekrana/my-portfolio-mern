@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
 const connectDB = require('./config/db');
 
@@ -58,25 +60,77 @@ app.use(express.json());
 
 /*
 |--------------------------------------------------------------------------
-| Static Uploads
+| STATIC UPLOADS
 |--------------------------------------------------------------------------
 |
-| Uploaded files:
+| IMPORTANT:
 |
-| /uploads/resume-xxxx.pdf
-| /uploads/profile-image-xxxx.png
-| /uploads/certificate-xxxx.png
+| Resume files must NOT be publicly accessible.
 |
-| Public URL example:
+| Public:
 |
-| http://localhost:5000/uploads/file-name.pdf
+|   Profile images
+|   Certificate images
+|   Other public uploaded assets
+|
+| Protected:
+|
+|   Resume PDF
+|
+| Resume will be served through:
+|
+| GET /api/portfolio/upload/resume
+|
+| which is protected by JWT authentication.
 |
 |--------------------------------------------------------------------------
 */
 
+/*
+|--------------------------------------------------------------------------
+| Public Uploads
+|--------------------------------------------------------------------------
+*/
+
+const uploadsDirectory = path.join(
+  __dirname,
+  'uploads'
+);
+
 app.use(
   '/uploads',
-  express.static('uploads')
+  (req, res, next) => {
+    /*
+    |--------------------------------------------------------------------------
+    | Block Direct Resume Access
+    |--------------------------------------------------------------------------
+    |
+    | Example blocked URL:
+    |
+    | /uploads/resume-example-123456.pdf
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    const requestedFile =
+      path.basename(req.path);
+
+    const isResume =
+      requestedFile
+        .toLowerCase()
+        .endsWith('.pdf');
+
+    if (isResume) {
+      return res.status(403).json({
+        success: false,
+        message:
+          'Direct access to resume files is not allowed.',
+      });
+    }
+
+    next();
+  },
+  express.static(uploadsDirectory)
 );
 
 /*
@@ -166,6 +220,9 @@ app.use(
 |--------------------------------------------------------------------------
 | PORTFOLIO UPLOAD ROUTES
 |--------------------------------------------------------------------------
+|
+| GET  /api/portfolio/upload/resume
+| GET  /api/portfolio/upload/resume/info
 |
 | POST /api/portfolio/upload/resume
 | POST /api/portfolio/upload/profile-image
