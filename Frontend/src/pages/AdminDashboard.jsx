@@ -25,6 +25,7 @@ import {
   FaDownload,
   FaExternalLinkAlt,
   FaCertificate,
+  FaBriefcase,
   FaImage,
   FaSave,
   FaLink,
@@ -36,6 +37,7 @@ import { useAuth } from '../context/AuthContext';
 import API from '../utils/axios';
 import ProjectForm from '../components/admin/ProjectForm';
 import ProfileManager from '../components/admin/ProfileManager';
+import ExperienceEducationManager from '../components/admin/ExperienceEducationManager';
 import Loader from '../components/ui/Loader';
 
 
@@ -74,6 +76,37 @@ function AdminDashboard() {
 
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
+
+
+  // =========================================================
+  // SETTINGS STATE
+  // =========================================================
+
+  const defaultSettings = {
+    dashboard: {
+      defaultSection: 'overview',
+      compactSidebar: false,
+      confirmBeforeDelete: true,
+      autoRefreshMessages: true,
+    },
+    notifications: {
+      newMessageBadge: true,
+      successNotifications: true,
+      browserNotifications: false,
+    },
+  };
+
+  const [settings, setSettings] =
+    useState(defaultSettings);
+
+  const [settingsLoading, setSettingsLoading] =
+    useState(false);
+
+  const [settingsSaving, setSettingsSaving] =
+    useState(false);
+
+  const [settingsError, setSettingsError] =
+    useState('');
 
 
   // =========================================================
@@ -256,59 +289,6 @@ function AdminDashboard() {
       );
     } finally {
       setResumeUploading(false);
-    }
-  };
-
-
-  // =========================================================
-  // DOWNLOAD RESUME
-  // =========================================================
-
-  const handleResumeDownload = async () => {
-    if (!resumeInfo?.url) {
-      toast.error('Resume is not available.');
-      return;
-    }
-
-    try {
-      const response = await fetch(resumeInfo.url);
-
-      if (!response.ok) {
-        throw new Error(
-          `Resume download failed: ${response.status}`
-        );
-      }
-
-      const blob = await response.blob();
-
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-
-      link.href = blobUrl;
-
-      link.download =
-        resumeInfo.originalName ||
-        resumeInfo.fileName ||
-        resumeInfo.filename ||
-        'Vivek-Rana-Resume.pdf';
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error(
-        'Admin resume download error:',
-        error
-      );
-
-      toast.error(
-        'Failed to download resume.'
-      );
     }
   };
 
@@ -676,6 +656,185 @@ function AdminDashboard() {
 
 
   // =========================================================
+  // SETTINGS
+  // =========================================================
+
+  const fetchSettings = async (
+    applyDefaultSection = false
+  ) => {
+    try {
+      setSettingsLoading(true);
+      setSettingsError('');
+
+      const response =
+        await API.get('/settings');
+
+      const serverSettings =
+        response.data?.data;
+
+      if (!serverSettings) {
+        return;
+      }
+
+      const nextSettings = {
+        dashboard: {
+          ...defaultSettings.dashboard,
+          ...(serverSettings.dashboard || {}),
+        },
+        notifications: {
+          ...defaultSettings.notifications,
+          ...(serverSettings.notifications || {}),
+        },
+      };
+
+      setSettings(nextSettings);
+
+      if (
+        applyDefaultSection &&
+        nextSettings.dashboard.defaultSection
+      ) {
+        setActiveSection(
+          nextSettings.dashboard.defaultSection
+        );
+      }
+    } catch (error) {
+      console.error(
+        'Settings fetch error:',
+        error
+      );
+
+      setSettingsError(
+        error.response?.data?.message ||
+        'Settings API is not available yet.'
+      );
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
+
+
+  const updateSetting = (
+    section,
+    key,
+    value
+  ) => {
+    setSettings((previous) => ({
+      ...previous,
+      [section]: {
+        ...previous[section],
+        [key]: value,
+      },
+    }));
+  };
+
+
+  const saveSettings = async () => {
+    try {
+      setSettingsSaving(true);
+
+      const response =
+        await API.put(
+          '/settings',
+          settings
+        );
+
+      const saved =
+        response.data?.data;
+
+      if (saved) {
+        setSettings({
+          dashboard: {
+            ...defaultSettings.dashboard,
+            ...(saved.dashboard || {}),
+          },
+          notifications: {
+            ...defaultSettings.notifications,
+            ...(saved.notifications || {}),
+          },
+        });
+      }
+
+      if (
+        settings.notifications.browserNotifications &&
+        'Notification' in window &&
+        Notification.permission === 'default'
+      ) {
+        await Notification.requestPermission();
+      }
+
+      toast.success(
+        'Settings saved successfully.'
+      );
+    } catch (error) {
+      console.error(
+        'Settings save error:',
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to save settings.'
+      );
+    } finally {
+      setSettingsSaving(false);
+    }
+  };
+
+
+  const resetSettings = async () => {
+    const confirmed =
+      window.confirm(
+        'Reset all settings to default values?'
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setSettingsSaving(true);
+
+      const response =
+        await API.put(
+          '/settings/reset'
+        );
+
+      const reset =
+        response.data?.data;
+
+      setSettings({
+        dashboard: {
+          ...defaultSettings.dashboard,
+          ...(reset?.dashboard || {}),
+        },
+        notifications: {
+          ...defaultSettings.notifications,
+          ...(reset?.notifications || {}),
+        },
+      });
+
+      setActiveSection('overview');
+
+      toast.success(
+        'Settings reset successfully.'
+      );
+    } catch (error) {
+      console.error(
+        'Settings reset error:',
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        'Failed to reset settings.'
+      );
+    } finally {
+      setSettingsSaving(false);
+    }
+  };
+
+
+  // =========================================================
   // INITIAL DATA
   // =========================================================
 
@@ -684,7 +843,26 @@ function AdminDashboard() {
     fetchMessages();
     fetchResumeInfo();
     fetchCertificates();
+    fetchSettings(true);
   }, []);
+
+
+  useEffect(() => {
+    if (!settings.dashboard.autoRefreshMessages) {
+      return undefined;
+    }
+
+    const intervalId =
+      window.setInterval(() => {
+        fetchMessages();
+      }, 30000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    settings.dashboard.autoRefreshMessages,
+  ]);
 
 
   // =========================================================
@@ -961,6 +1139,12 @@ function AdminDashboard() {
     },
 
     {
+      id: 'experienceEducation',
+      label: 'Experience & Education',
+      icon: <FaBriefcase />,
+    },
+
+    {
       id: 'settings',
       label: 'Settings',
       icon: <FaCog />,
@@ -989,6 +1173,10 @@ function AdminDashboard() {
 
     if (section === 'messages') {
       fetchMessages();
+    }
+
+    if (section === 'settings') {
+      fetchSettings(false);
     }
   };
 
@@ -1598,6 +1786,10 @@ function AdminDashboard() {
                 {activeSection ===
                   'profile' &&
                   'Admin Profile'}
+
+                {activeSection ===
+                  'experienceEducation' &&
+                  'Experience & Education'}
 
                 {activeSection ===
                   'settings' &&
@@ -4341,6 +4533,16 @@ function AdminDashboard() {
 
 
           {/* =================================================
+              EXPERIENCE & EDUCATION MANAGEMENT
+          ================================================== */}
+
+          {activeSection ===
+            'experienceEducation' && (
+            <ExperienceEducationManager />
+          )}
+
+
+          {/* =================================================
               RESUME MANAGEMENT
           ================================================== */}
 
@@ -4522,14 +4724,14 @@ function AdminDashboard() {
                           View Resume
                         </a>
 
-                        <button
-                          type="button"
-                          onClick={handleResumeDownload}
+                        <a
+                          href={resumeInfo.url}
+                          download={resumeInfo.originalName || 'Vivek-Rana-Resume.pdf'}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                         >
                           <FaDownload />
                           Download Resume
-                        </button>
+                        </a>
 
                       </>
                     )}
@@ -4600,11 +4802,10 @@ function AdminDashboard() {
 
           {activeSection ===
             'settings' && (
-            <section>
+            <section className="space-y-6">
 
               <div
                 className="
-                  max-w-2xl
                   rounded-3xl
                   border
                   border-gray-200
@@ -4617,187 +4818,774 @@ function AdminDashboard() {
                 "
               >
 
-                <div className="mb-7">
+                <div
+                  className="
+                    flex
+                    flex-col
+                    gap-5
+                    lg:flex-row
+                    lg:items-center
+                    lg:justify-between
+                  "
+                >
 
-                  <p
-                    className="
-                      text-sm
-                      font-semibold
-                      text-indigo-600
-                      dark:text-indigo-400
-                    "
-                  >
-                    Preferences
-                  </p>
-
-
-                  <h2
-                    className="
-                      mt-1
-                      text-2xl
-                      font-extrabold
-                      text-gray-900
-                      dark:text-white
-                    "
-                  >
-                    Settings
-                  </h2>
-
-
-                  <p
-                    className="
-                      mt-2
-                      text-sm
-                      text-gray-500
-                      dark:text-gray-400
-                    "
-                  >
-                    Dashboard functionality
-                    status.
-                  </p>
-
-                </div>
-
-
-                <div className="space-y-3">
-
-                  {/* Projects */}
-
-                  <div
-                    className="
-                      flex
-                      flex-col
-                      gap-3
-                      rounded-2xl
-                      sm:flex-row
-                      sm:items-center
-                      sm:justify-between
-                      border
-                      border-gray-200
-                      p-4
-                      dark:border-gray-800
-                    "
-                  >
-
-                    <div>
-
-                      <p
-                        className="
-                          text-sm
-                          font-semibold
-                          text-gray-900
-                          dark:text-white
-                        "
-                      >
-                        Project Management
-                      </p>
-
-
-                      <p
-                        className="
-                          mt-1
-                          text-xs
-                          text-gray-500
-                          dark:text-gray-400
-                        "
-                      >
-                        Add, edit and delete
-                        portfolio projects.
-                      </p>
-
-                    </div>
-
-
-                    <span
+                  <div>
+                    <p
                       className="
-                        rounded-full
-                        bg-green-50
-                        px-3
-                        py-1
-                        text-xs
+                        text-sm
                         font-semibold
-                        text-green-600
-                        dark:bg-green-500/10
-                        dark:text-green-400
+                        text-indigo-600
+                        dark:text-indigo-400
                       "
                     >
-                      Active
-                    </span>
+                      Preferences
+                    </p>
 
+                    <h2
+                      className="
+                        mt-1
+                        text-2xl
+                        font-extrabold
+                        text-gray-900
+                        dark:text-white
+                      "
+                    >
+                      Settings
+                    </h2>
+
+                    <p
+                      className="
+                        mt-2
+                        text-sm
+                        text-gray-500
+                        dark:text-gray-400
+                      "
+                    >
+                      Manage your dashboard preferences.
+                    </p>
                   </div>
 
 
-                  {/* Messages */}
+                  <div className="flex gap-3">
 
-                  <div
-                    className="
-                      flex
-                      flex-col
-                      gap-3
-                      rounded-2xl
-                      sm:flex-row
-                      sm:items-center
-                      sm:justify-between
-                      border
-                      border-gray-200
-                      p-4
-                      dark:border-gray-800
-                    "
-                  >
-
-                    <div>
-
-                      <p
-                        className="
-                          text-sm
-                          font-semibold
-                          text-gray-900
-                          dark:text-white
-                        "
-                      >
-                        Messages
-                      </p>
-
-
-                      <p
-                        className="
-                          mt-1
-                          text-xs
-                          text-gray-500
-                          dark:text-gray-400
-                        "
-                      >
-                        Contact messages
-                        connected to backend.
-                      </p>
-
-                    </div>
-
-
-                    <span
+                    <button
+                      type="button"
+                      onClick={resetSettings}
+                      disabled={
+                        settingsSaving ||
+                        settingsLoading
+                      }
                       className="
-                        rounded-full
-                        bg-green-50
-                        px-3
-                        py-1
-                        text-xs
+                        rounded-xl
+                        border
+                        border-gray-200
+                        px-4
+                        py-2.5
+                        text-sm
                         font-semibold
-                        text-green-600
-                        dark:bg-green-500/10
-                        dark:text-green-400
+                        text-gray-700
+                        hover:bg-gray-50
+                        disabled:opacity-50
+                        dark:border-gray-700
+                        dark:text-gray-300
+                        dark:hover:bg-gray-800
                       "
                     >
-                      Active
-                    </span>
+                      Reset
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={saveSettings}
+                      disabled={
+                        settingsSaving ||
+                        settingsLoading
+                      }
+                      className="
+                        rounded-xl
+                        bg-indigo-600
+                        px-5
+                        py-2.5
+                        text-sm
+                        font-semibold
+                        text-white
+                        hover:bg-indigo-700
+                        disabled:opacity-50
+                      "
+                    >
+                      {settingsSaving
+                        ? 'Saving...'
+                        : 'Save Changes'}
+                    </button>
 
                   </div>
 
                 </div>
+
+
+                {settingsError && (
+                  <div
+                    className="
+                      mt-5
+                      rounded-2xl
+                      border
+                      border-amber-200
+                      bg-amber-50
+                      p-4
+                      text-sm
+                      text-amber-700
+                      dark:border-amber-500/20
+                      dark:bg-amber-500/10
+                      dark:text-amber-300
+                    "
+                  >
+                    {settingsError}
+                  </div>
+                )}
 
               </div>
 
+
+              {settingsLoading ? (
+                <div
+                  className="
+                    flex
+                    min-h-64
+                    items-center
+                    justify-center
+                    rounded-3xl
+                    border
+                    border-gray-200
+                    bg-white
+                    dark:border-gray-800
+                    dark:bg-gray-900
+                  "
+                >
+                  <Loader />
+                </div>
+              ) : (
+                <div className="grid gap-6 xl:grid-cols-2">
+
+                  <div
+                    className="
+                      rounded-3xl
+                      border
+                      border-gray-200
+                      bg-white
+                      p-6
+                      shadow-sm
+                      dark:border-gray-800
+                      dark:bg-gray-900
+                    "
+                  >
+
+                    <p
+                      className="
+                        text-sm
+                        font-semibold
+                        text-indigo-600
+                        dark:text-indigo-400
+                      "
+                    >
+                      Dashboard
+                    </p>
+
+                    <h3
+                      className="
+                        mt-1
+                        text-xl
+                        font-extrabold
+                        text-gray-900
+                        dark:text-white
+                      "
+                    >
+                      Dashboard Preferences
+                    </h3>
+
+
+                    <div className="mt-6 space-y-4">
+
+                      <div>
+                        <label
+                          htmlFor="defaultDashboardSection"
+                          className="
+                            mb-2
+                            block
+                            text-sm
+                            font-semibold
+                            text-gray-900
+                            dark:text-white
+                          "
+                        >
+                          Default Dashboard Section
+                        </label>
+
+                        <select
+                          id="defaultDashboardSection"
+                          value={
+                            settings.dashboard.defaultSection
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'dashboard',
+                              'defaultSection',
+                              event.target.value
+                            )
+                          }
+                          className="
+                            w-full
+                            rounded-xl
+                            border
+                            border-gray-200
+                            bg-white
+                            px-4
+                            py-3
+                            text-sm
+                            outline-none
+                            dark:border-gray-700
+                            dark:bg-gray-950
+                            dark:text-white
+                          "
+                        >
+                          <option value="overview">
+                            Overview
+                          </option>
+                          <option value="projects">
+                            Projects
+                          </option>
+                          <option value="certificates">
+                            Certificates
+                          </option>
+                          <option value="messages">
+                            Messages
+                          </option>
+                          <option value="profile">
+                            Profile
+                          </option>
+                          <option value="settings">
+                            Settings
+                          </option>
+                          <option value="resume">
+                            Resume
+                          </option>
+                        </select>
+                      </div>
+
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            Compact Sidebar
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Save compact sidebar preference.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.dashboard.compactSidebar
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'dashboard',
+                              'compactSidebar',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            Confirm Before Delete
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Ask before delete actions.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.dashboard.confirmBeforeDelete
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'dashboard',
+                              'confirmBeforeDelete',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            Auto Refresh Messages
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Refresh messages every 30 seconds.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.dashboard.autoRefreshMessages
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'dashboard',
+                              'autoRefreshMessages',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    className="
+                      rounded-3xl
+                      border
+                      border-gray-200
+                      bg-white
+                      p-6
+                      shadow-sm
+                      dark:border-gray-800
+                      dark:bg-gray-900
+                    "
+                  >
+
+                    <p
+                      className="
+                        text-sm
+                        font-semibold
+                        text-indigo-600
+                        dark:text-indigo-400
+                      "
+                    >
+                      Notifications
+                    </p>
+
+                    <h3
+                      className="
+                        mt-1
+                        text-xl
+                        font-extrabold
+                        text-gray-900
+                        dark:text-white
+                      "
+                    >
+                      Notification Preferences
+                    </h3>
+
+
+                    <div className="mt-6 space-y-4">
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            New Message Badge
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Show unread message count.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.notifications.newMessageBadge
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'notifications',
+                              'newMessageBadge',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            Success Notifications
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Show success notifications.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.notifications.successNotifications
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'notifications',
+                              'successNotifications',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+
+                      <label
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          p-4
+                          dark:border-gray-800
+                        "
+                      >
+                        <span>
+                          <span
+                            className="
+                              block
+                              text-sm
+                              font-semibold
+                              text-gray-900
+                              dark:text-white
+                            "
+                          >
+                            Browser Notifications
+                          </span>
+
+                          <span
+                            className="
+                              mt-1
+                              block
+                              text-xs
+                              text-gray-500
+                              dark:text-gray-400
+                            "
+                          >
+                            Allow browser notifications.
+                          </span>
+                        </span>
+
+                        <input
+                          type="checkbox"
+                          checked={
+                            settings.notifications.browserNotifications
+                          }
+                          onChange={(event) =>
+                            updateSetting(
+                              'notifications',
+                              'browserNotifications',
+                              event.target.checked
+                            )
+                          }
+                          className="h-5 w-5"
+                        />
+                      </label>
+
+                    </div>
+
+                  </div>
+
+
+                  <div
+                    className="
+                      rounded-3xl
+                      border
+                      border-gray-200
+                      bg-white
+                      p-6
+                      shadow-sm
+                      dark:border-gray-800
+                      dark:bg-gray-900
+                      xl:col-span-2
+                    "
+                  >
+
+                    <p
+                      className="
+                        text-sm
+                        font-semibold
+                        text-indigo-600
+                        dark:text-indigo-400
+                      "
+                    >
+                      Account
+                    </p>
+
+                    <h3
+                      className="
+                        mt-1
+                        text-xl
+                        font-extrabold
+                        text-gray-900
+                        dark:text-white
+                      "
+                    >
+                      Admin Account
+                    </h3>
+
+
+                    <div
+                      className="
+                        mt-5
+                        grid
+                        gap-4
+                        md:grid-cols-2
+                      "
+                    >
+
+                      <div
+                        className="
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          bg-gray-50
+                          p-4
+                          dark:border-gray-800
+                          dark:bg-gray-950
+                        "
+                      >
+                        <p
+                          className="
+                            text-xs
+                            font-semibold
+                            uppercase
+                            text-gray-500
+                            dark:text-gray-400
+                          "
+                        >
+                          Username
+                        </p>
+
+                        <p
+                          className="
+                            mt-2
+                            text-sm
+                            font-semibold
+                            text-gray-900
+                            dark:text-white
+                          "
+                        >
+                          {admin?.username || 'Admin'}
+                        </p>
+                      </div>
+
+
+                      <div
+                        className="
+                          rounded-2xl
+                          border
+                          border-gray-200
+                          bg-gray-50
+                          p-4
+                          dark:border-gray-800
+                          dark:bg-gray-950
+                        "
+                      >
+                        <p
+                          className="
+                            text-xs
+                            font-semibold
+                            uppercase
+                            text-gray-500
+                            dark:text-gray-400
+                          "
+                        >
+                          Email
+                        </p>
+
+                        <p
+                          className="
+                            mt-2
+                            break-all
+                            text-sm
+                            font-semibold
+                            text-gray-900
+                            dark:text-white
+                          "
+                        >
+                          {admin?.email || 'Not available'}
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
+
             </section>
           )}
+
 
         </div>
 

@@ -6,7 +6,35 @@ const {
   resetSettings,
 } = require('../controllers/settingsController');
 
+const {
+  protect,
+} = require('../middleware/authMiddleware');
+
 const router = express.Router();
+
+/*
+|--------------------------------------------------------------------------
+| SETTINGS ROUTES
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| All settings routes are ADMIN PROTECTED.
+|
+| Authentication flow:
+|
+| Frontend
+|    ↓
+| Bearer Token
+|    ↓
+| protect middleware
+|    ↓
+| req.admin
+|    ↓
+| settingsController
+|
+|--------------------------------------------------------------------------
+*/
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +43,17 @@ const router = express.Router();
 |
 | GET /api/settings
 |
-| Admin ki current settings fetch karega.
+| Current logged-in admin ki settings fetch karega.
 |
 |--------------------------------------------------------------------------
 */
 
-router.get('/', getSettings);
+router.get(
+  '/',
+  protect,
+  getSettings
+);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -29,12 +62,17 @@ router.get('/', getSettings);
 |
 | PUT /api/settings
 |
-| Admin ki settings update karega.
+| Dashboard preferences aur notification settings update karega.
 |
 |--------------------------------------------------------------------------
 */
 
-router.put('/', updateSettings);
+router.put(
+  '/',
+  protect,
+  updateSettings
+);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -43,11 +81,16 @@ router.put('/', updateSettings);
 |
 | PUT /api/settings/reset
 |
-| Settings ko default values par reset karega.
+| Current admin ki settings ko default values par reset karega.
 |
 |--------------------------------------------------------------------------
 */
 
-router.put('/reset', resetSettings);
+router.put(
+  '/reset',
+  protect,
+  resetSettings
+);
+
 
 module.exports = router;

@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 const {
   notFound,
@@ -190,6 +191,26 @@ app.use(
 app.use(
   '/api/certificates',
   certificateRoutes
+);
+
+/*
+|--------------------------------------------------------------------------
+| SETTINGS ROUTES
+|--------------------------------------------------------------------------
+|
+| All settings routes are protected by the authentication middleware
+| inside settingsRoutes.js.
+|
+| GET    /api/settings
+| PUT    /api/settings
+| PUT    /api/settings/reset
+|
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  '/api/settings',
+  settingsRoutes
 );
 
 /*
