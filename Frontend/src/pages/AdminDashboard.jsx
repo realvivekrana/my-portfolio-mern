@@ -380,9 +380,33 @@ function AdminDashboard() {
     try {
       setResumeActionLoading(true);
 
+      /*
+      |--------------------------------------------------------------------------
+      | ✅ FIX: withCredentials: false for THIS call only
+      |--------------------------------------------------------------------------
+      |
+      | Our axios instance defaults to withCredentials: true. This
+      | request gets redirected (by our own backend) to Cloudinary.
+      | Cloudinary's raw-file responses use
+      | Access-Control-Allow-Origin: * (wildcard), which browsers
+      | REJECT whenever the request's credentials mode is 'include'
+      | — causing a CORS error even though the file itself loaded
+      | fine (net::ERR_FAILED with a 200 status is the tell).
+      |
+      | Auth here works via the Authorization: Bearer <token> header
+      | (added by the request interceptor in utils/axios.js), NOT
+      | cookies, so disabling withCredentials for this one call is
+      | safe and does not affect admin authentication.
+      |
+      |--------------------------------------------------------------------------
+      */
+
       const response = await API.get(
         '/portfolio/upload/resume',
-        { responseType: 'blob' }
+        {
+          responseType: 'blob',
+          withCredentials: false,
+        }
       );
 
       if (!response.data || response.data.size === 0) {

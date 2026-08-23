@@ -121,11 +121,27 @@ function Footer() {
 
       setResumeError('');
 
+      /*
+      |--------------------------------------------------------------------------
+      | ✅ FIX: withCredentials: false
+      |--------------------------------------------------------------------------
+      |
+      | This is a PUBLIC endpoint that redirects to Cloudinary.
+      | Cloudinary's raw-file responses use a wildcard
+      | Access-Control-Allow-Origin: *, which browsers reject
+      | whenever the request's credentials mode is 'include' — even
+      | though the file itself loads fine. No auth is needed here
+      | anyway (public resume), so credentials are unnecessary.
+      |
+      |--------------------------------------------------------------------------
+      */
+
       const response =
         await API.get(
           publicResumeEndpoint,
           {
             responseType: 'blob',
+            withCredentials: false,
           }
         );
 

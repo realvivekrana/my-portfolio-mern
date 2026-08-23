@@ -1,9 +1,3 @@
-// Backend/controllers/portfolioUploadController.js
-// ✅ FIXED: resume.url ab correct route pe point karta hai
-//    (pehle: /api/portfolio/resume/public  ❌ — yeh route exist hi nahi karta tha
-//     ab:    /api/portfolio/upload/public-resume ✅ — jo server.js + portfolioUploadRoutes.js
-//     me actually mounted hai)
-
 const cloudinary = require('../config/cloudinary');
 
 const PortfolioContent = require('../models/PortfolioContent');
@@ -33,7 +27,37 @@ const getCloudinaryPublicId = (file) => {
     return null;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | ✅ CRITICAL FIX
+  |--------------------------------------------------------------------------
+  |
+  | multer-storage-cloudinary (v4.x, the version this project uses)
+  | returns Cloudinary's public_id on `file.filename` — it never sets
+  | `file.public_id`. Checked directly in
+  | node_modules/multer-storage-cloudinary/lib/index.js:
+  |
+  |   callback(undefined, {
+  |     path: resp.secure_url,
+  |     size: resp.bytes,
+  |     filename: resp.public_id,   <-- the real Cloudinary public_id
+  |   });
+  |
+  | Because this function only checked `file.public_id` /
+  | `file.publicId` (both always undefined), the WRONG value was
+  | being saved to the database on every resume upload — which is
+  | why the generated Cloudinary URL never matched the real
+  | uploaded file and always 404'd.
+  |
+  | `file.filename` is now checked FIRST since it's what this
+  | library version actually populates. The old keys are kept as
+  | fallbacks in case a different library version is ever used.
+  |
+  |--------------------------------------------------------------------------
+  */
+
   return (
+    file.filename ||
     file.public_id ||
     file.publicId ||
     null
@@ -134,6 +158,26 @@ const uploadResume = async (
           'Please select a PDF resume file.',
       });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG — REAL req.file CONTENTS FROM CLOUDINARY
+    |--------------------------------------------------------------------------
+    |
+    | Prints exactly what multer-storage-cloudinary attached to
+    | req.file on THIS machine/version, so if the public-ID lookup
+    | ever fails again we can see the real field names instantly
+    | instead of guessing.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    console.log(
+      '\n========== RESUME UPLOAD DEBUG =========='
+    );
+    console.log('req.file keys:', Object.keys(req.file));
+    console.log('req.file full object:', req.file);
+    console.log('==========================================\n');
 
     /*
     |--------------------------------------------------------------------------
@@ -255,7 +299,8 @@ const uploadResume = async (
     |
     | The URL is generated only when resume is requested.
     |
-    | ✅ FIX: This must match the ACTUAL mounted route in server.js
+    | IMPORTANT FIX:
+    | This must match the ACTUAL mounted route in server.js
     | (app.use('/api/portfolio/upload', portfolioUploadRoutes))
     | + router.get('/public-resume', ...) in portfolioUploadRoutes.js.
     |
@@ -366,7 +411,7 @@ const uploadResume = async (
 |--------------------------------------------------------------------------
 | GET PUBLIC RESUME
 |--------------------------------------------------------------------------
-| @route   GET /api/portfolio/upload/public-resume
+| @route   GET /api/portfolio/resume/public
 | @access  Public
 |--------------------------------------------------------------------------
 |

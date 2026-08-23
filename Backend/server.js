@@ -1,44 +1,33 @@
+const express = require('express');
+const dotenv = require('dotenv');
+
 /*
 |--------------------------------------------------------------------------
-| LOAD ENVIRONMENT VARIABLES FIRST
+| Load Environment Variables — MUST BE FIRST
 |--------------------------------------------------------------------------
 |
-| IMPORTANT:
-| dotenv.config() ko sabhi routes/controllers import karne se
-| pehle run karna zaroori hai.
+| ✅ FIX (critical): This used to run AFTER the require() calls below.
+| Node executes require() synchronously as soon as it's called, so
+| config/cloudinary.js (pulled in indirectly via portfolioUploadRoutes)
+| was reading process.env.CLOUDINARY_CLOUD_NAME etc. BEFORE dotenv had
+| ever loaded the .env file — meaning those values were always
+| `undefined`, no matter what was actually in .env.
 |
-| Cloudinary configuration process.env se values read karti hai.
+| That is why resume upload/view/download failed with:
+| "Must supply cloud_name in tag or in configuration"
+|
+| dotenv.config() must run before ANY other local module is required,
+| so every downstream file sees the real environment variables.
 |
 |--------------------------------------------------------------------------
 */
-
-const dotenv = require('dotenv');
 
 dotenv.config();
 
-/*
-|--------------------------------------------------------------------------
-| CORE IMPORTS
-|--------------------------------------------------------------------------
-*/
-
-const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-/*
-|--------------------------------------------------------------------------
-| DATABASE
-|--------------------------------------------------------------------------
-*/
-
 const connectDB = require('./config/db');
-
-/*
-|--------------------------------------------------------------------------
-| ROUTES
-|--------------------------------------------------------------------------
-*/
 
 const projectRoutes = require('./routes/projectRoutes');
 const contactRoutes = require('./routes/contactRoutes');
@@ -48,12 +37,6 @@ const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 
-/*
-|--------------------------------------------------------------------------
-| ERROR MIDDLEWARE
-|--------------------------------------------------------------------------
-*/
-
 const {
   notFound,
   errorHandler,
@@ -61,7 +44,7 @@ const {
 
 /*
 |--------------------------------------------------------------------------
-| CONNECT TO MONGODB
+| Connect To MongoDB
 |--------------------------------------------------------------------------
 */
 
@@ -69,7 +52,7 @@ connectDB();
 
 /*
 |--------------------------------------------------------------------------
-| EXPRESS APP
+| Express App
 |--------------------------------------------------------------------------
 */
 
@@ -81,11 +64,17 @@ const app = express();
 |--------------------------------------------------------------------------
 |
 | Development:
+|
 |   http://localhost:5173
 |   http://localhost:5174
 |
 | Production:
+|
 |   FRONTEND_URL from .env
+|
+| Example:
+|
+|   FRONTEND_URL=https://your-portfolio.vercel.app
 |
 |--------------------------------------------------------------------------
 */
@@ -99,7 +88,7 @@ const allowedOrigins = [
 
 /*
 |--------------------------------------------------------------------------
-| ADD PRODUCTION FRONTEND URL
+| Add Production Frontend URL
 |--------------------------------------------------------------------------
 */
 
@@ -114,7 +103,7 @@ if (process.env.FRONTEND_URL) {
 
 /*
 |--------------------------------------------------------------------------
-| CORS CONFIGURATION
+| CORS Configuration
 |--------------------------------------------------------------------------
 */
 
@@ -123,14 +112,13 @@ app.use(
     origin: (origin, callback) => {
       /*
       |--------------------------------------------------------------------------
-      | Allow Requests Without Origin
+      | Allow requests without an Origin
       |--------------------------------------------------------------------------
       |
       | Useful for:
       | - Postman
       | - Server-to-server requests
       | - Health checks
-      |
       |--------------------------------------------------------------------------
       */
 
@@ -183,7 +171,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| JSON BODY PARSER
+| JSON Body Parser
 |--------------------------------------------------------------------------
 */
 
@@ -195,7 +183,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| URL ENCODED BODY PARSER
+| URL Encoded Body Parser
 |--------------------------------------------------------------------------
 */
 
@@ -216,20 +204,27 @@ app.use(
 | Resume PDFs must NOT be directly publicly accessible.
 |
 | Public uploaded assets:
+|
 |   - Profile images
 |   - Certificate images
 |   - Other non-PDF uploads
 |
-| Resume:
-|   - Protected through API routes
-|   - Cloudinary is used for the actual resume storage
+| Protected:
+|
+|   - Resume PDF
+|
+| Resume is served through:
+|
+|   GET /api/portfolio/upload/resume
+|
+| according to the authentication/public-resume logic.
 |
 |--------------------------------------------------------------------------
 */
 
 /*
 |--------------------------------------------------------------------------
-| UPLOAD DIRECTORY
+| Upload Directory
 |--------------------------------------------------------------------------
 */
 
@@ -241,7 +236,7 @@ const uploadsDirectory =
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC UPLOAD MIDDLEWARE
+| Public Upload Middleware
 |--------------------------------------------------------------------------
 */
 
@@ -250,7 +245,7 @@ app.use(
   (req, res, next) => {
     /*
     |--------------------------------------------------------------------------
-    | GET REQUESTED FILENAME
+    | Get Requested Filename
     |--------------------------------------------------------------------------
     */
 
@@ -261,7 +256,7 @@ app.use(
 
     /*
     |--------------------------------------------------------------------------
-    | DETECT PDF
+    | Detect PDF
     |--------------------------------------------------------------------------
     */
 
@@ -272,7 +267,7 @@ app.use(
 
     /*
     |--------------------------------------------------------------------------
-    | BLOCK DIRECT PDF ACCESS
+    | Block Direct PDF Access
     |--------------------------------------------------------------------------
     */
 
@@ -295,7 +290,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| HEALTH CHECK
+| Health Check
 |--------------------------------------------------------------------------
 */
 
@@ -352,16 +347,6 @@ app.use(
 |--------------------------------------------------------------------------
 | PORTFOLIO CONTENT ROUTES
 |--------------------------------------------------------------------------
-|
-| Includes:
-|   GET  /api/portfolio
-|   GET  /api/portfolio/resume/public
-|   PUT  /api/portfolio
-|   PUT  /api/portfolio/experience
-|   PUT  /api/portfolio/education
-|   etc.
-|
-|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -373,20 +358,41 @@ app.use(
 |--------------------------------------------------------------------------
 | PORTFOLIO UPLOAD ROUTES
 |--------------------------------------------------------------------------
-|
-| Includes:
-|   POST /api/portfolio/upload/resume
-|   GET  /api/portfolio/upload/resume
-|   GET  /api/portfolio/upload/resume/info
-|   GET  /api/portfolio/upload/public-resume
-|   POST /api/portfolio/upload/profile-image
-|
-|--------------------------------------------------------------------------
 */
 
 app.use(
   '/api/portfolio/upload',
   portfolioUploadRoutes
+);
+
+/*
+|--------------------------------------------------------------------------
+| LEGACY RESUME PATH — SAFETY NET (DO NOT REMOVE)
+|--------------------------------------------------------------------------
+|
+| An earlier version of this codebase stored the resume URL as
+| /api/portfolio/resume/public, which never matched an actual
+| route (the real one is /api/portfolio/upload/public-resume).
+|
+| That wrong string can still be sitting around in old browser
+| caches, old MongoDB documents, or an old frontend build that
+| hasn't been redeployed yet.
+|
+| Instead of 404ing on that path forever, we permanently redirect
+| it to the correct endpoint, so resume view/download self-heals
+| no matter where the stale reference is coming from.
+|
+|--------------------------------------------------------------------------
+*/
+
+app.get(
+  '/api/portfolio/resume/public',
+  (req, res) => {
+    return res.redirect(
+      308,
+      '/api/portfolio/upload/public-resume'
+    );
+  }
 );
 
 /*
@@ -417,7 +423,6 @@ app.use(
 |--------------------------------------------------------------------------
 |
 | Must remain AFTER all API routes.
-|
 |--------------------------------------------------------------------------
 */
 
@@ -446,7 +451,7 @@ const PORT =
 
 /*
 |--------------------------------------------------------------------------
-| START SERVER
+| Start Server
 |--------------------------------------------------------------------------
 */
 
@@ -471,39 +476,5 @@ app.listen(
         `🔗 Frontend URL: ${process.env.FRONTEND_URL}`
       );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cloudinary Configuration Check
-    |--------------------------------------------------------------------------
-    |
-    | Secret ko console mein kabhi print nahi karna.
-    |
-    |--------------------------------------------------------------------------
-    */
-
-    console.log(
-      `☁️ Cloudinary Cloud Name: ${
-        process.env.CLOUDINARY_CLOUD_NAME
-          ? 'Loaded'
-          : 'MISSING'
-      }`
-    );
-
-    console.log(
-      `☁️ Cloudinary API Key: ${
-        process.env.CLOUDINARY_API_KEY
-          ? 'Loaded'
-          : 'MISSING'
-      }`
-    );
-
-    console.log(
-      `☁️ Cloudinary API Secret: ${
-        process.env.CLOUDINARY_API_SECRET
-          ? 'Loaded'
-          : 'MISSING'
-      }`
-    );
   }
 );
