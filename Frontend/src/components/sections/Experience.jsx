@@ -42,7 +42,10 @@ const Experience = () => {
 
           const response =
             await axios.get(
-              '/portfolio'
+              '/portfolio',
+              {
+                params: { _t: Date.now() },
+              }
             );
 
           /*
@@ -52,7 +55,9 @@ const Experience = () => {
           */
 
           const portfolio =
-            response?.data?.data;
+            response?.data?.data ||
+            response?.data ||
+            {};
 
           const experience =
             portfolio?.experience;

@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'react';
+
+import API from '../../utils/axios';
+
 import {
   FaCode,
   FaGraduationCap,
@@ -57,6 +61,77 @@ const strengths = [
 ];
 
 function About() {
+  const [experiences, setExperiences] = useState([]);
+  const [education, setEducation] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchAboutData = async () => {
+      try {
+        const response = await API.get('/portfolio', {
+          params: { _t: Date.now() },
+        });
+
+        const portfolio =
+          response?.data?.data ||
+          response?.data ||
+          {};
+
+        const experienceData = Array.isArray(portfolio?.experience)
+          ? portfolio.experience
+          : [];
+
+        const educationData = Array.isArray(portfolio?.education)
+          ? portfolio.education
+          : [];
+
+        if (!isMounted) {
+          return;
+        }
+
+        setExperiences(
+          experienceData
+            .filter((item) => item?.isVisible !== false)
+            .sort(
+              (a, b) =>
+                Number(a?.displayOrder || 0) -
+                Number(b?.displayOrder || 0)
+            )
+        );
+
+        setEducation(
+          educationData
+            .filter((item) => item?.isVisible !== false)
+            .sort(
+              (a, b) =>
+                Number(a?.displayOrder || 0) -
+                Number(b?.displayOrder || 0)
+            )
+        );
+      } catch (error) {
+        console.error('Failed to fetch About data:', error);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setExperiences([]);
+        setEducation([]);
+      }
+    };
+
+    fetchAboutData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const currentExperience = experiences[0] || null;
+  const currentEducation = education[0] || null;
+  const previousEducation = education[1] || null;
+
   return (
     <section
       id="about"
@@ -204,16 +279,23 @@ function About() {
                   </p>
 
                   <h4 className="mt-1 text-sm font-bold leading-6 text-white sm:text-base">
-                    Frontend Developer Intern
+                    {currentExperience?.role || 'No experience information available'}
                   </h4>
 
                   <p className="mt-1 text-xs font-medium leading-5 text-indigo-400 sm:text-sm">
-                    Athenura · Feb 2026 – Present
+                    {currentExperience
+                      ? [
+                          currentExperience.company,
+                          currentExperience.duration,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')
+                      : 'Add experience from the admin dashboard'}
                   </p>
 
                   <p className="mt-2 text-xs leading-6 text-gray-400 sm:text-sm">
-                    Working with React.js to develop modern user interfaces,
-                    reusable components and production-focused web experiences.
+                    {currentExperience?.description ||
+                      'Your latest professional experience will appear here automatically after it is saved from the admin dashboard.'}
                   </p>
 
                 </div>
@@ -275,20 +357,21 @@ function About() {
                   </p>
 
                   <h3 className="mt-2 break-words text-base font-extrabold leading-6 text-white sm:text-lg">
-                    MCA — Artificial Intelligence & Machine Learning
+                    {currentEducation?.degree || 'No education information available'}
                   </h3>
 
                   <p className="mt-1 text-sm font-semibold text-gray-400">
-                    Amity University Online
+                    {currentEducation?.institution ||
+                      'Add education from the admin dashboard'}
                   </p>
 
                   <p className="mt-3 text-xs leading-6 text-gray-500 sm:text-sm">
-                    Building a strong foundation in computer applications,
-                    software development and emerging AI/ML technologies.
+                    {currentEducation?.description ||
+                      'Your latest education information will appear here automatically after it is saved from the admin dashboard.'}
                   </p>
 
                   <div className="mt-4 inline-flex rounded-full border border-indigo-400/10 bg-indigo-500/[0.06] px-3 py-1.5 text-[11px] font-semibold text-indigo-300 sm:text-xs">
-                    Postgraduate
+                    {currentEducation?.status || currentEducation?.duration || 'Education'}
                   </div>
 
                 </div>
@@ -315,15 +398,18 @@ function About() {
                   </p>
 
                   <h3 className="mt-2 break-words text-base font-extrabold leading-6 text-white sm:text-lg">
-                    Bachelor of Computer Applications
+                    {previousEducation?.degree || 'Previous education'}
                   </h3>
 
                   <p className="mt-1 text-sm font-semibold text-gray-400">
-                    Vinoba Bhave University
+                    {previousEducation?.institution ||
+                      'Add education from the admin dashboard'}
                   </p>
 
                   <p className="mt-2 text-xs font-medium text-gray-500">
-                    2021 – 2024
+                    {previousEducation?.duration ||
+                      previousEducation?.status ||
+                      'Education details will appear here'}
                   </p>
 
                 </div>
