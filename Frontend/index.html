@@ -82,6 +82,69 @@
     />
 
     <!-- =====================================================
+         INITIAL THEME
+         -----------------------------------------------------
+         React load hone se pehle saved theme ko HTML par
+         apply karta hai.
+
+         Isse initial render ke waqt light/dark theme flash
+         hone ka chance kam hota hai.
+    ====================================================== -->
+
+    <script>
+      (() => {
+        try {
+          const savedTheme =
+            localStorage.getItem(
+              'theme'
+            );
+
+          const systemPrefersDark =
+            window.matchMedia(
+              '(prefers-color-scheme: dark)'
+            ).matches;
+
+          const shouldUseDark =
+            savedTheme === 'dark' ||
+            (
+              savedTheme !== 'light' &&
+              systemPrefersDark
+            );
+
+          const root =
+            document.documentElement;
+
+          if (shouldUseDark) {
+            root.classList.add(
+              'dark'
+            );
+          } else {
+            root.classList.remove(
+              'dark'
+            );
+          }
+
+          root.style.colorScheme =
+            shouldUseDark
+              ? 'dark'
+              : 'light';
+        } catch (error) {
+          /*
+          |--------------------------------------------------------------------------
+          | If localStorage is unavailable,
+          | simply allow React ThemeContext to handle the theme.
+          |--------------------------------------------------------------------------
+          */
+
+          console.warn(
+            'Initial theme detection failed:',
+            error
+          );
+        }
+      })();
+    </script>
+
+    <!-- =====================================================
          OPEN GRAPH
     ====================================================== -->
 

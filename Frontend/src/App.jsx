@@ -1,4 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+} from 'react-router-dom';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,24 +17,69 @@ import ProtectedRoute from './components/admin/ProtectedRoute';
 
 import GlobalSpaceBackground from './components/ui/GlobalSpaceBackground';
 
-function App() {
+/*
+|--------------------------------------------------------------------------
+| App Content
+|--------------------------------------------------------------------------
+*/
+
+function AppContent() {
+  const location =
+    useLocation();
+
+  /*
+  |--------------------------------------------------------------------------
+  | ADMIN ROUTE DETECTION
+  |--------------------------------------------------------------------------
+  |
+  | Admin pages ko public cosmic background se alag rakha gaya hai.
+  |
+  | Isse:
+  |
+  | /admin/login
+  | /admin/pin
+  | /admin/dashboard
+  |
+  | par GlobalSpaceBackground render nahi hoga.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  const isAdminRoute =
+    location.pathname.startsWith(
+      '/admin'
+    );
+
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-black text-white">
+    <div
+      className={`relative min-h-screen overflow-x-hidden ${
+        isAdminRoute
+          ? 'bg-white text-gray-900 dark:bg-[#050505] dark:text-white'
+          : 'bg-black text-white'
+      }`}
+    >
 
       {/* =====================================================
-          GLOBAL COSMIC / SOLAR SYSTEM BACKGROUND
+          GLOBAL COSMIC BACKGROUND
           -----------------------------------------------------
-          Public portfolio ke liye common animated background.
-          Admin pages ko is animation se alag rakha gaya hai.
+          Sirf public portfolio ke liye.
       ====================================================== */}
 
-      <GlobalSpaceBackground />
+      {!isAdminRoute && (
+        <GlobalSpaceBackground />
+      )}
 
       {/* =====================================================
           APPLICATION CONTENT
       ====================================================== */}
 
-      <div className="relative z-10">
+      <div
+        className={
+          isAdminRoute
+            ? 'relative z-10 min-h-screen'
+            : 'relative z-10'
+        }
+      >
 
         <Routes>
 
@@ -49,7 +98,9 @@ function App() {
 
           <Route
             path="/admin/login"
-            element={<AdminLogin />}
+            element={
+              <AdminLogin />
+            }
           />
 
           {/* =================================================
@@ -58,7 +109,9 @@ function App() {
 
           <Route
             path="/admin/pin"
-            element={<AdminPin />}
+            element={
+              <AdminPin />
+            }
           />
 
           {/* =================================================
@@ -80,7 +133,9 @@ function App() {
 
           <Route
             path="*"
-            element={<NotFound />}
+            element={
+              <NotFound />
+            }
           />
 
         </Routes>
@@ -97,6 +152,18 @@ function App() {
       />
 
     </div>
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| APP
+|--------------------------------------------------------------------------
+*/
+
+function App() {
+  return (
+    <AppContent />
   );
 }
 
