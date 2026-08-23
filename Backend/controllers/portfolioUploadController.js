@@ -1,170 +1,103 @@
-const fs = require('fs');
-const path = require('path');
+const cloudinary = require('../config/cloudinary');
 
 const PortfolioContent = require('../models/PortfolioContent');
 
 /*
 |--------------------------------------------------------------------------
-| Uploads Directory
+| Cloudinary Helpers
 |--------------------------------------------------------------------------
 */
 
-const uploadsDirectory = path.join(
-  __dirname,
-  '../uploads'
-);
-
 /*
 |--------------------------------------------------------------------------
-| Get Public File URL
-|--------------------------------------------------------------------------
-*/
-
-const getPublicFileUrl = (req, filename) => {
-  const protocol = req.protocol;
-  const host = req.get('host');
-
-  return `${protocol}://${host}/uploads/${filename}`;
-};
-
-/*
-|--------------------------------------------------------------------------
-| Delete Existing Uploaded File
-|--------------------------------------------------------------------------
-*/
-
-const deleteUploadedFile = (fileUrl) => {
-  try {
-    if (!fileUrl) {
-      return;
-    }
-
-    const fileName = path.basename(fileUrl);
-
-    const filePath = path.join(
-      uploadsDirectory,
-      fileName
-    );
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-  } catch (error) {
-    console.error(
-      'Failed to delete old uploaded file:',
-      error.message
-    );
-  }
-};
-
-/*
-|--------------------------------------------------------------------------
-| Delete File By Filename
-|--------------------------------------------------------------------------
-*/
-
-const deleteUploadedFileByName = (filename) => {
-  try {
-    if (!filename) {
-      return;
-    }
-
-    const safeFileName =
-      path.basename(filename);
-
-    const filePath = path.join(
-      uploadsDirectory,
-      safeFileName
-    );
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-  } catch (error) {
-    console.error(
-      'Failed to delete uploaded file:',
-      error.message
-    );
-  }
-};
-
-/*
-|--------------------------------------------------------------------------
-| SEND RESUME FILE
+| Get Cloudinary Public ID
 |--------------------------------------------------------------------------
 |
-| Common helper used by public/admin resume endpoints.
+| multer-storage-cloudinary provides:
+|
+| req.file.public_id
+| req.file.path
+| req.file.secure_url
 |
 |--------------------------------------------------------------------------
 */
 
-const sendResumeFile = async (
-  req,
-  res,
-  portfolio
+const getCloudinaryPublicId = (file) => {
+  if (!file) {
+    return null;
+  }
+
+  return (
+    file.public_id ||
+    file.publicId ||
+    null
+  );
+};
+
+/*
+|--------------------------------------------------------------------------
+| Delete Cloudinary File
+|--------------------------------------------------------------------------
+*/
+
+const deleteCloudinaryFile = async (
+  publicId,
+  resourceType = 'image'
 ) => {
-  if (
-    !portfolio ||
-    !portfolio.resume ||
-    !portfolio.resume.fileName
-  ) {
-    return res.status(404).json({
-      success: false,
-      message:
-        'No resume has been uploaded yet.',
-    });
+  try {
+    if (!publicId) {
+      return;
+    }
+
+    await cloudinary.uploader.destroy(
+      publicId,
+      {
+        resource_type:
+          resourceType,
+
+        invalidate: true,
+      }
+    );
+  } catch (error) {
+    console.error(
+      'Failed to delete Cloudinary file:',
+      error.message
+    );
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Generate Secure Resume URL
+|--------------------------------------------------------------------------
+|
+| Resume is stored as a RAW resource on Cloudinary.
+|
+| We generate a signed URL instead of storing a permanent
+| public URL in the database.
+|
+|--------------------------------------------------------------------------
+*/
+
+const getResumeDeliveryUrl = (
+  publicId
+) => {
+  if (!publicId) {
+    return null;
   }
 
-  const fileName = path.basename(
-    portfolio.resume.fileName
+  return cloudinary.url(
+    publicId,
+    {
+      resource_type: 'raw',
+
+      type: 'upload',
+
+      secure: true,
+
+      sign_url: true,
+    }
   );
-
-  const filePath = path.join(
-    uploadsDirectory,
-    fileName
-  );
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({
-      success: false,
-      message:
-        'Resume file not found on server.',
-    });
-  }
-
-  const originalName =
-    portfolio.resume.originalName ||
-    'Resume.pdf';
-
-  res.setHeader(
-    'Content-Type',
-    'application/pdf'
-  );
-
-  res.setHeader(
-    'Content-Disposition',
-    `inline; filename="${originalName.replace(
-      /"/g,
-      ''
-    )}"`
-  );
-
-  res.setHeader(
-    'Cache-Control',
-    'private, no-store, no-cache, must-revalidate'
-  );
-
-  res.setHeader(
-    'Pragma',
-    'no-cache'
-  );
-
-  res.setHeader(
-    'Expires',
-    '0'
-  );
-
-  return res.sendFile(filePath);
 };
 
 /*
@@ -176,34 +109,74 @@ const sendResumeFile = async (
 |--------------------------------------------------------------------------
 */
 
-const uploadResume = async (req, res) => {
+const uploadResume = async (
+  req,
+  res
+) => {
   try {
+    /*
+    |--------------------------------------------------------------------------
+    | Check File
+    |--------------------------------------------------------------------------
+    */
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
+
         message:
           'Please select a PDF resume file.',
       });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Validate PDF
+    |--------------------------------------------------------------------------
+    */
+
     const isPdf =
       req.file.mimetype ===
         'application/pdf' ||
-      path
-        .extname(req.file.originalname || '')
-        .toLowerCase() === '.pdf';
+      (
+        req.file.originalname &&
+        req.file.originalname
+          .toLowerCase()
+          .endsWith('.pdf')
+      );
 
     if (!isPdf) {
-      deleteUploadedFileByName(
-        req.file.filename
-      );
+      /*
+      |--------------------------------------------------------------------------
+      | Delete Invalid Cloudinary Upload
+      |--------------------------------------------------------------------------
+      */
+
+      const uploadedPublicId =
+        getCloudinaryPublicId(
+          req.file
+        );
+
+      if (uploadedPublicId) {
+        await deleteCloudinaryFile(
+          uploadedPublicId,
+          'raw'
+        );
+      }
 
       return res.status(400).json({
         success: false,
+
         message:
           'Only PDF resume files are allowed.',
       });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find Portfolio
+    |--------------------------------------------------------------------------
+    */
 
     let portfolio =
       await PortfolioContent.findOne({
@@ -217,27 +190,52 @@ const uploadResume = async (req, res) => {
         });
     }
 
-    let oldResumeFileName = null;
+    /*
+    |--------------------------------------------------------------------------
+    | Old Resume Public ID
+    |--------------------------------------------------------------------------
+    |
+    | We store Cloudinary public_id in resume.fileName.
+    |
+    |--------------------------------------------------------------------------
+    */
 
-    if (
-      portfolio.resume &&
-      portfolio.resume.fileName
-    ) {
-      oldResumeFileName =
-        portfolio.resume.fileName;
+    const oldResumePublicId =
+      portfolio.resume?.fileName ||
+      null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | New Cloudinary Public ID
+    |--------------------------------------------------------------------------
+    */
+
+    const newResumePublicId =
+      getCloudinaryPublicId(
+        req.file
+      );
+
+    if (!newResumePublicId) {
+      return res.status(500).json({
+        success: false,
+
+        message:
+          'Cloudinary upload completed but public ID was not returned.',
+      });
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Save New Resume
+    | Save Resume Metadata
     |--------------------------------------------------------------------------
     */
 
     portfolio.resume.fileName =
-      req.file.filename;
+      newResumePublicId;
 
     portfolio.resume.originalName =
-      req.file.originalname;
+      req.file.originalname ||
+      'Resume.pdf';
 
     portfolio.resume.uploadedAt =
       new Date();
@@ -247,11 +245,9 @@ const uploadResume = async (req, res) => {
     | IMPORTANT
     |--------------------------------------------------------------------------
     |
-    | Public URL is no longer stored as the resume URL.
+    | We DO NOT store the permanent Cloudinary URL.
     |
-    | Resume is accessed through:
-    |
-    | /api/portfolio/resume/public
+    | The URL is generated only when resume is requested.
     |
     |--------------------------------------------------------------------------
     */
@@ -263,34 +259,56 @@ const uploadResume = async (req, res) => {
 
     /*
     |--------------------------------------------------------------------------
-    | Delete Old Resume
+    | Delete Previous Resume
     |--------------------------------------------------------------------------
     */
 
     if (
-      oldResumeFileName &&
-      oldResumeFileName !== req.file.filename
+      oldResumePublicId &&
+      oldResumePublicId !==
+        newResumePublicId
     ) {
-      deleteUploadedFileByName(
-        oldResumeFileName
+      await deleteCloudinaryFile(
+        oldResumePublicId,
+        'raw'
       );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Generate Response URL
+    |--------------------------------------------------------------------------
+    */
+
+    const resumeUrl =
+      getResumeDeliveryUrl(
+        newResumePublicId
+      );
+
     return res.status(200).json({
       success: true,
+
       message:
         'Resume uploaded successfully.',
+
       data: {
         resume: {
           exists: true,
+
           fileName:
-            portfolio.resume.fileName,
+            newResumePublicId,
+
           originalName:
             portfolio.resume.originalName,
+
           uploadedAt:
             portfolio.resume.uploadedAt,
+
           url:
             '/api/portfolio/resume/public',
+
+          deliveryUrl:
+            resumeUrl,
         },
       },
     });
@@ -300,17 +318,32 @@ const uploadResume = async (req, res) => {
       error
     );
 
-    if (req.file?.filename) {
-      deleteUploadedFileByName(
-        req.file.filename
+    /*
+    |--------------------------------------------------------------------------
+    | Cleanup Newly Uploaded Cloudinary File
+    |--------------------------------------------------------------------------
+    */
+
+    const uploadedPublicId =
+      getCloudinaryPublicId(
+        req.file
+      );
+
+    if (uploadedPublicId) {
+      await deleteCloudinaryFile(
+        uploadedPublicId,
+        'raw'
       );
     }
 
     return res.status(500).json({
       success: false,
+
       message:
         'Failed to upload resume.',
-      error: error.message,
+
+      error:
+        error.message,
     });
   }
 };
@@ -324,10 +357,10 @@ const uploadResume = async (req, res) => {
 |--------------------------------------------------------------------------
 |
 | Public portfolio:
-|   → Resume accessible
+|   Resume accessible
 |
 | Private portfolio:
-|   → Resume blocked
+|   Resume blocked
 |
 |--------------------------------------------------------------------------
 */
@@ -337,6 +370,12 @@ const getPublicResume = async (
   res
 ) => {
   try {
+    /*
+    |--------------------------------------------------------------------------
+    | Find Portfolio
+    |--------------------------------------------------------------------------
+    */
+
     const portfolio =
       await PortfolioContent.findOne({
         key: 'main',
@@ -345,13 +384,21 @@ const getPublicResume = async (
     if (!portfolio) {
       return res.status(404).json({
         success: false,
+
         message:
           'Portfolio not found.',
       });
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Portfolio Visibility
+    |--------------------------------------------------------------------------
+    */
+
     const visibility =
-      portfolio.settings?.portfolioVisibility ||
+      portfolio.settings
+        ?.portfolioVisibility ||
       'public';
 
     /*
@@ -360,9 +407,12 @@ const getPublicResume = async (
     |--------------------------------------------------------------------------
     */
 
-    if (visibility === 'private') {
+    if (
+      visibility === 'private'
+    ) {
       return res.status(403).json({
         success: false,
+
         message:
           'Resume is currently private.',
       });
@@ -370,14 +420,50 @@ const getPublicResume = async (
 
     /*
     |--------------------------------------------------------------------------
-    | PUBLIC PORTFOLIO
+    | Resume Exists Check
     |--------------------------------------------------------------------------
     */
 
-    return sendResumeFile(
-      req,
-      res,
-      portfolio
+    const publicId =
+      portfolio.resume?.fileName;
+
+    if (!publicId) {
+      return res.status(404).json({
+        success: false,
+
+        message:
+          'No resume has been uploaded yet.',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generate Signed Cloudinary URL
+    |--------------------------------------------------------------------------
+    */
+
+    const resumeUrl =
+      getResumeDeliveryUrl(
+        publicId
+      );
+
+    if (!resumeUrl) {
+      return res.status(404).json({
+        success: false,
+
+        message:
+          'Resume file could not be located.',
+      });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect To Cloudinary
+    |--------------------------------------------------------------------------
+    */
+
+    return res.redirect(
+      resumeUrl
     );
   } catch (error) {
     console.error(
@@ -387,9 +473,12 @@ const getPublicResume = async (
 
     return res.status(500).json({
       success: false,
+
       message:
         'Failed to load public resume.',
-      error: error.message,
+
+      error:
+        error.message,
     });
   }
 };
@@ -403,35 +492,96 @@ const getPublicResume = async (
 |--------------------------------------------------------------------------
 */
 
-const getProtectedResume = async (
-  req,
-  res
-) => {
-  try {
-    const portfolio =
-      await PortfolioContent.findOne({
-        key: 'main',
+const getProtectedResume =
+  async (
+    req,
+    res
+  ) => {
+    try {
+      /*
+      |--------------------------------------------------------------------------
+      | Find Portfolio
+      |--------------------------------------------------------------------------
+      */
+
+      const portfolio =
+        await PortfolioContent.findOne({
+          key: 'main',
+        });
+
+      if (!portfolio) {
+        return res.status(404).json({
+          success: false,
+
+          message:
+            'Portfolio not found.',
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Resume Public ID
+      |--------------------------------------------------------------------------
+      */
+
+      const publicId =
+        portfolio.resume?.fileName;
+
+      if (!publicId) {
+        return res.status(404).json({
+          success: false,
+
+          message:
+            'No resume has been uploaded yet.',
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Generate Signed URL
+      |--------------------------------------------------------------------------
+      */
+
+      const resumeUrl =
+        getResumeDeliveryUrl(
+          publicId
+        );
+
+      if (!resumeUrl) {
+        return res.status(404).json({
+          success: false,
+
+          message:
+            'Resume file could not be located.',
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Admin Resume Access
+      |--------------------------------------------------------------------------
+      */
+
+      return res.redirect(
+        resumeUrl
+      );
+    } catch (error) {
+      console.error(
+        'Get Protected Resume Error:',
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+
+        message:
+          'Failed to load resume.',
+
+        error:
+          error.message,
       });
-
-    return sendResumeFile(
-      req,
-      res,
-      portfolio
-    );
-  } catch (error) {
-    console.error(
-      'Get Protected Resume Error:',
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        'Failed to load resume.',
-      error: error.message,
-    });
-  }
-};
+    }
+  };
 
 /*
 |--------------------------------------------------------------------------
@@ -442,103 +592,126 @@ const getProtectedResume = async (
 |--------------------------------------------------------------------------
 */
 
-const getResumeInfo = async (
-  req,
-  res
-) => {
-  try {
-    const portfolio =
-      await PortfolioContent.findOne({
-        key: 'main',
-      });
+const getResumeInfo =
+  async (
+    req,
+    res
+  ) => {
+    try {
+      /*
+      |--------------------------------------------------------------------------
+      | Find Portfolio
+      |--------------------------------------------------------------------------
+      */
 
-    if (
-      !portfolio ||
-      !portfolio.resume ||
-      !portfolio.resume.fileName
-    ) {
+      const portfolio =
+        await PortfolioContent.findOne({
+          key: 'main',
+        });
+
+      /*
+      |--------------------------------------------------------------------------
+      | No Resume
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        !portfolio ||
+        !portfolio.resume ||
+        !portfolio.resume.fileName
+      ) {
+        return res.status(200).json({
+          success: true,
+
+          data: {
+            exists: false,
+
+            resume: null,
+          },
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Cloudinary Public ID
+      |--------------------------------------------------------------------------
+      */
+
+      const publicId =
+        portfolio.resume.fileName;
+
+      /*
+      |--------------------------------------------------------------------------
+      | Generate Signed URL
+      |--------------------------------------------------------------------------
+      */
+
+      const resumeUrl =
+        getResumeDeliveryUrl(
+          publicId
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Response
+      |--------------------------------------------------------------------------
+      |
+      | Size is not read from local filesystem anymore.
+      |
+      | Cloudinary remains the source of truth.
+      |
+      |--------------------------------------------------------------------------
+      */
+
       return res.status(200).json({
         success: true,
+
         data: {
-          exists: false,
-          resume: null,
+          exists: true,
+
+          resume: {
+            fileName:
+              publicId,
+
+            originalName:
+              portfolio.resume
+                .originalName ||
+              'Resume.pdf',
+
+            uploadedAt:
+              portfolio.resume
+                .uploadedAt,
+
+            size: null,
+
+            sizeFormatted:
+              'Stored on Cloudinary',
+
+            url:
+              '/api/portfolio/upload/resume',
+
+            deliveryUrl:
+              resumeUrl,
+          },
         },
       });
+    } catch (error) {
+      console.error(
+        'Get Resume Info Error:',
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+
+        message:
+          'Failed to fetch resume information.',
+
+        error:
+          error.message,
+      });
     }
-
-    const fileName = path.basename(
-      portfolio.resume.fileName
-    );
-
-    const filePath = path.join(
-      uploadsDirectory,
-      fileName
-    );
-
-    const exists =
-      fs.existsSync(filePath);
-
-    let size = 0;
-
-    if (exists) {
-      const stats =
-        fs.statSync(filePath);
-
-      size = stats.size;
-    }
-
-    let sizeFormatted = '0 KB';
-
-    if (size >= 1024 * 1024) {
-      sizeFormatted =
-        `${(
-          size /
-          (1024 * 1024)
-        ).toFixed(2)} MB`;
-    } else if (size >= 1024) {
-      sizeFormatted =
-        `${(
-          size /
-          1024
-        ).toFixed(2)} KB`;
-    } else {
-      sizeFormatted =
-        `${size} bytes`;
-    }
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        exists,
-        resume: {
-          fileName:
-            portfolio.resume.fileName,
-          originalName:
-            portfolio.resume.originalName ||
-            'Resume.pdf',
-          uploadedAt:
-            portfolio.resume.uploadedAt,
-          size,
-          sizeFormatted,
-          url:
-            '/api/portfolio/upload/resume',
-        },
-      },
-    });
-  } catch (error) {
-    console.error(
-      'Get Resume Info Error:',
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-      message:
-        'Failed to fetch resume information.',
-      error: error.message,
-    });
-  }
-};
+  };
 
 /*
 |--------------------------------------------------------------------------
@@ -549,83 +722,129 @@ const getResumeInfo = async (
 |--------------------------------------------------------------------------
 */
 
-const uploadProfileImage = async (
-  req,
-  res
-) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Please select a profile image.',
-      });
-    }
+const uploadProfileImage =
+  async (
+    req,
+    res
+  ) => {
+    try {
+      /*
+      |--------------------------------------------------------------------------
+      | Check File
+      |--------------------------------------------------------------------------
+      */
 
-    let portfolio =
-      await PortfolioContent.findOne({
-        key: 'main',
-      });
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
 
-    if (!portfolio) {
-      portfolio =
-        await PortfolioContent.create({
+          message:
+            'Please select a profile image.',
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Find Portfolio
+      |--------------------------------------------------------------------------
+      */
+
+      let portfolio =
+        await PortfolioContent.findOne({
           key: 'main',
         });
-    }
 
-    if (
-      portfolio.hero &&
-      portfolio.hero.profileImage &&
-      portfolio.hero.profileImage.includes(
-        '/uploads/'
-      )
-    ) {
-      deleteUploadedFile(
-        portfolio.hero.profileImage
+      if (!portfolio) {
+        portfolio =
+          await PortfolioContent.create({
+            key: 'main',
+          });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Cloudinary Image URL
+      |--------------------------------------------------------------------------
+      */
+
+      const imageUrl =
+        req.file.secure_url ||
+        req.file.path ||
+        null;
+
+      if (!imageUrl) {
+        return res.status(500).json({
+          success: false,
+
+          message:
+            'Cloudinary image URL was not returned.',
+        });
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Save Profile Image
+      |--------------------------------------------------------------------------
+      */
+
+      portfolio.hero.profileImage =
+        imageUrl;
+
+      await portfolio.save();
+
+      /*
+      |--------------------------------------------------------------------------
+      | Response
+      |--------------------------------------------------------------------------
+      */
+
+      return res.status(200).json({
+        success: true,
+
+        message:
+          'Profile image uploaded successfully.',
+
+        data: {
+          profileImage:
+            portfolio.hero
+              .profileImage,
+        },
+      });
+    } catch (error) {
+      console.error(
+        'Upload Profile Image Error:',
+        error
       );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Cleanup New Cloudinary Image
+      |--------------------------------------------------------------------------
+      */
+
+      const uploadedPublicId =
+        getCloudinaryPublicId(
+          req.file
+        );
+
+      if (uploadedPublicId) {
+        await deleteCloudinaryFile(
+          uploadedPublicId,
+          'image'
+        );
+      }
+
+      return res.status(500).json({
+        success: false,
+
+        message:
+          'Failed to upload profile image.',
+
+        error:
+          error.message,
+      });
     }
-
-    const imageUrl =
-      getPublicFileUrl(
-        req,
-        req.file.filename
-      );
-
-    portfolio.hero.profileImage =
-      imageUrl;
-
-    await portfolio.save();
-
-    return res.status(200).json({
-      success: true,
-      message:
-        'Profile image uploaded successfully.',
-      data: {
-        profileImage:
-          portfolio.hero.profileImage,
-      },
-    });
-  } catch (error) {
-    console.error(
-      'Upload Profile Image Error:',
-      error
-    );
-
-    if (req.file?.filename) {
-      deleteUploadedFileByName(
-        req.file.filename
-      );
-    }
-
-    return res.status(500).json({
-      success: false,
-      message:
-        'Failed to upload profile image.',
-      error: error.message,
-    });
-  }
-};
+  };
 
 /*
 |--------------------------------------------------------------------------
@@ -635,8 +854,12 @@ const uploadProfileImage = async (
 
 module.exports = {
   uploadResume,
+
   getPublicResume,
+
   getProtectedResume,
+
   getResumeInfo,
+
   uploadProfileImage,
 };

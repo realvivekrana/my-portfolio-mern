@@ -1,204 +1,673 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const {
+  CloudinaryStorage,
+} = require('multer-storage-cloudinary');
+
+const cloudinary =
+  require('../config/cloudinary');
 
 /*
 |--------------------------------------------------------------------------
-| Upload Directory
+| CLOUDINARY STORAGE
+|--------------------------------------------------------------------------
+|
+| All uploaded files are stored directly on Cloudinary.
+|
+| Resume:
+|   PDF
+|   resource_type = raw
+|
+| Images:
+|   JPG / JPEG / PNG / WEBP
+|   resource_type = image
+|
 |--------------------------------------------------------------------------
 */
 
-const uploadDirectory = path.join(
-  __dirname,
-  '../uploads'
-);
+const storage =
+  new CloudinaryStorage({
+    cloudinary,
 
-/*
-|--------------------------------------------------------------------------
-| Create Upload Directory If It Doesn't Exist
-|--------------------------------------------------------------------------
-*/
+    params: async (
+      req,
+      file
+    ) => {
+      /*
+      |--------------------------------------------------------------------------
+      | DEBUG
+      |--------------------------------------------------------------------------
+      */
 
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory, {
-    recursive: true,
+      console.log(
+        '\n========================================'
+      );
+
+      console.log(
+        '☁️ CloudinaryStorage received file'
+      );
+
+      console.log(
+        'Original name:',
+        file?.originalname
+      );
+
+      console.log(
+        'MIME type:',
+        file?.mimetype
+      );
+
+      console.log(
+        'Field name:',
+        file?.fieldname
+      );
+
+      console.log(
+        '========================================\n'
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | FILE NAME
+      |--------------------------------------------------------------------------
+      */
+
+      const originalName =
+        file?.originalname ||
+        'file';
+
+      const lowerFileName =
+        originalName.toLowerCase();
+
+      /*
+      |--------------------------------------------------------------------------
+      | PDF DETECTION
+      |--------------------------------------------------------------------------
+      |
+      | MIME type OR extension.
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      const isPdf =
+        file?.mimetype ===
+          'application/pdf' ||
+        lowerFileName.endsWith(
+          '.pdf'
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | IMAGE DETECTION
+      |--------------------------------------------------------------------------
+      */
+
+      const isImage =
+        file?.mimetype ===
+          'image/jpeg' ||
+        file?.mimetype ===
+          'image/jpg' ||
+        file?.mimetype ===
+          'image/png' ||
+        file?.mimetype ===
+          'image/webp' ||
+        /\.(jpe?g|png|webp)$/i.test(
+          lowerFileName
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | CLOUDINARY FOLDER
+      |--------------------------------------------------------------------------
+      */
+
+      let folder =
+        'vivek-portfolio/uploads';
+
+      if (isPdf) {
+        folder =
+          'vivek-portfolio/resume';
+      } else if (isImage) {
+        folder =
+          'vivek-portfolio/images';
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | CLOUDINARY RESOURCE TYPE
+      |--------------------------------------------------------------------------
+      */
+
+      const resourceType =
+        isPdf
+          ? 'raw'
+          : 'image';
+
+      /*
+      |--------------------------------------------------------------------------
+      | FILE EXTENSION
+      |--------------------------------------------------------------------------
+      */
+
+      const extension =
+        originalName.includes('.')
+          ? originalName
+              .substring(
+                originalName.lastIndexOf('.') +
+                  1
+              )
+              .toLowerCase()
+          : '';
+
+      /*
+      |--------------------------------------------------------------------------
+      | CLEAN BASE NAME
+      |--------------------------------------------------------------------------
+      */
+
+      const baseName =
+        originalName
+          .replace(
+            /\.[^/.]+$/,
+            ''
+          )
+          .replace(
+            /[^a-zA-Z0-9-_]/g,
+            '-'
+          )
+          .replace(
+            /-+/g,
+            '-'
+          )
+          .replace(
+            /^-|-$/g,
+            ''
+          )
+          .toLowerCase() ||
+        'file';
+
+      /*
+      |--------------------------------------------------------------------------
+      | UNIQUE PUBLIC ID
+      |--------------------------------------------------------------------------
+      */
+
+      const uniqueName =
+        `${baseName}-${Date.now()}`;
+
+      /*
+      |--------------------------------------------------------------------------
+      | DEBUG CLOUDINARY PARAMS
+      |--------------------------------------------------------------------------
+      */
+
+      console.log(
+        '📁 Cloudinary folder:',
+        folder
+      );
+
+      console.log(
+        '📦 Cloudinary resource type:',
+        resourceType
+      );
+
+      console.log(
+        '🆔 Cloudinary public ID:',
+        uniqueName
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | CLOUDINARY PARAMS
+      |--------------------------------------------------------------------------
+      */
+
+      return {
+        folder,
+
+        resource_type:
+          resourceType,
+
+        public_id:
+          uniqueName,
+
+        use_filename:
+          false,
+
+        unique_filename:
+          false,
+
+        overwrite:
+          false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | PDF FORMAT
+        |--------------------------------------------------------------------------
+        */
+
+        ...(isPdf && extension
+          ? {
+              format:
+                extension,
+            }
+          : {}),
+      };
+    },
   });
-}
 
 /*
 |--------------------------------------------------------------------------
-| Storage Configuration
-|--------------------------------------------------------------------------
-*/
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDirectory);
-  },
-
-  filename: (req, file, cb) => {
-    const extension = path.extname(
-      file.originalname
-    );
-
-    const baseName = path
-      .basename(
-        file.originalname,
-        extension
-      )
-      .replace(/[^a-zA-Z0-9-_]/g, '-')
-      .toLowerCase();
-
-    const uniqueName =
-      `${baseName}-${Date.now()}${extension.toLowerCase()}`;
-
-    cb(null, uniqueName);
-  },
-});
-
-/*
-|--------------------------------------------------------------------------
-| General Allowed File Types
+| GENERAL FILE TYPES
 |--------------------------------------------------------------------------
 */
 
 const allowedMimeTypes = [
   'application/pdf',
+
   'image/jpeg',
+  'image/jpg',
   'image/png',
   'image/webp',
 ];
 
 /*
 |--------------------------------------------------------------------------
-| General File Filter
+| GENERAL FILE FILTER
 |--------------------------------------------------------------------------
 */
 
-const fileFilter = (req, file, cb) => {
-  if (
+const fileFilter = (
+  req,
+  file,
+  cb
+) => {
+  /*
+  |--------------------------------------------------------------------------
+  | DEBUG - FILE RECEIVED BY MULTER
+  |--------------------------------------------------------------------------
+  */
+
+  console.log(
+    '\n========================================'
+  );
+
+  console.log(
+    '📥 MULTER FILE FILTER'
+  );
+
+  console.log(
+    'Field name:',
+    file?.fieldname
+  );
+
+  console.log(
+    'Original name:',
+    file?.originalname
+  );
+
+  console.log(
+    'MIME type:',
+    file?.mimetype
+  );
+
+  console.log(
+    '========================================\n'
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILE NAME
+  |--------------------------------------------------------------------------
+  */
+
+  const fileName =
+    (
+      file?.originalname ||
+      ''
+    ).toLowerCase();
+
+  /*
+  |--------------------------------------------------------------------------
+  | PDF CHECK
+  |--------------------------------------------------------------------------
+  */
+
+  const isPdf =
+    file?.mimetype ===
+      'application/pdf' ||
+    fileName.endsWith(
+      '.pdf'
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | IMAGE CHECK
+  |--------------------------------------------------------------------------
+  */
+
+  const isImageByMime =
     allowedMimeTypes.includes(
-      file.mimetype
-    )
+      file?.mimetype
+    ) &&
+    file?.mimetype !==
+      'application/pdf';
+
+  const isImageByExtension =
+    /\.(jpe?g|png|webp)$/i.test(
+      fileName
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | ALLOW FILE
+  |--------------------------------------------------------------------------
+  */
+
+  if (
+    isPdf ||
+    isImageByMime ||
+    isImageByExtension
   ) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        'Only PDF, JPG, JPEG, PNG and WEBP files are allowed.'
-      ),
-      false
+    console.log(
+      '✅ Multer accepted file:',
+      file?.originalname
+    );
+
+    return cb(
+      null,
+      true
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | REJECT FILE
+  |--------------------------------------------------------------------------
+  */
+
+  console.error(
+    '❌ Multer rejected file:',
+    file?.originalname
+  );
+
+  console.error(
+    '❌ MIME:',
+    file?.mimetype
+  );
+
+  return cb(
+    new Error(
+      'Only PDF, JPG, JPEG, PNG and WEBP files are allowed.'
+    ),
+    false
+  );
 };
 
 /*
 |--------------------------------------------------------------------------
-| General Upload
+| GENERAL UPLOAD
 |--------------------------------------------------------------------------
 |
-| 10 MB maximum file size.
+| Maximum file size:
+| 10 MB
 |
 |--------------------------------------------------------------------------
 */
 
-const upload = multer({
-  storage,
-  fileFilter,
+const upload =
+  multer({
+    storage,
 
-  limits: {
-    fileSize: 10 * 1024 * 1024,
-  },
-});
+    fileFilter,
+
+    limits: {
+      fileSize:
+        10 * 1024 * 1024,
+    },
+  });
 
 /*
 |--------------------------------------------------------------------------
-| Resume Upload
+| RESUME UPLOAD
 |--------------------------------------------------------------------------
 |
-| Only PDF should be accepted.
+| Only PDF files are accepted.
+|
+| PDF detection:
+|   MIME type OR .pdf extension
+|
+| Maximum:
+|   10 MB
 |
 |--------------------------------------------------------------------------
 */
 
-const uploadResume = multer({
-  storage,
+const uploadResume =
+  multer({
+    storage,
 
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype ===
-      'application/pdf'
-    ) {
-      cb(null, true);
-    } else {
-      cb(
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      /*
+      |--------------------------------------------------------------------------
+      | DEBUG
+      |--------------------------------------------------------------------------
+      */
+
+      console.log(
+        '\n========================================'
+      );
+
+      console.log(
+        '📄 RESUME UPLOAD FILTER'
+      );
+
+      console.log(
+        'Field:',
+        file?.fieldname
+      );
+
+      console.log(
+        'Name:',
+        file?.originalname
+      );
+
+      console.log(
+        'MIME:',
+        file?.mimetype
+      );
+
+      console.log(
+        '========================================\n'
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | FILE NAME
+      |--------------------------------------------------------------------------
+      */
+
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
+      /*
+      |--------------------------------------------------------------------------
+      | PDF CHECK
+      |--------------------------------------------------------------------------
+      */
+
+      const isPdf =
+        file?.mimetype ===
+          'application/pdf' ||
+        fileName.endsWith(
+          '.pdf'
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | ACCEPT PDF
+      |--------------------------------------------------------------------------
+      */
+
+      if (isPdf) {
+        console.log(
+          '✅ Resume PDF accepted by Multer'
+        );
+
+        return cb(
+          null,
+          true
+        );
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | REJECT NON-PDF
+      |--------------------------------------------------------------------------
+      */
+
+      console.error(
+        '❌ Resume rejected by Multer'
+      );
+
+      console.error(
+        'Name:',
+        file?.originalname
+      );
+
+      console.error(
+        'MIME:',
+        file?.mimetype
+      );
+
+      return cb(
         new Error(
           'Only PDF files are allowed for resume.'
         ),
         false
       );
-    }
-  },
+    },
 
-  limits: {
-    fileSize: 10 * 1024 * 1024,
-  },
-});
+    limits: {
+      fileSize:
+        10 * 1024 * 1024,
+    },
+  });
 
 /*
 |--------------------------------------------------------------------------
-| Profile Image Upload
+| PROFILE IMAGE UPLOAD
 |--------------------------------------------------------------------------
 |
-| JPG / JPEG / PNG / WEBP
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
+|
+| Maximum:
+|   5 MB
 |
 |--------------------------------------------------------------------------
 */
 
-const uploadProfileImage = multer({
-  storage,
+const uploadProfileImage =
+  multer({
+    storage,
 
-  fileFilter: (req, file, cb) => {
-    const allowedImages = [
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-    ];
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
 
-    if (
-      allowedImages.includes(
-        file.mimetype
-      )
-    ) {
-      cb(null, true);
-    } else {
-      cb(
+      const allowedImages = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const isValidMime =
+        allowedImages.includes(
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | ACCEPT IMAGE
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        isValidMime ||
+        isValidExtension
+      ) {
+        console.log(
+          '✅ Profile image accepted:',
+          file?.originalname
+        );
+
+        return cb(
+          null,
+          true
+        );
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | REJECT IMAGE
+      |--------------------------------------------------------------------------
+      */
+
+      console.error(
+        '❌ Profile image rejected:',
+        file?.originalname
+      );
+
+      return cb(
         new Error(
           'Only JPG, JPEG, PNG and WEBP images are allowed.'
         ),
         false
       );
-    }
-  },
+    },
 
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-  },
-});
+    limits: {
+      fileSize:
+        5 * 1024 * 1024,
+    },
+  });
 
 /*
 |--------------------------------------------------------------------------
-| Certificate Image Upload
+| CERTIFICATE IMAGE UPLOAD
 |--------------------------------------------------------------------------
 |
-| Certificate ke liye:
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
 |
-| JPG
-| JPEG
-| PNG
-| WEBP
-|
-| Maximum size: 5 MB
+| Maximum:
+|   5 MB
 |
 |--------------------------------------------------------------------------
 */
@@ -207,43 +676,92 @@ const uploadCertificateImage =
   multer({
     storage,
 
-    fileFilter: (req, file, cb) => {
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
       const allowedImages = [
         'image/jpeg',
+        'image/jpg',
         'image/png',
         'image/webp',
       ];
 
-      if (
+      const isValidMime =
         allowedImages.includes(
-          file.mimetype
-        )
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | ACCEPT IMAGE
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        isValidMime ||
+        isValidExtension
       ) {
-        cb(null, true);
-      } else {
-        cb(
-          new Error(
-            'Only JPG, JPEG, PNG and WEBP images are allowed for certificates.'
-          ),
-          false
+        console.log(
+          '✅ Certificate image accepted:',
+          file?.originalname
+        );
+
+        return cb(
+          null,
+          true
         );
       }
+
+      /*
+      |--------------------------------------------------------------------------
+      | REJECT IMAGE
+      |--------------------------------------------------------------------------
+      */
+
+      console.error(
+        '❌ Certificate image rejected:',
+        file?.originalname
+      );
+
+      return cb(
+        new Error(
+          'Only JPG, JPEG, PNG and WEBP files are allowed for certificates.'
+        ),
+        false
+      );
     },
 
     limits: {
-      fileSize: 5 * 1024 * 1024,
+      fileSize:
+        5 * 1024 * 1024,
     },
   });
 
 /*
 |--------------------------------------------------------------------------
-| Export
+| EXPORTS
 |--------------------------------------------------------------------------
 */
 
 module.exports = {
   upload,
+
   uploadResume,
+
   uploadProfileImage,
+
   uploadCertificateImage,
 };

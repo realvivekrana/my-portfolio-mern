@@ -199,65 +199,227 @@ function AdminDashboard() {
   // =========================================================
 
   const handleResumeUpload = async (event) => {
-    const file = event.target.files?.[0];
+    /*
+    |--------------------------------------------------------------------------
+    | GET SELECTED FILE
+    |--------------------------------------------------------------------------
+    |
+    | We intentionally do NOT reset the input before validation/upload.
+    | The previous implementation reset it immediately, which can make
+    | debugging file-selection problems unnecessarily difficult.
+    |
+    |--------------------------------------------------------------------------
+    */
 
-    // Same file ko dobara select karne ke liye input reset.
-    event.target.value = '';
+    const input = event?.currentTarget;
+    const file = input?.files?.[0];
+
+    console.log('Resume file selected:', file);
 
     if (!file) {
+      toast.error('Please select a resume file.');
       return;
     }
 
-    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      toast.error('Please select a PDF resume file.');
+    /*
+    |--------------------------------------------------------------------------
+    | PDF VALIDATION
+    |--------------------------------------------------------------------------
+    |
+    | IMPORTANT:
+    |
+    | Do not depend on browser MIME type here.
+    | Some browsers / operating-system file associations can return an
+    | empty or unexpected MIME type even when the selected file is a PDF.
+    |
+    | The backend also validates the uploaded file, so the frontend only
+    | checks the filename extension here.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    const fileName =
+      String(file.name || '').trim();
+
+    const lowerFileName =
+      fileName.toLowerCase();
+
+    if (!lowerFileName.endsWith('.pdf')) {
+      toast.error(
+        'Please select a PDF resume file.'
+      );
+
+      input.value = '';
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024;
+    /*
+    |--------------------------------------------------------------------------
+    | MAXIMUM FILE SIZE
+    |--------------------------------------------------------------------------
+    |
+    | Backend resume upload limit is 10 MB.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    const maxSize =
+      10 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      toast.error('Resume must be 10 MB or smaller.');
+      toast.error(
+        'Resume must be 10 MB or smaller.'
+      );
+
+      input.value = '';
       return;
     }
 
-    const confirmed = window.confirm(
-      resumeInfo?.exists
-        ? 'Replace your current resume with this PDF?'
-        : 'Upload this PDF as your portfolio resume?'
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY FILE
+    |--------------------------------------------------------------------------
+    */
+
+    if (!file.size || file.size <= 0) {
+      toast.error(
+        'The selected PDF file is empty or invalid.'
+      );
+
+      input.value = '';
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIRM UPLOAD
+    |--------------------------------------------------------------------------
+    */
+
+    const confirmed =
+      window.confirm(
+        resumeInfo?.exists
+          ? 'Replace your current resume with this PDF?'
+          : 'Upload this PDF as your portfolio resume?'
+      );
 
     if (!confirmed) {
+      input.value = '';
       return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD TO BACKEND
+    |--------------------------------------------------------------------------
+    */
 
     try {
       setResumeUploading(true);
 
-      const formData = new FormData();
+      const formData =
+        new FormData();
 
-      formData.append('resume', file);
+      /*
+      |--------------------------------------------------------------------------
+      | IMPORTANT
+      |--------------------------------------------------------------------------
+      |
+      | Backend route uses:
+      |
+      | resumeUpload.single('resume')
+      |
+      | Therefore the multipart field MUST be named "resume".
+      |
+      |--------------------------------------------------------------------------
+      */
 
-      await API.post(
-        '/portfolio/upload/resume',
-        formData
+      formData.append(
+        'resume',
+        file,
+        fileName
       );
+
+      /*
+      |--------------------------------------------------------------------------
+      | DEBUG
+      |--------------------------------------------------------------------------
+      */
+
+      console.log(
+        'Uploading resume:',
+        {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        }
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | API REQUEST
+      |--------------------------------------------------------------------------
+      |
+      | Do NOT manually set Content-Type.
+      | Axios/browser will generate the multipart boundary correctly.
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      const response =
+        await API.post(
+          '/portfolio/upload/resume',
+          formData
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | REFRESH RESUME INFORMATION
+      |--------------------------------------------------------------------------
+      */
 
       await fetchResumeInfo();
 
       toast.success(
-        resumeInfo?.exists
-          ? 'Resume replaced successfully.'
-          : 'Resume uploaded successfully.'
+        response.data?.message ||
+          (
+            resumeInfo?.exists
+              ? 'Resume replaced successfully.'
+              : 'Resume uploaded successfully.'
+          )
       );
     } catch (error) {
-      console.error('Resume upload error:', error);
+      console.error(
+        'Resume upload error:',
+        error
+      );
+
+      console.error(
+        'Resume upload response:',
+        error.response?.data
+      );
 
       toast.error(
         error.response?.data?.message ||
+        error.message ||
         'Failed to upload resume'
       );
     } finally {
       setResumeUploading(false);
+
+      /*
+      |--------------------------------------------------------------------------
+      | Reset input AFTER upload is finished
+      |--------------------------------------------------------------------------
+      |
+      | Same PDF can be selected again later.
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      if (input) {
+        input.value = '';
+      }
     }
   };
 

@@ -2,6 +2,12 @@ const express = require('express');
 
 const router = express.Router();
 
+/*
+|--------------------------------------------------------------------------
+| Controllers
+|--------------------------------------------------------------------------
+*/
+
 const {
   uploadResume,
   getPublicResume,
@@ -10,10 +16,22 @@ const {
   uploadProfileImage,
 } = require('../controllers/portfolioUploadController');
 
+/*
+|--------------------------------------------------------------------------
+| Upload Middleware
+|--------------------------------------------------------------------------
+*/
+
 const {
   uploadResume: resumeUpload,
   uploadProfileImage: profileImageUpload,
 } = require('../middleware/uploadMiddleware');
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Middleware
+|--------------------------------------------------------------------------
+*/
 
 const {
   protect,
@@ -32,6 +50,8 @@ const {
 | Private portfolio:
 |   → Resume blocked
 |
+| Authentication is intentionally NOT required here.
+|
 |--------------------------------------------------------------------------
 */
 
@@ -47,6 +67,8 @@ router.get(
 |
 | GET /api/portfolio/upload/resume
 |
+| Only authenticated admin can access this endpoint.
+|
 |--------------------------------------------------------------------------
 */
 
@@ -60,6 +82,12 @@ router.get(
 |--------------------------------------------------------------------------
 | RESUME INFORMATION
 |--------------------------------------------------------------------------
+|
+| GET /api/portfolio/upload/resume/info
+|
+| Only authenticated admin can access resume metadata.
+|
+|--------------------------------------------------------------------------
 */
 
 router.get(
@@ -71,6 +99,15 @@ router.get(
 /*
 |--------------------------------------------------------------------------
 | UPLOAD RESUME
+|--------------------------------------------------------------------------
+|
+| POST /api/portfolio/upload/resume
+|
+| Protected admin endpoint.
+|
+| Cloudinary:
+|   PDF → RAW resource
+|
 |--------------------------------------------------------------------------
 */
 
@@ -85,13 +122,30 @@ router.post(
 |--------------------------------------------------------------------------
 | UPLOAD PROFILE IMAGE
 |--------------------------------------------------------------------------
+|
+| POST /api/portfolio/upload/profile-image
+|
+| Protected admin endpoint.
+|
+| Cloudinary:
+|   JPG / JPEG / PNG / WEBP → IMAGE resource
+|
+|--------------------------------------------------------------------------
 */
 
 router.post(
   '/profile-image',
   protect,
-  profileImageUpload.single('profileImage'),
+  profileImageUpload.single(
+    'profileImage'
+  ),
   uploadProfileImage
 );
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT ROUTER
+|--------------------------------------------------------------------------
+*/
 
 module.exports = router;

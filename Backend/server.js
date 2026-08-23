@@ -2,7 +2,6 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
 
 const connectDB = require('./config/db');
 
@@ -45,18 +44,139 @@ const app = express();
 
 /*
 |--------------------------------------------------------------------------
-| Global Middleware
+| CORS
+|--------------------------------------------------------------------------
+|
+| Development:
+|
+|   http://localhost:5173
+|   http://localhost:5174
+|
+| Production:
+|
+|   FRONTEND_URL from .env
+|
+| Example:
+|
+|   FRONTEND_URL=https://your-portfolio.vercel.app
+|
+|--------------------------------------------------------------------------
+*/
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+].filter(Boolean);
+
+/*
+|--------------------------------------------------------------------------
+| Add Production Frontend URL
+|--------------------------------------------------------------------------
+*/
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(
+    process.env.FRONTEND_URL.replace(
+      /\/$/,
+      ''
+    )
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| CORS Configuration
 |--------------------------------------------------------------------------
 */
 
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      /*
+      |--------------------------------------------------------------------------
+      | Allow requests without an Origin
+      |--------------------------------------------------------------------------
+      |
+      | Useful for:
+      | - Postman
+      | - Server-to-server requests
+      | - Health checks
+      |--------------------------------------------------------------------------
+      */
+
+      if (!origin) {
+        return callback(
+          null,
+          true
+        );
+      }
+
+      const normalizedOrigin =
+        origin.replace(
+          /\/$/,
+          ''
+        );
+
+      /*
+      |--------------------------------------------------------------------------
+      | Allow Known Origins
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        allowedOrigins.includes(
+          normalizedOrigin
+        )
+      ) {
+        return callback(
+          null,
+          true
+        );
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Reject Unknown Origins
+      |--------------------------------------------------------------------------
+      */
+
+      return callback(
+        new Error(
+          'CORS policy: Origin not allowed.'
+        )
+      );
+    },
+
     credentials: true,
   })
 );
 
-app.use(express.json());
+/*
+|--------------------------------------------------------------------------
+| JSON Body Parser
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  express.json({
+    limit: '10mb',
+  })
+);
+
+/*
+|--------------------------------------------------------------------------
+| URL Encoded Body Parser
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: '10mb',
+  })
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -65,64 +185,80 @@ app.use(express.json());
 |
 | IMPORTANT:
 |
-| Resume files must NOT be publicly accessible.
+| Resume PDFs must NOT be directly publicly accessible.
 |
-| Public:
+| Public uploaded assets:
 |
-|   Profile images
-|   Certificate images
-|   Other public uploaded assets
+|   - Profile images
+|   - Certificate images
+|   - Other non-PDF uploads
 |
 | Protected:
 |
-|   Resume PDF
+|   - Resume PDF
 |
-| Resume will be served through:
+| Resume is served through:
 |
-| GET /api/portfolio/upload/resume
+|   GET /api/portfolio/upload/resume
 |
-| which is protected by JWT authentication.
+| according to the authentication/public-resume logic.
 |
 |--------------------------------------------------------------------------
 */
 
 /*
 |--------------------------------------------------------------------------
-| Public Uploads
+| Upload Directory
 |--------------------------------------------------------------------------
 */
 
-const uploadsDirectory = path.join(
-  __dirname,
-  'uploads'
-);
+const uploadsDirectory =
+  path.join(
+    __dirname,
+    'uploads'
+  );
+
+/*
+|--------------------------------------------------------------------------
+| Public Upload Middleware
+|--------------------------------------------------------------------------
+*/
 
 app.use(
   '/uploads',
   (req, res, next) => {
     /*
     |--------------------------------------------------------------------------
-    | Block Direct Resume Access
-    |--------------------------------------------------------------------------
-    |
-    | Example blocked URL:
-    |
-    | /uploads/resume-example-123456.pdf
-    |
+    | Get Requested Filename
     |--------------------------------------------------------------------------
     */
 
     const requestedFile =
-      path.basename(req.path);
+      path.basename(
+        req.path
+      );
 
-    const isResume =
+    /*
+    |--------------------------------------------------------------------------
+    | Detect PDF
+    |--------------------------------------------------------------------------
+    */
+
+    const isPdf =
       requestedFile
         .toLowerCase()
         .endsWith('.pdf');
 
-    if (isResume) {
+    /*
+    |--------------------------------------------------------------------------
+    | Block Direct PDF Access
+    |--------------------------------------------------------------------------
+    */
+
+    if (isPdf) {
       return res.status(403).json({
         success: false,
+
         message:
           'Direct access to resume files is not allowed.',
       });
@@ -130,21 +266,33 @@ app.use(
 
     next();
   },
-  express.static(uploadsDirectory)
+
+  express.static(
+    uploadsDirectory
+  )
 );
 
 /*
 |--------------------------------------------------------------------------
-| Test / Health Route
+| Health Check
 |--------------------------------------------------------------------------
 */
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: '🚀 Portfolio API is running...',
-  });
-});
+app.get(
+  '/',
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+
+      message:
+        '🚀 Portfolio API is running...',
+
+      environment:
+        process.env.NODE_ENV ||
+        'development',
+    });
+  }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -161,19 +309,6 @@ app.use(
 |--------------------------------------------------------------------------
 | CONTACT ROUTES
 |--------------------------------------------------------------------------
-|
-| Contact form:
-|
-| POST /api/contact
-|
-| Admin:
-|
-| GET    /api/contact
-| GET    /api/contact/:id
-| PUT    /api/contact/:id/read
-| DELETE /api/contact/:id
-|
-|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -184,14 +319,6 @@ app.use(
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES
-|--------------------------------------------------------------------------
-|
-| POST /api/auth/register
-| POST /api/auth/login
-| POST /api/auth/verify-pin
-| GET  /api/auth/me
-| PUT  /api/auth/change-password
-|
 |--------------------------------------------------------------------------
 */
 
@@ -204,11 +331,6 @@ app.use(
 |--------------------------------------------------------------------------
 | PORTFOLIO CONTENT ROUTES
 |--------------------------------------------------------------------------
-|
-| GET  /api/portfolio
-| PUT  /api/portfolio
-|
-|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -219,14 +341,6 @@ app.use(
 /*
 |--------------------------------------------------------------------------
 | PORTFOLIO UPLOAD ROUTES
-|--------------------------------------------------------------------------
-|
-| GET  /api/portfolio/upload/resume
-| GET  /api/portfolio/upload/resume/info
-|
-| POST /api/portfolio/upload/resume
-| POST /api/portfolio/upload/profile-image
-|
 |--------------------------------------------------------------------------
 */
 
@@ -239,17 +353,6 @@ app.use(
 |--------------------------------------------------------------------------
 | CERTIFICATE ROUTES
 |--------------------------------------------------------------------------
-|
-| GET    /api/certificates
-| GET    /api/certificates/featured
-| GET    /api/certificates/admin
-| GET    /api/certificates/:id
-|
-| POST   /api/certificates
-| PUT    /api/certificates/:id
-| DELETE /api/certificates/:id
-|
-|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -260,15 +363,6 @@ app.use(
 /*
 |--------------------------------------------------------------------------
 | SETTINGS ROUTES
-|--------------------------------------------------------------------------
-|
-| All settings routes are protected by the authentication
-| middleware inside settingsRoutes.js.
-|
-| GET    /api/settings
-| PUT    /api/settings
-| PUT    /api/settings/reset
-|
 |--------------------------------------------------------------------------
 */
 
@@ -282,13 +376,13 @@ app.use(
 | 404 NOT FOUND
 |--------------------------------------------------------------------------
 |
-| IMPORTANT:
-| This middleware must stay AFTER all API routes.
-|
+| Must remain AFTER all API routes.
 |--------------------------------------------------------------------------
 */
 
-app.use(notFound);
+app.use(
+  notFound
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -296,7 +390,9 @@ app.use(notFound);
 |--------------------------------------------------------------------------
 */
 
-app.use(errorHandler);
+app.use(
+  errorHandler
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -307,8 +403,32 @@ app.use(errorHandler);
 const PORT =
   process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(
-    `✅ Server running on port ${PORT}`
-  );
-});
+/*
+|--------------------------------------------------------------------------
+| Start Server
+|--------------------------------------------------------------------------
+*/
+
+app.listen(
+  PORT,
+  () => {
+    console.log(
+      `✅ Server running on port ${PORT}`
+    );
+
+    console.log(
+      `🌍 Environment: ${
+        process.env.NODE_ENV ||
+        'development'
+      }`
+    );
+
+    if (
+      process.env.FRONTEND_URL
+    ) {
+      console.log(
+        `🔗 Frontend URL: ${process.env.FRONTEND_URL}`
+      );
+    }
+  }
+);
