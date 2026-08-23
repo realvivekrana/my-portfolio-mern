@@ -123,6 +123,9 @@ function AdminDashboard() {
   const [resumeUploading, setResumeUploading] =
     useState(false);
 
+  const [resumeActionLoading, setResumeActionLoading] =
+    useState(false);
+
 
   // =========================================================
   // CERTIFICATE STATE
@@ -329,7 +332,11 @@ function AdminDashboard() {
 
       const resume = portfolio?.resume;
 
-      if (resume?.url) {
+      // FIX: `resume.url` defaults to '/resume.pdf' in the schema
+      // even when nothing has ever been uploaded, which made this
+      // always report "Active". `resume.fileName` only gets set
+      // once an actual Cloudinary upload succeeds, so check that.
+      if (resume?.fileName) {
         setResumeInfo({
           exists: true,
           url: resume.url,
@@ -352,6 +359,93 @@ function AdminDashboard() {
     }
   };
 
+
+  // =========================================================
+  // VIEW / DOWNLOAD RESUME (FIXED)
+  // =========================================================
+  //
+  // OLD BUG: buttons used `resumeInfo.url`, which is a relative
+  // backend path like "/api/portfolio/upload/public-resume".
+  // In the browser that resolves against the FRONTEND domain
+  // (e.g. https://your-portfolio.vercel.app/api/...), not the
+  // backend domain — so it always 404'd. The `download` attribute
+  // also silently fails on cross-origin links.
+  //
+  // FIX: fetch the PDF as a blob using the authenticated admin
+  // endpoint (works even when the public portfolio is set to
+  // Private), then open/download that blob directly.
+  // =========================================================
+
+  const getAdminResumeBlob = async () => {
+    try {
+      setResumeActionLoading(true);
+
+      const response = await API.get(
+        '/portfolio/upload/resume',
+        { responseType: 'blob' }
+      );
+
+      if (!response.data || response.data.size === 0) {
+        throw new Error('Resume file is empty or unavailable.');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error('Admin resume fetch error:', error);
+
+      let message = 'Unable to load resume.';
+
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          if (parsed?.message) message = parsed.message;
+        } catch {
+          // ignore parse failure, keep default message
+        }
+      } else if (error?.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error?.message) {
+        message = error.message;
+      }
+
+      toast.error(message);
+      return null;
+    } finally {
+      setResumeActionLoading(false);
+    }
+  };
+
+  const handleAdminViewResume = async () => {
+    const blob = await getAdminResumeBlob();
+    if (!blob) return;
+
+    const blobUrl = window.URL.createObjectURL(blob);
+    const newWindow = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+
+    if (!newWindow) {
+      toast.error('Unable to open resume. Please allow popups for this site.');
+    }
+
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
+  };
+
+  const handleAdminDownloadResume = async () => {
+    const blob = await getAdminResumeBlob();
+    if (!blob) return;
+
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = blobUrl;
+    link.download = resumeInfo?.originalName || 'Vivek-Rana-Resume.pdf';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+  };
 
   // =========================================================
   // UPLOAD / REPLACE RESUME
@@ -4843,24 +4937,25 @@ function AdminDashboard() {
                     {resumeInfo?.exists && (
                       <>
 
-                        <a
-                          href={resumeInfo.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
+                        <button
+                          type="button"
+                          onClick={handleAdminViewResume}
+                          disabled={resumeActionLoading}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
                         >
                           <FaExternalLinkAlt className="text-xs" />
-                          View Resume
-                        </a>
+                          {resumeActionLoading ? 'Loading...' : 'View Resume'}
+                        </button>
 
-                        <a
-                          href={resumeInfo.url}
-                          download={resumeInfo.originalName || 'Vivek-Rana-Resume.pdf'}
-                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+                        <button
+                          type="button"
+                          onClick={handleAdminDownloadResume}
+                          disabled={resumeActionLoading}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FaDownload />
-                          Download Resume
-                        </a>
+                          {resumeActionLoading ? 'Please wait...' : 'Download Resume'}
+                        </button>
 
                       </>
                     )}

@@ -1,3 +1,9 @@
+// Backend/controllers/portfolioUploadController.js
+// ✅ FIXED: resume.url ab correct route pe point karta hai
+//    (pehle: /api/portfolio/resume/public  ❌ — yeh route exist hi nahi karta tha
+//     ab:    /api/portfolio/upload/public-resume ✅ — jo server.js + portfolioUploadRoutes.js
+//     me actually mounted hai)
+
 const cloudinary = require('../config/cloudinary');
 
 const PortfolioContent = require('../models/PortfolioContent');
@@ -249,11 +255,19 @@ const uploadResume = async (
     |
     | The URL is generated only when resume is requested.
     |
+    | ✅ FIX: This must match the ACTUAL mounted route in server.js
+    | (app.use('/api/portfolio/upload', portfolioUploadRoutes))
+    | + router.get('/public-resume', ...) in portfolioUploadRoutes.js.
+    |
+    | The old value '/api/portfolio/resume/public' pointed to a
+    | route that does not exist, which is why View/Download Resume
+    | was failing.
+    |
     |--------------------------------------------------------------------------
     */
 
     portfolio.resume.url =
-      '/api/portfolio/resume/public';
+      '/api/portfolio/upload/public-resume';
 
     await portfolio.save();
 
@@ -305,7 +319,7 @@ const uploadResume = async (
             portfolio.resume.uploadedAt,
 
           url:
-            '/api/portfolio/resume/public',
+            '/api/portfolio/upload/public-resume',
 
           deliveryUrl:
             resumeUrl,
@@ -352,7 +366,7 @@ const uploadResume = async (
 |--------------------------------------------------------------------------
 | GET PUBLIC RESUME
 |--------------------------------------------------------------------------
-| @route   GET /api/portfolio/resume/public
+| @route   GET /api/portfolio/upload/public-resume
 | @access  Public
 |--------------------------------------------------------------------------
 |

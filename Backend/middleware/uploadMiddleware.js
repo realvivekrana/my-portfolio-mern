@@ -11,15 +11,11 @@ const cloudinary =
 | CLOUDINARY STORAGE
 |--------------------------------------------------------------------------
 |
-| All uploaded files are stored directly on Cloudinary.
+| Images aur general uploads Cloudinary par jayenge.
 |
-| Resume:
-|   PDF
-|   resource_type = raw
-|
-| Images:
-|   JPG / JPEG / PNG / WEBP
-|   resource_type = image
+| Resume ke liye neeche memoryStorage use kiya gaya hai,
+| kyunki PDF ko controller se directly Cloudinary RAW resource
+| ke roop mein upload karenge.
 |
 |--------------------------------------------------------------------------
 */
@@ -81,10 +77,6 @@ const storage =
       /*
       |--------------------------------------------------------------------------
       | PDF DETECTION
-      |--------------------------------------------------------------------------
-      |
-      | MIME type OR extension.
-      |
       |--------------------------------------------------------------------------
       */
 
@@ -281,12 +273,6 @@ const fileFilter = (
   file,
   cb
 ) => {
-  /*
-  |--------------------------------------------------------------------------
-  | DEBUG - FILE RECEIVED BY MULTER
-  |--------------------------------------------------------------------------
-  */
-
   console.log(
     '\n========================================'
   );
@@ -431,32 +417,35 @@ const upload =
 | RESUME UPLOAD
 |--------------------------------------------------------------------------
 |
-| Only PDF files are accepted.
+| IMPORTANT:
 |
-| PDF detection:
-|   MIME type OR .pdf extension
+| Resume ke liye CloudinaryStorage use nahi kar rahe hain.
 |
-| Maximum:
-|   10 MB
+| PDF pehle memory mein jayega:
+|
+|   PDF
+|    ↓
+|   Multer memoryStorage
+|    ↓
+|   req.file.buffer
+|    ↓
+|   Cloudinary upload_stream()
+|
+| Isse RAW PDF upload reliable rahega.
 |
 |--------------------------------------------------------------------------
 */
 
 const uploadResume =
   multer({
-    storage,
+    storage:
+      multer.memoryStorage(),
 
     fileFilter: (
       req,
       file,
       cb
     ) => {
-      /*
-      |--------------------------------------------------------------------------
-      | DEBUG
-      |--------------------------------------------------------------------------
-      */
-
       console.log(
         '\n========================================'
       );
@@ -528,7 +517,7 @@ const uploadResume =
 
       /*
       |--------------------------------------------------------------------------
-      | REJECT NON-PDF
+      | REJECT PDF
       |--------------------------------------------------------------------------
       */
 

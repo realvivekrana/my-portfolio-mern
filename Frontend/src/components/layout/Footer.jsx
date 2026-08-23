@@ -85,10 +85,13 @@ function Footer() {
   |--------------------------------------------------------------------------
   */
 
+  // FIX: `resume.url` has a schema default ('/resume.pdf') that is
+  // truthy even before any resume is ever uploaded. Only
+  // `resume.fileName` (the Cloudinary public_id) is reliable proof
+  // that a real resume file exists.
   const hasResume =
     Boolean(
-      portfolio?.resume?.fileName ||
-      portfolio?.resume?.url
+      portfolio?.resume?.fileName
     );
 
   /*

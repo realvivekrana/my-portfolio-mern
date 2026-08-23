@@ -53,13 +53,43 @@ function Hero() {
   |
   |--------------------------------------------------------------------------
   */
+  /*
+  |--------------------------------------------------------------------------
+  | Public Resume URL
+  |--------------------------------------------------------------------------
+  |
+  | API.defaults.baseURL already contains:
+  |
+  |   /api
+  |
+  | Example:
+  |
+  |   https://backend.example.com/api
+  |
+  | Therefore the public resume endpoint must be:
+  |
+  |   /portfolio/resume/public
+  |
+  | NOT:
+  |
+  |   /portfolio/upload/public-resume
+  |
+  | The /portfolio/resume/public route is registered in
+  | portfolioRoutes.js and redirects to the Cloudinary signed PDF URL.
+  |
+  |--------------------------------------------------------------------------
+  */
+
   const publicResumeBaseURL =
     API.defaults.baseURL || '';
 
-  const publicResumeUrl =
-    `${publicResumeBaseURL.endsWith('/')
+  const normalizedAPIBaseURL =
+    publicResumeBaseURL.endsWith('/')
       ? publicResumeBaseURL.slice(0, -1)
-      : publicResumeBaseURL}/portfolio/upload/public-resume`;
+      : publicResumeBaseURL;
+
+  const publicResumeUrl =
+    `${normalizedAPIBaseURL}/portfolio/resume/public`;
 
   const [resumeUrl, setResumeUrl] =
     useState(publicResumeUrl);
@@ -226,7 +256,13 @@ function Hero() {
     }
 
     try {
-      const response = await fetch(resumeUrl);
+      const response = await fetch(
+        `${resumeUrl}?download=${Date.now()}`,
+        {
+          method: 'GET',
+          cache: 'no-store',
+        }
+      );
 
       if (!response.ok) {
         throw new Error(

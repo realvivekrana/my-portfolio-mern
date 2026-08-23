@@ -44,13 +44,9 @@ const {
 |
 | GET /api/portfolio/upload/public-resume
 |
-| Public portfolio:
-|   → Resume available
+| Public portfolio ka resume yahan se open hoga.
 |
-| Private portfolio:
-|   → Resume blocked
-|
-| Authentication is intentionally NOT required here.
+| Authentication required nahi hai.
 |
 |--------------------------------------------------------------------------
 */
@@ -62,12 +58,50 @@ router.get(
 
 /*
 |--------------------------------------------------------------------------
+| PUBLIC RESUME - BACKWARD COMPATIBILITY
+|--------------------------------------------------------------------------
+|
+| GET /api/portfolio/upload/resume/public
+|
+| Purane database / frontend versions mein agar ye URL save hai,
+| to resume phir bhi properly open ho jayega.
+|
+| Authentication required nahi hai.
+|
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/resume/public',
+  getPublicResume
+);
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC RESUME - OLD ROUTE COMPATIBILITY
+|--------------------------------------------------------------------------
+|
+| GET /api/portfolio/resume/public
+|
+| Kuch purane records mein ye URL save ho sakta hai.
+|
+| Is route ko direct portfolio upload router mein nahi rakha ja sakta,
+| kyunki router /api/portfolio/upload ke andar mounted hai.
+|
+| Isliye actual old route server.js/portfolioRoutes.js level par
+| separately handle karna recommended hai.
+|
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
 | PROTECTED ADMIN RESUME
 |--------------------------------------------------------------------------
 |
 | GET /api/portfolio/upload/resume
 |
-| Only authenticated admin can access this endpoint.
+| Sirf authenticated admin resume access kar sakta hai.
 |
 |--------------------------------------------------------------------------
 */
@@ -85,7 +119,7 @@ router.get(
 |
 | GET /api/portfolio/upload/resume/info
 |
-| Only authenticated admin can access resume metadata.
+| Admin dashboard current resume ki information fetch karega.
 |
 |--------------------------------------------------------------------------
 */
@@ -103,10 +137,10 @@ router.get(
 |
 | POST /api/portfolio/upload/resume
 |
-| Protected admin endpoint.
+| Admin dashboard se PDF resume upload hoga.
 |
-| Cloudinary:
-|   PDF → RAW resource
+| Field name:
+|   resume
 |
 |--------------------------------------------------------------------------
 */
@@ -125,10 +159,10 @@ router.post(
 |
 | POST /api/portfolio/upload/profile-image
 |
-| Protected admin endpoint.
+| Admin dashboard se profile image upload hogi.
 |
-| Cloudinary:
-|   JPG / JPEG / PNG / WEBP → IMAGE resource
+| Field name:
+|   profileImage
 |
 |--------------------------------------------------------------------------
 */

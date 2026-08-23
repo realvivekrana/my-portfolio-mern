@@ -171,12 +171,39 @@ const updatePortfolio = async (
     */
 
     if (resume) {
+      /*
+      |--------------------------------------------------------------------------
+      | FIX: url and fileName are SERVER-AUTHORITATIVE
+      |--------------------------------------------------------------------------
+      |
+      | These two must ONLY ever be set by the actual resume upload
+      | endpoint (uploadResume in portfolioUploadController.js), which
+      | knows the real Cloudinary public_id and the correct route path.
+      |
+      | Previously, this endpoint blindly merged whatever the admin's
+      | Profile form sent — including a stale/incorrect `url` value
+      | left over in the form from before a fix was deployed — and
+      | that silently overwrote the correct value on every unrelated
+      | "Save Profile" click. This is why the resume kept breaking
+      | again even after the upload endpoint was fixed.
+      |
+      | Client is still allowed to edit `originalName` (display name).
+      |
+      |--------------------------------------------------------------------------
+      */
+
+      const {
+        url: _ignoredUrl,
+        fileName: _ignoredFileName,
+        ...safeResumeFields
+      } = resume;
+
       portfolio.resume = {
         ...(
           portfolio.resume?.toObject?.() ||
           {}
         ),
-        ...resume,
+        ...safeResumeFields,
       };
     }
 

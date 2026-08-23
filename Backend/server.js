@@ -1,9 +1,44 @@
-const express = require('express');
+/*
+|--------------------------------------------------------------------------
+| LOAD ENVIRONMENT VARIABLES FIRST
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| dotenv.config() ko sabhi routes/controllers import karne se
+| pehle run karna zaroori hai.
+|
+| Cloudinary configuration process.env se values read karti hai.
+|
+|--------------------------------------------------------------------------
+*/
+
 const dotenv = require('dotenv');
+
+dotenv.config();
+
+/*
+|--------------------------------------------------------------------------
+| CORE IMPORTS
+|--------------------------------------------------------------------------
+*/
+
+const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+/*
+|--------------------------------------------------------------------------
+| DATABASE
+|--------------------------------------------------------------------------
+*/
+
 const connectDB = require('./config/db');
+
+/*
+|--------------------------------------------------------------------------
+| ROUTES
+|--------------------------------------------------------------------------
+*/
 
 const projectRoutes = require('./routes/projectRoutes');
 const contactRoutes = require('./routes/contactRoutes');
@@ -13,6 +48,12 @@ const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 
+/*
+|--------------------------------------------------------------------------
+| ERROR MIDDLEWARE
+|--------------------------------------------------------------------------
+*/
+
 const {
   notFound,
   errorHandler,
@@ -20,15 +61,7 @@ const {
 
 /*
 |--------------------------------------------------------------------------
-| Load Environment Variables
-|--------------------------------------------------------------------------
-*/
-
-dotenv.config();
-
-/*
-|--------------------------------------------------------------------------
-| Connect To MongoDB
+| CONNECT TO MONGODB
 |--------------------------------------------------------------------------
 */
 
@@ -36,7 +69,7 @@ connectDB();
 
 /*
 |--------------------------------------------------------------------------
-| Express App
+| EXPRESS APP
 |--------------------------------------------------------------------------
 */
 
@@ -48,17 +81,11 @@ const app = express();
 |--------------------------------------------------------------------------
 |
 | Development:
-|
 |   http://localhost:5173
 |   http://localhost:5174
 |
 | Production:
-|
 |   FRONTEND_URL from .env
-|
-| Example:
-|
-|   FRONTEND_URL=https://your-portfolio.vercel.app
 |
 |--------------------------------------------------------------------------
 */
@@ -72,7 +99,7 @@ const allowedOrigins = [
 
 /*
 |--------------------------------------------------------------------------
-| Add Production Frontend URL
+| ADD PRODUCTION FRONTEND URL
 |--------------------------------------------------------------------------
 */
 
@@ -87,7 +114,7 @@ if (process.env.FRONTEND_URL) {
 
 /*
 |--------------------------------------------------------------------------
-| CORS Configuration
+| CORS CONFIGURATION
 |--------------------------------------------------------------------------
 */
 
@@ -96,13 +123,14 @@ app.use(
     origin: (origin, callback) => {
       /*
       |--------------------------------------------------------------------------
-      | Allow requests without an Origin
+      | Allow Requests Without Origin
       |--------------------------------------------------------------------------
       |
       | Useful for:
       | - Postman
       | - Server-to-server requests
       | - Health checks
+      |
       |--------------------------------------------------------------------------
       */
 
@@ -155,7 +183,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| JSON Body Parser
+| JSON BODY PARSER
 |--------------------------------------------------------------------------
 */
 
@@ -167,7 +195,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| URL Encoded Body Parser
+| URL ENCODED BODY PARSER
 |--------------------------------------------------------------------------
 */
 
@@ -188,27 +216,20 @@ app.use(
 | Resume PDFs must NOT be directly publicly accessible.
 |
 | Public uploaded assets:
-|
 |   - Profile images
 |   - Certificate images
 |   - Other non-PDF uploads
 |
-| Protected:
-|
-|   - Resume PDF
-|
-| Resume is served through:
-|
-|   GET /api/portfolio/upload/resume
-|
-| according to the authentication/public-resume logic.
+| Resume:
+|   - Protected through API routes
+|   - Cloudinary is used for the actual resume storage
 |
 |--------------------------------------------------------------------------
 */
 
 /*
 |--------------------------------------------------------------------------
-| Upload Directory
+| UPLOAD DIRECTORY
 |--------------------------------------------------------------------------
 */
 
@@ -220,7 +241,7 @@ const uploadsDirectory =
 
 /*
 |--------------------------------------------------------------------------
-| Public Upload Middleware
+| PUBLIC UPLOAD MIDDLEWARE
 |--------------------------------------------------------------------------
 */
 
@@ -229,7 +250,7 @@ app.use(
   (req, res, next) => {
     /*
     |--------------------------------------------------------------------------
-    | Get Requested Filename
+    | GET REQUESTED FILENAME
     |--------------------------------------------------------------------------
     */
 
@@ -240,7 +261,7 @@ app.use(
 
     /*
     |--------------------------------------------------------------------------
-    | Detect PDF
+    | DETECT PDF
     |--------------------------------------------------------------------------
     */
 
@@ -251,7 +272,7 @@ app.use(
 
     /*
     |--------------------------------------------------------------------------
-    | Block Direct PDF Access
+    | BLOCK DIRECT PDF ACCESS
     |--------------------------------------------------------------------------
     */
 
@@ -274,7 +295,7 @@ app.use(
 
 /*
 |--------------------------------------------------------------------------
-| Health Check
+| HEALTH CHECK
 |--------------------------------------------------------------------------
 */
 
@@ -331,6 +352,16 @@ app.use(
 |--------------------------------------------------------------------------
 | PORTFOLIO CONTENT ROUTES
 |--------------------------------------------------------------------------
+|
+| Includes:
+|   GET  /api/portfolio
+|   GET  /api/portfolio/resume/public
+|   PUT  /api/portfolio
+|   PUT  /api/portfolio/experience
+|   PUT  /api/portfolio/education
+|   etc.
+|
+|--------------------------------------------------------------------------
 */
 
 app.use(
@@ -341,6 +372,15 @@ app.use(
 /*
 |--------------------------------------------------------------------------
 | PORTFOLIO UPLOAD ROUTES
+|--------------------------------------------------------------------------
+|
+| Includes:
+|   POST /api/portfolio/upload/resume
+|   GET  /api/portfolio/upload/resume
+|   GET  /api/portfolio/upload/resume/info
+|   GET  /api/portfolio/upload/public-resume
+|   POST /api/portfolio/upload/profile-image
+|
 |--------------------------------------------------------------------------
 */
 
@@ -377,6 +417,7 @@ app.use(
 |--------------------------------------------------------------------------
 |
 | Must remain AFTER all API routes.
+|
 |--------------------------------------------------------------------------
 */
 
@@ -405,7 +446,7 @@ const PORT =
 
 /*
 |--------------------------------------------------------------------------
-| Start Server
+| START SERVER
 |--------------------------------------------------------------------------
 */
 
@@ -430,5 +471,39 @@ app.listen(
         `🔗 Frontend URL: ${process.env.FRONTEND_URL}`
       );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cloudinary Configuration Check
+    |--------------------------------------------------------------------------
+    |
+    | Secret ko console mein kabhi print nahi karna.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    console.log(
+      `☁️ Cloudinary Cloud Name: ${
+        process.env.CLOUDINARY_CLOUD_NAME
+          ? 'Loaded'
+          : 'MISSING'
+      }`
+    );
+
+    console.log(
+      `☁️ Cloudinary API Key: ${
+        process.env.CLOUDINARY_API_KEY
+          ? 'Loaded'
+          : 'MISSING'
+      }`
+    );
+
+    console.log(
+      `☁️ Cloudinary API Secret: ${
+        process.env.CLOUDINARY_API_SECRET
+          ? 'Loaded'
+          : 'MISSING'
+      }`
+    );
   }
 );
