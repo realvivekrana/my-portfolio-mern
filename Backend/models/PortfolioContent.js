@@ -568,6 +568,284 @@ const portfolioContentSchema = new mongoose.Schema(
 
     /*
     |--------------------------------------------------------------------------
+    | SKILLS
+    |--------------------------------------------------------------------------
+    |
+    | Admin Dashboard
+    |       ↓
+    | PUT /api/portfolio
+    |       ↓
+    | MongoDB
+    |       ↓
+    | GET /api/portfolio
+    |       ↓
+    | Public Skills Section
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    skills: {
+      type: [
+        {
+          title: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          description: {
+            type: String,
+            trim: true,
+            default: '',
+          },
+
+          icon: {
+            type: String,
+            trim: true,
+            default: 'code',
+          },
+
+          skills: {
+            type: [
+              {
+                name: {
+                  type: String,
+                  trim: true,
+                  default: '',
+                },
+
+                icon: {
+                  type: String,
+                  trim: true,
+                  default: 'code',
+                },
+
+                level: {
+                  type: String,
+                  trim: true,
+                  default: 'Intermediate',
+                },
+
+                progress: {
+                  type: Number,
+                  min: 0,
+                  max: 100,
+                  default: 70,
+                },
+
+                displayOrder: {
+                  type: Number,
+                  default: 0,
+                },
+              },
+            ],
+
+            default: [],
+          },
+
+          displayOrder: {
+            type: Number,
+            default: 0,
+          },
+
+          isVisible: {
+            type: Boolean,
+            default: true,
+          },
+        },
+      ],
+
+      /*
+      |--------------------------------------------------------------------------
+      | DEFAULT SKILLS
+      |--------------------------------------------------------------------------
+      */
+
+      default: [
+        {
+          title: 'Frontend',
+
+          description:
+            'Building responsive, interactive and user-friendly interfaces.',
+
+          icon: 'code',
+
+          skills: [
+            {
+              name: 'HTML',
+              icon: 'html',
+              level: 'Advanced',
+              progress: 90,
+              displayOrder: 0,
+            },
+
+            {
+              name: 'CSS',
+              icon: 'css',
+              level: 'Advanced',
+              progress: 88,
+              displayOrder: 1,
+            },
+
+            {
+              name: 'JavaScript',
+              icon: 'javascript',
+              level: 'Advanced',
+              progress: 85,
+              displayOrder: 2,
+            },
+
+            {
+              name: 'React',
+              icon: 'react',
+              level: 'Advanced',
+              progress: 85,
+              displayOrder: 3,
+            },
+
+            {
+              name: 'Tailwind CSS',
+              icon: 'tailwind',
+              level: 'Intermediate',
+              progress: 78,
+              displayOrder: 4,
+            },
+
+            {
+              name: 'Bootstrap',
+              icon: 'bootstrap',
+              level: 'Intermediate',
+              progress: 75,
+              displayOrder: 5,
+            },
+          ],
+
+          displayOrder: 0,
+
+          isVisible: true,
+        },
+
+        {
+          title: 'Backend',
+
+          description:
+            'Developing server-side applications and RESTful APIs.',
+
+          icon: 'server',
+
+          skills: [
+            {
+              name: 'Node.js',
+              icon: 'node',
+              level: 'Intermediate',
+              progress: 75,
+              displayOrder: 0,
+            },
+
+            {
+              name: 'Express.js',
+              icon: 'express',
+              level: 'Intermediate',
+              progress: 75,
+              displayOrder: 1,
+            },
+
+            {
+              name: 'REST APIs',
+              icon: 'server',
+              level: 'Intermediate',
+              progress: 72,
+              displayOrder: 2,
+            },
+          ],
+
+          displayOrder: 1,
+
+          isVisible: true,
+        },
+
+        {
+          title: 'Database',
+
+          description:
+            'Managing application data and database-driven solutions.',
+
+          icon: 'database',
+
+          skills: [
+            {
+              name: 'MongoDB',
+              icon: 'mongodb',
+              level: 'Intermediate',
+              progress: 78,
+              displayOrder: 0,
+            },
+
+            {
+              name: 'MySQL',
+              icon: 'mysql',
+              level: 'Intermediate',
+              progress: 68,
+              displayOrder: 1,
+            },
+          ],
+
+          displayOrder: 2,
+
+          isVisible: true,
+        },
+
+        {
+          title: 'Tools',
+
+          description:
+            'Development tools and workflows used in everyday projects.',
+
+          icon: 'tools',
+
+          skills: [
+            {
+              name: 'Git',
+              icon: 'git',
+              level: 'Intermediate',
+              progress: 80,
+              displayOrder: 0,
+            },
+
+            {
+              name: 'GitHub',
+              icon: 'github',
+              level: 'Intermediate',
+              progress: 82,
+              displayOrder: 1,
+            },
+
+            {
+              name: 'Postman',
+              icon: 'postman',
+              level: 'Intermediate',
+              progress: 75,
+              displayOrder: 2,
+            },
+
+            {
+              name: 'VS Code',
+              icon: 'code',
+              level: 'Advanced',
+              progress: 90,
+              displayOrder: 3,
+            },
+          ],
+
+          displayOrder: 3,
+
+          isVisible: true,
+        },
+      ],
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | VISIBILITY / SITE SETTINGS
     |--------------------------------------------------------------------------
     */

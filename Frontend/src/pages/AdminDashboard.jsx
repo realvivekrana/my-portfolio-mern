@@ -111,29 +111,6 @@ function AdminDashboard() {
 
 
   // =========================================================
-  // PORTFOLIO VISIBILITY STATE
-  // =========================================================
-
-  const defaultPortfolioSettings = {
-    portfolioVisibility: 'public',
-    showAvailabilityBadge: true,
-    showGithub: true,
-    showLinkedin: true,
-    showResume: true,
-    showAdminAccess: false,
-  };
-
-  const [portfolioSettings, setPortfolioSettings] =
-    useState(defaultPortfolioSettings);
-
-  const [portfolioSettingsLoading, setPortfolioSettingsLoading] =
-    useState(false);
-
-  const [portfolioSettingsSaving, setPortfolioSettingsSaving] =
-    useState(false);
-
-
-  // =========================================================
   // RESUME STATE
   // =========================================================
 
@@ -208,6 +185,30 @@ function AdminDashboard() {
       setProjectsLoading(false);
     }
   };
+
+
+  // =========================================================
+  // PORTFOLIO VISIBILITY STATE
+  // =========================================================
+
+  const defaultPortfolioSettings = {
+    portfolioVisibility: 'public',
+    showAvailabilityBadge: true,
+    showGithub: true,
+    showLinkedin: true,
+    showResume: true,
+    showAdminAccess: false,
+  };
+
+  const [portfolioSettings, setPortfolioSettings] =
+    useState(defaultPortfolioSettings);
+
+  const [portfolioSettingsLoading, setPortfolioSettingsLoading] =
+    useState(false);
+
+  const [portfolioSettingsSaving, setPortfolioSettingsSaving] =
+    useState(false);
+
 
 
   // =========================================================
@@ -298,6 +299,7 @@ function AdminDashboard() {
   };
 
 
+
   // =========================================================
   // PUBLIC RESUME URL
   // =========================================================
@@ -309,6 +311,7 @@ function AdminDashboard() {
       ? baseURL.slice(0, -1)
       : baseURL}/portfolio/upload/public-resume`;
   };
+
 
 
   // =========================================================
@@ -4841,7 +4844,7 @@ function AdminDashboard() {
                       <>
 
                         <a
-                          href={getPublicResumeUrl()}
+                          href={resumeInfo.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
@@ -4851,7 +4854,7 @@ function AdminDashboard() {
                         </a>
 
                         <a
-                          href={getPublicResumeUrl()}
+                          href={resumeInfo.url}
                           download={resumeInfo.originalName || 'Vivek-Rana-Resume.pdf'}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                         >
@@ -6208,6 +6211,7 @@ function AdminDashboard() {
                   </div>
 
 
+
                   {/* =================================================
                       CHANGE PASSWORD
                   ================================================== */}
@@ -6220,6 +6224,7 @@ function AdminDashboard() {
                   >
                     <AdminPasswordManager />
                   </div>
+
 
                 </div>
               )}

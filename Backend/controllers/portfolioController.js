@@ -26,114 +26,13 @@ const getMainPortfolio = async () => {
 |--------------------------------------------------------------------------
 | GET /api/portfolio
 |
-| Public:
-|   Public portfolio -> complete data
-|   Private portfolio -> private response
-|
-| Admin:
-|   Public/private dono condition mein complete portfolio access.
+| Public + Admin dono ke liye portfolio data fetch karega.
 |--------------------------------------------------------------------------
 */
 
 const getPortfolio = async (req, res) => {
   try {
     const portfolio = await getMainPortfolio();
-
-    /*
-    |--------------------------------------------------------------------------
-    | PORTFOLIO VISIBILITY
-    |--------------------------------------------------------------------------
-    */
-
-    const visibility =
-      portfolio.settings?.portfolioVisibility ||
-      'public';
-
-    /*
-    |--------------------------------------------------------------------------
-    | OPTIONAL ADMIN AUTHENTICATION
-    |--------------------------------------------------------------------------
-    |
-    | /api/portfolio public route hai, isliye protect middleware directly
-    | route par nahi laga sakte.
-    |
-    | Agar Authorization Bearer token available hai to yahan manually
-    | verify karke check karenge ki request admin ki hai ya nahi.
-    |
-    |--------------------------------------------------------------------------
-    */
-
-    let isAdmin = false;
-
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer ')
-    ) {
-      try {
-        const token =
-          req.headers.authorization.split(' ')[1];
-
-        const jwt = require('jsonwebtoken');
-        const Admin = require('../models/Admin');
-
-        const decoded = jwt.verify(
-          token,
-          process.env.JWT_SECRET
-        );
-
-        const admin = await Admin.findById(
-          decoded.id
-        ).select('_id');
-
-        if (admin) {
-          isAdmin = true;
-        }
-      } catch (authError) {
-        /*
-        |--------------------------------------------------------------------------
-        | Invalid / Expired Token
-        |--------------------------------------------------------------------------
-        |
-        | Public request ko fail nahi karenge.
-        | Is request ko normal visitor treat karenge.
-        |
-        |--------------------------------------------------------------------------
-        */
-
-        isAdmin = false;
-      }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PRIVATE PORTFOLIO
-    |--------------------------------------------------------------------------
-    |
-    | Agar portfolio private hai aur visitor admin nahi hai,
-    | to complete portfolio data expose nahi karenge.
-    |
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      visibility === 'private' &&
-      !isAdmin
-    ) {
-      return res.status(200).json({
-        success: true,
-        message: 'Portfolio is currently private',
-        data: {
-          isPrivate: true,
-          portfolioVisibility: 'private',
-        },
-      });
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PUBLIC / ADMIN RESPONSE
-    |--------------------------------------------------------------------------
-    */
 
     return res.status(200).json({
       success: true,
@@ -156,15 +55,18 @@ const getPortfolio = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE PORTFOLIO
+| UPDATE COMPLETE PORTFOLIO
 |--------------------------------------------------------------------------
 | PUT /api/portfolio
 |
-| Admin Dashboard se portfolio information update karega.
+| Admin Dashboard se portfolio ke multiple sections update honge.
 |--------------------------------------------------------------------------
 */
 
-const updatePortfolio = async (req, res) => {
+const updatePortfolio = async (
+  req,
+  res
+) => {
   try {
     const {
       hero,
@@ -172,10 +74,11 @@ const updatePortfolio = async (req, res) => {
       contact,
       socialLinks,
       resume,
-      seo,
-      settings,
       experience,
       education,
+      skills,
+      seo,
+      settings,
     } = req.body;
 
     const portfolio =
@@ -187,9 +90,12 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (hero !== undefined) {
+    if (hero) {
       portfolio.hero = {
-        ...portfolio.hero?.toObject?.(),
+        ...(
+          portfolio.hero?.toObject?.() ||
+          {}
+        ),
         ...hero,
       };
     }
@@ -200,23 +106,27 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (about !== undefined) {
+    if (about) {
       portfolio.about = {
-        ...portfolio.about?.toObject?.(),
+        ...(
+          portfolio.about?.toObject?.() ||
+          {}
+        ),
         ...about,
       };
 
       /*
-      |--------------------------------------------------------------------------
+      |----------------------------------------------------------------------
       | CURRENT ROLE
-      |--------------------------------------------------------------------------
+      |----------------------------------------------------------------------
       */
 
-      if (
-        about.currentRole !== undefined
-      ) {
+      if (about.currentRole) {
         portfolio.about.currentRole = {
-          ...portfolio.about.currentRole?.toObject?.(),
+          ...(
+            portfolio.about.currentRole?.toObject?.() ||
+            {}
+          ),
           ...about.currentRole,
         };
       }
@@ -228,9 +138,12 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (contact !== undefined) {
+    if (contact) {
       portfolio.contact = {
-        ...portfolio.contact?.toObject?.(),
+        ...(
+          portfolio.contact?.toObject?.() ||
+          {}
+        ),
         ...contact,
       };
     }
@@ -241,9 +154,12 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (socialLinks !== undefined) {
+    if (socialLinks) {
       portfolio.socialLinks = {
-        ...portfolio.socialLinks?.toObject?.(),
+        ...(
+          portfolio.socialLinks?.toObject?.() ||
+          {}
+        ),
         ...socialLinks,
       };
     }
@@ -254,11 +170,265 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (resume !== undefined) {
+    if (resume) {
       portfolio.resume = {
-        ...portfolio.resume?.toObject?.(),
+        ...(
+          portfolio.resume?.toObject?.() ||
+          {}
+        ),
         ...resume,
       };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPERIENCE
+    |--------------------------------------------------------------------------
+    */
+
+    if (Array.isArray(experience)) {
+      portfolio.experience =
+        experience.map(
+          (item, index) => ({
+            role:
+              item.role || '',
+
+            company:
+              item.company || '',
+
+            duration:
+              item.duration || '',
+
+            type:
+              item.type ||
+              'Full-time',
+
+            location:
+              item.location || '',
+
+            description:
+              item.description || '',
+
+            responsibilities:
+              Array.isArray(
+                item.responsibilities
+              )
+                ? item.responsibilities
+                    .filter(Boolean)
+                    .map(
+                      (
+                        responsibility
+                      ) => {
+                        /*
+                        |------------------------------------------------------
+                        | Old format support
+                        |------------------------------------------------------
+                        */
+
+                        if (
+                          typeof responsibility ===
+                          'string'
+                        ) {
+                          return {
+                            icon: 'code',
+                            text:
+                              responsibility,
+                          };
+                        }
+
+                        return {
+                          icon:
+                            responsibility.icon ||
+                            'code',
+
+                          text:
+                            responsibility.text ||
+                            '',
+                        };
+                      }
+                    )
+                : [],
+
+            technologies:
+              Array.isArray(
+                item.technologies
+              )
+                ? item.technologies.filter(
+                    Boolean
+                  )
+                : [],
+
+            displayOrder:
+              Number.isFinite(
+                Number(
+                  item.displayOrder
+                )
+              )
+                ? Number(
+                    item.displayOrder
+                  )
+                : index,
+
+            isVisible:
+              item.isVisible !== false,
+          })
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EDUCATION
+    |--------------------------------------------------------------------------
+    */
+
+    if (Array.isArray(education)) {
+      portfolio.education =
+        education.map(
+          (item, index) => ({
+            degree:
+              item.degree || '',
+
+            institution:
+              item.institution ||
+              '',
+
+            duration:
+              item.duration || '',
+
+            status:
+              item.status || '',
+
+            description:
+              item.description ||
+              '',
+
+            highlights:
+              Array.isArray(
+                item.highlights
+              )
+                ? item.highlights.filter(
+                    Boolean
+                  )
+                : [],
+
+            icon:
+              item.icon ||
+              'book',
+
+            displayOrder:
+              Number.isFinite(
+                Number(
+                  item.displayOrder
+                )
+              )
+                ? Number(
+                    item.displayOrder
+                  )
+                : index,
+
+            isVisible:
+              item.isVisible !== false,
+          })
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SKILLS
+    |--------------------------------------------------------------------------
+    |
+    | Admin Dashboard
+    |       ↓
+    | PUT /api/portfolio
+    |       ↓
+    | MongoDB
+    |       ↓
+    | GET /api/portfolio
+    |       ↓
+    | Public Skills
+    |--------------------------------------------------------------------------
+    */
+
+    if (Array.isArray(skills)) {
+      portfolio.skills =
+        skills.map(
+          (
+            category,
+            categoryIndex
+          ) => ({
+            title:
+              category.title || '',
+
+            description:
+              category.description ||
+              '',
+
+            icon:
+              category.icon ||
+              'code',
+
+            displayOrder:
+              Number.isFinite(
+                Number(
+                  category.displayOrder
+                )
+              )
+                ? Number(
+                    category.displayOrder
+                  )
+                : categoryIndex,
+
+            isVisible:
+              category.isVisible !==
+              false,
+
+            skills:
+              Array.isArray(
+                category.skills
+              )
+                ? category.skills.map(
+                    (
+                      skill,
+                      skillIndex
+                    ) => ({
+                      name:
+                        skill.name ||
+                        '',
+
+                      icon:
+                        skill.icon ||
+                        'code',
+
+                      level:
+                        skill.level ||
+                        'Intermediate',
+
+                      progress:
+                        Math.min(
+                          100,
+                          Math.max(
+                            0,
+                            Number(
+                              skill.progress
+                            ) || 0
+                          )
+                        ),
+
+                      displayOrder:
+                        Number.isFinite(
+                          Number(
+                            skill.displayOrder
+                          )
+                        )
+                          ? Number(
+                              skill.displayOrder
+                            )
+                          : skillIndex,
+                    })
+                  )
+                : [],
+          })
+        );
     }
 
     /*
@@ -267,9 +437,12 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (seo !== undefined) {
+    if (seo) {
       portfolio.seo = {
-        ...portfolio.seo?.toObject?.(),
+        ...(
+          portfolio.seo?.toObject?.() ||
+          {}
+        ),
         ...seo,
       };
     }
@@ -280,49 +453,14 @@ const updatePortfolio = async (req, res) => {
     |--------------------------------------------------------------------------
     */
 
-    if (settings !== undefined) {
+    if (settings) {
       portfolio.settings = {
-        ...portfolio.settings?.toObject?.(),
+        ...(
+          portfolio.settings?.toObject?.() ||
+          {}
+        ),
         ...settings,
       };
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EXPERIENCE
-    |--------------------------------------------------------------------------
-    */
-
-    if (experience !== undefined) {
-      if (!Array.isArray(experience)) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'Experience must be an array',
-        });
-      }
-
-      portfolio.experience =
-        experience;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EDUCATION
-    |--------------------------------------------------------------------------
-    */
-
-    if (education !== undefined) {
-      if (!Array.isArray(education)) {
-        return res.status(400).json({
-          success: false,
-          message:
-            'Education must be an array',
-        });
-      }
-
-      portfolio.education =
-        education;
     }
 
     /*
@@ -332,6 +470,12 @@ const updatePortfolio = async (req, res) => {
     */
 
     await portfolio.save();
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     return res.status(200).json({
       success: true,
@@ -371,7 +515,9 @@ const updateExperience = async (
       experience,
     } = req.body;
 
-    if (!Array.isArray(experience)) {
+    if (
+      !Array.isArray(experience)
+    ) {
       return res.status(400).json({
         success: false,
         message:
@@ -383,7 +529,85 @@ const updateExperience = async (
       await getMainPortfolio();
 
     portfolio.experience =
-      experience;
+      experience.map(
+        (item, index) => ({
+          role:
+            item.role || '',
+
+          company:
+            item.company || '',
+
+          duration:
+            item.duration || '',
+
+          type:
+            item.type ||
+            'Full-time',
+
+          location:
+            item.location || '',
+
+          description:
+            item.description || '',
+
+          responsibilities:
+            Array.isArray(
+              item.responsibilities
+            )
+              ? item.responsibilities
+                  .filter(Boolean)
+                  .map(
+                    (
+                      responsibility
+                    ) => {
+                      if (
+                        typeof responsibility ===
+                        'string'
+                      ) {
+                        return {
+                          icon: 'code',
+                          text:
+                            responsibility,
+                        };
+                      }
+
+                      return {
+                        icon:
+                          responsibility.icon ||
+                          'code',
+
+                        text:
+                          responsibility.text ||
+                          '',
+                      };
+                    }
+                  )
+              : [],
+
+          technologies:
+            Array.isArray(
+              item.technologies
+            )
+              ? item.technologies.filter(
+                  Boolean
+                )
+              : [],
+
+          displayOrder:
+            Number.isFinite(
+              Number(
+                item.displayOrder
+              )
+            )
+              ? Number(
+                  item.displayOrder
+                )
+              : index,
+
+          isVisible:
+            item.isVisible !== false,
+        })
+      );
 
     await portfolio.save();
 
@@ -391,8 +615,7 @@ const updateExperience = async (
       success: true,
       message:
         'Experience updated successfully',
-      data:
-        portfolio.experience,
+      data: portfolio.experience,
     });
   } catch (error) {
     console.error(
@@ -426,7 +649,9 @@ const updateEducation = async (
       education,
     } = req.body;
 
-    if (!Array.isArray(education)) {
+    if (
+      !Array.isArray(education)
+    ) {
       return res.status(400).json({
         success: false,
         message:
@@ -438,7 +663,53 @@ const updateEducation = async (
       await getMainPortfolio();
 
     portfolio.education =
-      education;
+      education.map(
+        (item, index) => ({
+          degree:
+            item.degree || '',
+
+          institution:
+            item.institution ||
+            '',
+
+          duration:
+            item.duration || '',
+
+          status:
+            item.status || '',
+
+          description:
+            item.description ||
+            '',
+
+          highlights:
+            Array.isArray(
+              item.highlights
+            )
+              ? item.highlights.filter(
+                  Boolean
+                )
+              : [],
+
+          icon:
+            item.icon ||
+            'book',
+
+          displayOrder:
+            Number.isFinite(
+              Number(
+                item.displayOrder
+              )
+            )
+              ? Number(
+                  item.displayOrder
+                )
+              : index,
+
+          isVisible:
+            item.isVisible !== false,
+        })
+      );
 
     await portfolio.save();
 
@@ -446,8 +717,7 @@ const updateEducation = async (
       success: true,
       message:
         'Education updated successfully',
-      data:
-        portfolio.education,
+      data: portfolio.education,
     });
   } catch (error) {
     console.error(
@@ -481,8 +751,11 @@ const updateHero = async (
       await getMainPortfolio();
 
     portfolio.hero = {
-      ...portfolio.hero?.toObject?.(),
-      ...req.body,
+      ...(
+        portfolio.hero?.toObject?.() ||
+        {}
+      ),
+      ...(req.body || {}),
     };
 
     await portfolio.save();
@@ -490,9 +763,8 @@ const updateHero = async (
     return res.status(200).json({
       success: true,
       message:
-        'Hero information updated successfully',
-      data:
-        portfolio.hero,
+        'Hero updated successfully',
+      data: portfolio.hero,
     });
   } catch (error) {
     console.error(
@@ -503,7 +775,7 @@ const updateHero = async (
     return res.status(500).json({
       success: false,
       message:
-        'Failed to update hero information',
+        'Failed to update hero',
       error: error.message,
     });
   }
@@ -525,9 +797,15 @@ const updateAbout = async (
     const portfolio =
       await getMainPortfolio();
 
+    const aboutData =
+      req.body || {};
+
     portfolio.about = {
-      ...portfolio.about?.toObject?.(),
-      ...req.body,
+      ...(
+        portfolio.about?.toObject?.() ||
+        {}
+      ),
+      ...aboutData,
     };
 
     /*
@@ -537,12 +815,14 @@ const updateAbout = async (
     */
 
     if (
-      req.body.currentRole !==
-      undefined
+      aboutData.currentRole
     ) {
       portfolio.about.currentRole = {
-        ...portfolio.about.currentRole?.toObject?.(),
-        ...req.body.currentRole,
+        ...(
+          portfolio.about.currentRole?.toObject?.() ||
+          {}
+        ),
+        ...aboutData.currentRole,
       };
     }
 
@@ -551,9 +831,8 @@ const updateAbout = async (
     return res.status(200).json({
       success: true,
       message:
-        'About information updated successfully',
-      data:
-        portfolio.about,
+        'About updated successfully',
+      data: portfolio.about,
     });
   } catch (error) {
     console.error(
@@ -564,7 +843,7 @@ const updateAbout = async (
     return res.status(500).json({
       success: false,
       message:
-        'Failed to update about information',
+        'Failed to update about',
       error: error.message,
     });
   }
@@ -587,8 +866,11 @@ const updateContact = async (
       await getMainPortfolio();
 
     portfolio.contact = {
-      ...portfolio.contact?.toObject?.(),
-      ...req.body,
+      ...(
+        portfolio.contact?.toObject?.() ||
+        {}
+      ),
+      ...(req.body || {}),
     };
 
     await portfolio.save();
@@ -596,9 +878,8 @@ const updateContact = async (
     return res.status(200).json({
       success: true,
       message:
-        'Contact information updated successfully',
-      data:
-        portfolio.contact,
+        'Contact updated successfully',
+      data: portfolio.contact,
     });
   } catch (error) {
     console.error(
@@ -609,7 +890,7 @@ const updateContact = async (
     return res.status(500).json({
       success: false,
       message:
-        'Failed to update contact information',
+        'Failed to update contact',
       error: error.message,
     });
   }
@@ -632,8 +913,11 @@ const updateSocialLinks = async (
       await getMainPortfolio();
 
     portfolio.socialLinks = {
-      ...portfolio.socialLinks?.toObject?.(),
-      ...req.body,
+      ...(
+        portfolio.socialLinks?.toObject?.() ||
+        {}
+      ),
+      ...(req.body || {}),
     };
 
     await portfolio.save();
@@ -677,8 +961,11 @@ const updateSEO = async (
       await getMainPortfolio();
 
     portfolio.seo = {
-      ...portfolio.seo?.toObject?.(),
-      ...req.body,
+      ...(
+        portfolio.seo?.toObject?.() ||
+        {}
+      ),
+      ...(req.body || {}),
     };
 
     await portfolio.save();
@@ -686,9 +973,8 @@ const updateSEO = async (
     return res.status(200).json({
       success: true,
       message:
-        'SEO information updated successfully',
-      data:
-        portfolio.seo,
+        'SEO updated successfully',
+      data: portfolio.seo,
     });
   } catch (error) {
     console.error(
@@ -699,7 +985,7 @@ const updateSEO = async (
     return res.status(500).json({
       success: false,
       message:
-        'Failed to update SEO information',
+        'Failed to update SEO',
       error: error.message,
     });
   }
@@ -711,17 +997,6 @@ const updateSEO = async (
 |--------------------------------------------------------------------------
 | PUT /api/portfolio/settings
 |--------------------------------------------------------------------------
-|
-| Supported:
-|
-| portfolioVisibility
-| showAvailabilityBadge
-| showGithub
-| showLinkedin
-| showResume
-| showAdminAccess
-|
-|--------------------------------------------------------------------------
 */
 
 const updateSettings = async (
@@ -732,156 +1007,20 @@ const updateSettings = async (
     const portfolio =
       await getMainPortfolio();
 
-    const {
-      portfolioVisibility,
-      showAvailabilityBadge,
-      showGithub,
-      showLinkedin,
-      showResume,
-      showAdminAccess,
-    } = req.body;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validate Portfolio Visibility
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      portfolioVisibility !==
-        undefined &&
-      !['public', 'private'].includes(
-        portfolioVisibility
-      )
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Portfolio visibility must be either public or private',
-      });
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Existing Settings
-    |--------------------------------------------------------------------------
-    */
-
-    const existingSettings =
-      portfolio.settings?.toObject?.() ||
-      {};
-
-    /*
-    |--------------------------------------------------------------------------
-    | Build Updated Settings
-    |--------------------------------------------------------------------------
-    */
-
-    const updatedSettings = {
-      ...existingSettings,
+    portfolio.settings = {
+      ...(
+        portfolio.settings?.toObject?.() ||
+        {}
+      ),
+      ...(req.body || {}),
     };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Portfolio Visibility
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      portfolioVisibility !==
-      undefined
-    ) {
-      updatedSettings.portfolioVisibility =
-        portfolioVisibility;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Availability Badge
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      showAvailabilityBadge !==
-      undefined
-    ) {
-      updatedSettings.showAvailabilityBadge =
-        Boolean(
-          showAvailabilityBadge
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | GitHub
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      showGithub !==
-      undefined
-    ) {
-      updatedSettings.showGithub =
-        Boolean(showGithub);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | LinkedIn
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      showLinkedin !==
-      undefined
-    ) {
-      updatedSettings.showLinkedin =
-        Boolean(showLinkedin);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Resume
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      showResume !==
-      undefined
-    ) {
-      updatedSettings.showResume =
-        Boolean(showResume);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Admin Access
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      showAdminAccess !==
-      undefined
-    ) {
-      updatedSettings.showAdminAccess =
-        Boolean(showAdminAccess);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | SAVE SETTINGS
-    |--------------------------------------------------------------------------
-    */
-
-    portfolio.settings =
-      updatedSettings;
 
     await portfolio.save();
 
     return res.status(200).json({
       success: true,
       message:
-        'Portfolio settings updated successfully',
+        'Settings updated successfully',
       data:
         portfolio.settings,
     });
@@ -894,7 +1033,7 @@ const updateSettings = async (
     return res.status(500).json({
       success: false,
       message:
-        'Failed to update portfolio settings',
+        'Failed to update settings',
       error: error.message,
     });
   }
@@ -932,7 +1071,7 @@ const updateProfileImage = async (
 
     /*
     |--------------------------------------------------------------------------
-    | IMAGE URL
+    | FILE URL
     |--------------------------------------------------------------------------
     */
 
@@ -970,8 +1109,10 @@ const updateProfileImage = async (
       success: true,
       message:
         'Profile image updated successfully',
-      data:
-        portfolio,
+      data: {
+        profileImage:
+          portfolio.hero.profileImage,
+      },
     });
   } catch (error) {
     console.error(
@@ -1013,8 +1154,10 @@ const removeProfileImage = async (
       success: true,
       message:
         'Profile image removed successfully',
-      data:
-        portfolio,
+      data: {
+        profileImage:
+          portfolio.hero.profileImage,
+      },
     });
   } catch (error) {
     console.error(
@@ -1047,21 +1190,9 @@ const resetPortfolio = async (
     const portfolio =
       await getMainPortfolio();
 
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE EXISTING
-    |--------------------------------------------------------------------------
-    */
-
     await PortfolioContent.deleteOne({
       _id: portfolio._id,
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE FRESH PORTFOLIO
-    |--------------------------------------------------------------------------
-    */
 
     const newPortfolio =
       await PortfolioContent.create({
@@ -1072,8 +1203,7 @@ const resetPortfolio = async (
       success: true,
       message:
         'Portfolio reset successfully',
-      data:
-        newPortfolio,
+      data: newPortfolio,
     });
   } catch (error) {
     console.error(
@@ -1148,6 +1278,7 @@ const deletePortfolio = async (
 
 module.exports = {
   getPortfolio,
+
   updatePortfolio,
 
   updateExperience,
