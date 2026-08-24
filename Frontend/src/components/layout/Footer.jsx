@@ -12,9 +12,6 @@ function Footer() {
   const [portfolio, setPortfolio] =
     useState(null);
 
-  const [loadingPortfolio, setLoadingPortfolio] =
-    useState(true);
-
   const [resumeLoading, setResumeLoading] =
     useState(false);
 
@@ -28,7 +25,26 @@ function Footer() {
   */
 
   const currentYear =
-    new Date().getFullYear();
+  new Date().getFullYear();
+
+const handleSectionClick = (
+  event,
+  sectionId
+) => {
+  event.preventDefault();
+
+  const target =
+    document.getElementById(sectionId);
+
+  if (target) {
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  } else {
+    window.location.hash = sectionId;
+  }
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -39,8 +55,6 @@ function Footer() {
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        setLoadingPortfolio(true);
-
         const response =
           await API.get('/portfolio');
 
@@ -54,8 +68,6 @@ function Footer() {
         );
 
         setPortfolio(null);
-      } finally {
-        setLoadingPortfolio(false);
       }
     };
 

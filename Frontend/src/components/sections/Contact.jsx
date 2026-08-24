@@ -10,9 +10,6 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
   FaStar,
-  FaReact,
-  FaNodeJs,
-  FaDatabase,
 } from 'react-icons/fa';
 
 function Contact() {

@@ -30,7 +30,6 @@ import {
   FaSave,
   FaLink,
   FaEyeSlash,
-  FaGripVertical,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
@@ -1031,10 +1030,6 @@ function AdminDashboard() {
     ).length;
 
 
-  const regularProjects =
-    totalProjects -
-    featuredProjects;
-
 
   // =========================================================
   // NAVIGATION
@@ -1109,32 +1104,6 @@ function AdminDashboard() {
     }
   };
 
-
-  // =========================================================
-  // FORMAT DATE
-  // =========================================================
-
-  const formatDate = (date) => {
-    if (!date) {
-      return '—';
-    }
-
-
-    try {
-      return new Date(
-        date
-      ).toLocaleDateString(
-        'en-IN',
-        {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }
-      );
-    } catch {
-      return '—';
-    }
-  };
 
 
   const formatDateTime = (

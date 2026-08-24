@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { toast } from 'react-toastify';
 
@@ -30,7 +30,6 @@ import {
   FaSave,
   FaLink,
   FaEyeSlash,
-  FaGripVertical,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
@@ -218,7 +217,7 @@ function AdminDashboard() {
   // FETCH PORTFOLIO SETTINGS
   // =========================================================
 
-  const fetchPortfolioSettings = async () => {
+  const fetchPortfolioSettings = useCallback(async () => {
     try {
       setPortfolioSettingsLoading(true);
 
@@ -244,7 +243,7 @@ function AdminDashboard() {
     } finally {
       setPortfolioSettingsLoading(false);
     }
-  };
+  }, []);
 
 
   // =========================================================
@@ -299,20 +298,6 @@ function AdminDashboard() {
     } finally {
       setPortfolioSettingsSaving(false);
     }
-  };
-
-
-
-  // =========================================================
-  // PUBLIC RESUME URL
-  // =========================================================
-
-  const getPublicResumeUrl = () => {
-    const baseURL = API.defaults.baseURL || '';
-
-    return `${baseURL.endsWith('/')
-      ? baseURL.slice(0, -1)
-      : baseURL}/portfolio/upload/public-resume`;
   };
 
 
@@ -440,18 +425,75 @@ function AdminDashboard() {
     }
   };
 
-  const handleAdminViewResume = async () => {
-    const blob = await getAdminResumeBlob();
-    if (!blob) return;
+  // =========================================================
+  // VIEW RESUME
+  // =========================================================
+  //
+  // IMPORTANT:
+  // Do NOT fetch the protected PDF as a Blob for the View button.
+  //
+  // The protected endpoint redirects to Cloudinary. Fetching that
+  // redirect through Axios can hit browser CORS restrictions.
+  //
+  // The public-resume endpoint is already designed to redirect
+  // the browser directly to the signed Cloudinary PDF URL.
+  // Opening that URL directly also lets Chrome's built-in PDF
+  // viewer handle the file normally.
+  // =========================================================
 
-    const blobUrl = window.URL.createObjectURL(blob);
-    const newWindow = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+  const getPublicResumeUrl = () => {
+    const baseURL = API.defaults.baseURL || '';
 
-    if (!newWindow) {
-      toast.error('Unable to open resume. Please allow popups for this site.');
+    const cleanBaseURL = baseURL.endsWith('/')
+      ? baseURL.slice(0, -1)
+      : baseURL;
+
+    return `${cleanBaseURL}/portfolio/upload/public-resume`;
+  };
+
+  const handleAdminViewResume = () => {
+    if (!resumeInfo?.exists) {
+      toast.error('No resume has been uploaded yet.');
+      return;
     }
 
-    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
+    const resumeUrl = getPublicResumeUrl();
+
+    console.log('Opening resume:', resumeUrl);
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT
+    |--------------------------------------------------------------------------
+    |
+    | Do NOT use:
+    |
+    |   const newWindow = window.open(..., 'noopener,noreferrer');
+    |
+    | When `noopener` is used, modern browsers can intentionally return
+    | `null` from window.open() even when the new tab was opened
+    | successfully. That caused the false error toast:
+    |
+    |   "Unable to open resume..."
+    |
+    | The screenshot confirms the resume actually opens, so the old
+    | `newWindow === null` check was simply reporting a false error.
+    |
+    | Instead, create a normal anchor element and trigger it from the
+    | user's button click. Chrome handles the navigation normally and
+    | there is no false popup error.
+    |--------------------------------------------------------------------------
+    */
+
+    const link = document.createElement('a');
+
+    link.href = resumeUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleAdminDownloadResume = async () => {
@@ -905,7 +947,7 @@ function AdminDashboard() {
   // SETTINGS
   // =========================================================
 
-  const fetchSettings = async (
+  const fetchSettings = useCallback(async (
     applyDefaultSection = false
   ) => {
     try {
@@ -956,7 +998,7 @@ function AdminDashboard() {
     } finally {
       setSettingsLoading(false);
     }
-  };
+  }, []);
 
 
   const updateSetting = (
@@ -1091,7 +1133,7 @@ function AdminDashboard() {
     fetchCertificates();
     fetchSettings(true);
     fetchPortfolioSettings();
-  }, []);
+  }, [fetchPortfolioSettings, fetchSettings]);
 
 
   useEffect(() => {
@@ -1345,11 +1387,6 @@ function AdminDashboard() {
     ).length;
 
 
-  const regularProjects =
-    totalProjects -
-    featuredProjects;
-
-
   // =========================================================
   // NAVIGATION
   // =========================================================
@@ -1427,34 +1464,9 @@ function AdminDashboard() {
     }
   };
 
-
   // =========================================================
-  // FORMAT DATE
+  // FORMAT DATE/TIME
   // =========================================================
-
-  const formatDate = (date) => {
-    if (!date) {
-      return '—';
-    }
-
-
-    try {
-      return new Date(
-        date
-      ).toLocaleDateString(
-        'en-IN',
-        {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        }
-      );
-    } catch {
-      return '—';
-    }
-  };
-
-
   const formatDateTime = (
     date
   ) => {

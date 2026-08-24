@@ -6,16 +6,33 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+
   {
     files: ['**/*.{js,jsx}'],
+
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
+
     languageOptions: {
       globals: globals.browser,
-      parserOptions: { ecmaFeatures: { jsx: true } },
+
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+
+    rules: {
+      // Existing portfolio uses data-fetching functions
+      // inside useEffect. Keep this pattern allowed.
+      'react-hooks/set-state-in-effect': 'off',
+
+      // Context files intentionally export hooks/constants.
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

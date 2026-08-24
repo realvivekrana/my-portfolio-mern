@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
           sessionStorage.getItem('adminPinVerified') === 'true';
 
         setPinVerified(verified);
-      } catch (err) {
+      } catch {
         localStorage.removeItem('adminToken');
         sessionStorage.removeItem('adminPinVerified');
 
