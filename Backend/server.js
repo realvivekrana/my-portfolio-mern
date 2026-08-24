@@ -1,26 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
 
-/*
-|--------------------------------------------------------------------------
-| Load Environment Variables — MUST BE FIRST
-|--------------------------------------------------------------------------
-|
-| ✅ FIX (critical): This used to run AFTER the require() calls below.
-| Node executes require() synchronously as soon as it's called, so
-| config/cloudinary.js (pulled in indirectly via portfolioUploadRoutes)
-| was reading process.env.CLOUDINARY_CLOUD_NAME etc. BEFORE dotenv had
-| ever loaded the .env file — meaning those values were always
-| `undefined`, no matter what was actually in .env.
-|
-| That is why resume upload/view/download failed with:
-| "Must supply cloud_name in tag or in configuration"
-|
-| dotenv.config() must run before ANY other local module is required,
-| so every downstream file sees the real environment variables.
-|
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// LOAD ENVIRONMENT VARIABLES — MUST BE FIRST
+// ======================================================
 
 dotenv.config();
 
@@ -42,121 +25,96 @@ const {
   errorHandler,
 } = require('./middleware/errorMiddleware');
 
-/*
-|--------------------------------------------------------------------------
-| Connect To MongoDB
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// CONNECT TO MONGODB
+// ======================================================
 
 connectDB();
 
-/*
-|--------------------------------------------------------------------------
-| Express App
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// EXPRESS APP
+// ======================================================
 
 const app = express();
 
-/*
-|--------------------------------------------------------------------------
-| CORS
-|--------------------------------------------------------------------------
-|
-| Development:
-|
-|   http://localhost:5173
-|   http://localhost:5174
-|
-| Production:
-|
-|   FRONTEND_URL from .env
-|
-| Example:
-|
-|   FRONTEND_URL=https://your-portfolio.vercel.app
-|
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// CORS CONFIGURATION
+// ======================================================
 
 const allowedOrigins = [
+  // ----------------------------------------------------
+  // LOCAL DEVELOPMENT
+  // ----------------------------------------------------
+
   'http://localhost:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
+
+  // ----------------------------------------------------
+  // PRODUCTION — VERCEL
+  // ----------------------------------------------------
+
+  'https://my-portfolio-mern-mauve.vercel.app',
 ].filter(Boolean);
 
-/*
-|--------------------------------------------------------------------------
-| Add Production Frontend URL
-|--------------------------------------------------------------------------
-*/
+// ------------------------------------------------------
+// ADD FRONTEND_URL FROM RENDER ENVIRONMENT
+// ------------------------------------------------------
 
 if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(
-    process.env.FRONTEND_URL.replace(
-      /\/$/,
-      ''
-    )
-  );
+  const frontendUrl = process.env.FRONTEND_URL
+    .trim()
+    .replace(/\/$/, '');
+
+  if (!allowedOrigins.includes(frontendUrl)) {
+    allowedOrigins.push(frontendUrl);
+  }
 }
 
-/*
-|--------------------------------------------------------------------------
-| CORS Configuration
-|--------------------------------------------------------------------------
-*/
+// ------------------------------------------------------
+// CORS MIDDLEWARE
+// ------------------------------------------------------
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      /*
-      |--------------------------------------------------------------------------
-      | Allow requests without an Origin
-      |--------------------------------------------------------------------------
-      |
-      | Useful for:
-      | - Postman
-      | - Server-to-server requests
-      | - Health checks
-      |--------------------------------------------------------------------------
-      */
+      // ------------------------------------------------
+      // Requests without Origin
+      // Useful for Postman / health checks
+      // ------------------------------------------------
 
       if (!origin) {
-        return callback(
-          null,
-          true
-        );
+        return callback(null, true);
       }
 
-      const normalizedOrigin =
-        origin.replace(
-          /\/$/,
-          ''
-        );
+      const normalizedOrigin = origin
+        .trim()
+        .replace(/\/$/, '');
 
-      /*
-      |--------------------------------------------------------------------------
-      | Allow Known Origins
-      |--------------------------------------------------------------------------
-      */
+      // ------------------------------------------------
+      // ALLOW KNOWN ORIGINS
+      // ------------------------------------------------
 
       if (
-        allowedOrigins.includes(
-          normalizedOrigin
-        )
+        allowedOrigins.includes(normalizedOrigin)
       ) {
-        return callback(
-          null,
-          true
-        );
+        return callback(null, true);
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | Reject Unknown Origins
-      |--------------------------------------------------------------------------
-      */
+      // ------------------------------------------------
+      // REJECT UNKNOWN ORIGINS
+      // ------------------------------------------------
+
+      console.log(
+        '❌ CORS blocked origin:',
+        normalizedOrigin
+      );
+
+      console.log(
+        '✅ Allowed origins:',
+        allowedOrigins
+      );
 
       return callback(
         new Error(
@@ -166,14 +124,29 @@ app.use(
     },
 
     credentials: true,
+
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
+
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+    ],
   })
 );
 
-/*
-|--------------------------------------------------------------------------
-| JSON Body Parser
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// JSON BODY PARSER
+// ======================================================
 
 app.use(
   express.json({
@@ -181,11 +154,9 @@ app.use(
   })
 );
 
-/*
-|--------------------------------------------------------------------------
-| URL Encoded Body Parser
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// URL ENCODED BODY PARSER
+// ======================================================
 
 app.use(
   express.urlencoded({
@@ -194,87 +165,37 @@ app.use(
   })
 );
 
-/*
-|--------------------------------------------------------------------------
-| STATIC UPLOADS
-|--------------------------------------------------------------------------
-|
-| IMPORTANT:
-|
-| Resume PDFs must NOT be directly publicly accessible.
-|
-| Public uploaded assets:
-|
-|   - Profile images
-|   - Certificate images
-|   - Other non-PDF uploads
-|
-| Protected:
-|
-|   - Resume PDF
-|
-| Resume is served through:
-|
-|   GET /api/portfolio/upload/resume
-|
-| according to the authentication/public-resume logic.
-|
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// STATIC UPLOADS
+// ======================================================
 
-/*
-|--------------------------------------------------------------------------
-| Upload Directory
-|--------------------------------------------------------------------------
-*/
+const uploadsDirectory = path.join(
+  __dirname,
+  'uploads'
+);
 
-const uploadsDirectory =
-  path.join(
-    __dirname,
-    'uploads'
-  );
-
-/*
-|--------------------------------------------------------------------------
-| Public Upload Middleware
-|--------------------------------------------------------------------------
-*/
+// ------------------------------------------------------
+// PUBLIC UPLOAD MIDDLEWARE
+// ------------------------------------------------------
 
 app.use(
   '/uploads',
   (req, res, next) => {
-    /*
-    |--------------------------------------------------------------------------
-    | Get Requested Filename
-    |--------------------------------------------------------------------------
-    */
+    const requestedFile = path.basename(
+      req.path
+    );
 
-    const requestedFile =
-      path.basename(
-        req.path
-      );
+    const isPdf = requestedFile
+      .toLowerCase()
+      .endsWith('.pdf');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Detect PDF
-    |--------------------------------------------------------------------------
-    */
-
-    const isPdf =
-      requestedFile
-        .toLowerCase()
-        .endsWith('.pdf');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Block Direct PDF Access
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------
+    // BLOCK DIRECT PDF ACCESS
+    // --------------------------------------------------
 
     if (isPdf) {
       return res.status(403).json({
         success: false,
-
         message:
           'Direct access to resume files is not allowed.',
       });
@@ -288,21 +209,17 @@ app.use(
   )
 );
 
-/*
-|--------------------------------------------------------------------------
-| Health Check
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// HEALTH CHECK
+// ======================================================
 
 app.get(
   '/',
   (req, res) => {
     res.status(200).json({
       success: true,
-
       message:
         '🚀 Portfolio API is running...',
-
       environment:
         process.env.NODE_ENV ||
         'development',
@@ -310,80 +227,54 @@ app.get(
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| PROJECT ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// PROJECT ROUTES
+// ======================================================
 
 app.use(
   '/api/projects',
   projectRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| CONTACT ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// CONTACT ROUTES
+// ======================================================
 
 app.use(
   '/api/contact',
   contactRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| AUTH ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// AUTH ROUTES
+// ======================================================
 
 app.use(
   '/api/auth',
   authRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| PORTFOLIO CONTENT ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// PORTFOLIO CONTENT ROUTES
+// ======================================================
 
 app.use(
   '/api/portfolio',
   portfolioRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| PORTFOLIO UPLOAD ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// PORTFOLIO UPLOAD ROUTES
+// ======================================================
 
 app.use(
   '/api/portfolio/upload',
   portfolioUploadRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| LEGACY RESUME PATH — SAFETY NET (DO NOT REMOVE)
-|--------------------------------------------------------------------------
-|
-| An earlier version of this codebase stored the resume URL as
-| /api/portfolio/resume/public, which never matched an actual
-| route (the real one is /api/portfolio/upload/public-resume).
-|
-| That wrong string can still be sitting around in old browser
-| caches, old MongoDB documents, or an old frontend build that
-| hasn't been redeployed yet.
-|
-| Instead of 404ing on that path forever, we permanently redirect
-| it to the correct endpoint, so resume view/download self-heals
-| no matter where the stale reference is coming from.
-|
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// LEGACY RESUME PATH — SAFETY NET
+// ======================================================
 
 app.get(
   '/api/portfolio/resume/public',
@@ -395,65 +286,50 @@ app.get(
   }
 );
 
-/*
-|--------------------------------------------------------------------------
-| CERTIFICATE ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// CERTIFICATE ROUTES
+// ======================================================
 
 app.use(
   '/api/certificates',
   certificateRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| SETTINGS ROUTES
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// SETTINGS ROUTES
+// ======================================================
 
 app.use(
   '/api/settings',
   settingsRoutes
 );
 
-/*
-|--------------------------------------------------------------------------
-| 404 NOT FOUND
-|--------------------------------------------------------------------------
-|
-| Must remain AFTER all API routes.
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// 404 NOT FOUND
+// ======================================================
 
 app.use(
   notFound
 );
 
-/*
-|--------------------------------------------------------------------------
-| GLOBAL ERROR HANDLER
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// GLOBAL ERROR HANDLER
+// ======================================================
 
 app.use(
   errorHandler
 );
 
-/*
-|--------------------------------------------------------------------------
-| SERVER
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// SERVER
+// ======================================================
 
 const PORT =
   process.env.PORT || 5000;
 
-/*
-|--------------------------------------------------------------------------
-| Start Server
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// START SERVER
+// ======================================================
 
 app.listen(
   PORT,
@@ -467,6 +343,18 @@ app.listen(
         process.env.NODE_ENV ||
         'development'
       }`
+    );
+
+    console.log(
+      '🌐 Allowed CORS origins:'
+    );
+
+    allowedOrigins.forEach(
+      (origin) => {
+        console.log(
+          `   ✅ ${origin}`
+        );
+      }
     );
 
     if (
