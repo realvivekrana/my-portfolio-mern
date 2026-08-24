@@ -7,11 +7,13 @@ import {
   FaLinkedin,
   FaReact,
   FaNodeJs,
+  FaJs,
 } from 'react-icons/fa';
 
 import {
   SiExpress,
   SiMongodb,
+  SiTailwindcss,
 } from 'react-icons/si';
 
 import {
@@ -70,15 +72,15 @@ function Hero() {
       name: 'React',
       icon: <FaReact />,
       color: 'text-cyan-400',
-      glow: 'shadow-cyan-400/50',
+      glow: 'shadow-cyan-400/60',
       dotColor: 'bg-cyan-400 text-cyan-400',
-      ring: 'from-cyan-400 via-cyan-300 to-blue-400',
+      ring: 'from-cyan-400 via-sky-300 to-blue-500',
     },
     {
       name: 'Node.js',
       icon: <FaNodeJs />,
       color: 'text-green-500',
-      glow: 'shadow-green-500/50',
+      glow: 'shadow-green-500/60',
       dotColor: 'bg-green-500 text-green-500',
       ring: 'from-green-500 via-emerald-400 to-lime-400',
     },
@@ -86,17 +88,35 @@ function Hero() {
       name: 'Express',
       icon: <SiExpress />,
       color: 'text-gray-700 dark:text-gray-100',
-      glow: 'shadow-gray-400/40',
+      glow: 'shadow-slate-400/50',
       dotColor: 'bg-gray-400 text-gray-400',
-      ring: 'from-gray-500 via-gray-400 to-gray-600',
+      ring: 'from-slate-500 via-gray-400 to-slate-600',
     },
     {
       name: 'MongoDB',
       icon: <SiMongodb />,
       color: 'text-green-500',
-      glow: 'shadow-green-500/50',
+      glow: 'shadow-green-500/60',
       dotColor: 'bg-green-500 text-green-500',
       ring: 'from-green-600 via-green-500 to-emerald-400',
+    },
+    {
+      name: 'JavaScript',
+      icon: <FaJs />,
+      color: 'text-yellow-500',
+      glow: 'shadow-yellow-400/60',
+      dotColor: 'bg-yellow-400 text-yellow-500',
+      ring: 'from-yellow-400 via-amber-300 to-orange-400',
+      hideOnMobile: true,
+    },
+    {
+      name: 'Tailwind',
+      icon: <SiTailwindcss />,
+      color: 'text-sky-500',
+      glow: 'shadow-sky-400/60',
+      dotColor: 'bg-sky-400 text-sky-500',
+      ring: 'from-sky-400 via-teal-300 to-cyan-400',
+      hideOnMobile: true,
     },
   ];
 
@@ -459,64 +479,65 @@ function Hero() {
 
               {/* =================================================
                   FLOATING SKILL BADGES
-                  (only React, Node.js, Express, MongoDB — no
-                  blinking, each badge gently floats up and down,
-                  then fades away and reappears a little later at
-                  the same spot, on its own staggered cycle)
+                  Circular glass bubbles orbiting the photo, each
+                  with a brand-colored glow + spinning gradient
+                  ring, a gentle continuous float/drift, and the
+                  skill name revealed as a pill on hover.
               ================================================== */}
 
               {skills.map((skill, index) => (
                 <div
                   key={skill.name}
-                  className="group absolute z-20"
+                  className={`skill-float group absolute z-20 ${
+                    skill.hideOnMobile ? 'hidden sm:block' : ''
+                  }`}
                   style={{
                     left: `${skillPositions[index].left}%`,
                     top: `${skillPositions[index].top}%`,
-                    animation: `skillFloatFade ${
-                      skillPositions[index].duration + 6
-                    }s ease-in-out ${
-                      skillPositions[index].delay
-                    }s infinite`,
+                    '--float-duration': `${skillPositions[index].duration}s`,
+                    '--float-delay': `${skillPositions[index].delay}s`,
                   }}
                 >
-                  {/* Big soft color glow behind everything */}
+                  {/* Big soft color glow behind everything, breathing */}
 
                   <div
                     aria-hidden="true"
-                    className={`absolute inset-0 -z-10 rounded-full blur-2xl ${skill.glow}`}
+                    className={`absolute inset-0 -z-10 animate-[skillGlowPulse_4s_ease-in-out_infinite] rounded-full blur-2xl ${skill.glow}`}
                   />
 
-                  {/* Slowly pulsing gradient ring border */}
+                  {/* Slowly spinning gradient ring border */}
 
                   <div
                     aria-hidden="true"
-                    className={`absolute -inset-[3px] -z-10 rounded-2xl bg-gradient-to-r ${skill.ring} opacity-80 blur-[1px]`}
+                    className={`absolute -inset-[2.5px] -z-10 rounded-full bg-gradient-to-r ${skill.ring} opacity-90 blur-[0.5px]`}
                     style={{
-                      animation: 'skillRingSpin 6s linear infinite',
+                      animation: 'skillRingSpin 5s linear infinite',
                     }}
                   />
 
                   <div
-                    className="skill-bubble relative flex flex-col items-center gap-1.5 rounded-2xl border border-white/80 bg-white/90 px-4 py-3 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-110 group-hover:shadow-2xl dark:border-white/10 dark:bg-gray-900/90"
+                    className="skill-bubble relative flex h-14 w-14 flex-col items-center justify-center rounded-full border border-white/80 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:shadow-2xl sm:h-16 sm:w-16 dark:border-white/10 dark:bg-gray-900/95"
                   >
-                    {/* Icon in a glossy color badge */}
+                    {/* Icon */}
 
                     <span
-                      className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-100 text-2xl shadow-inner ring-1 ring-black/5 dark:from-gray-800 dark:to-gray-900 dark:ring-white/10 ${skill.color}`}
+                      className={`text-2xl drop-shadow-sm sm:text-3xl ${skill.color}`}
                     >
                       {skill.icon}
-                    </span>
-
-                    <span className="whitespace-nowrap text-[11px] font-bold tracking-wide text-gray-700 dark:text-gray-200 sm:text-xs">
-                      {skill.name}
                     </span>
 
                     {/* Tiny status dot — steady, no blinking */}
 
                     <span
-                      className={`absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-gray-900 ${skill.dotColor}`}
+                      className={`absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-white dark:ring-gray-900 ${skill.dotColor}`}
                     />
                   </div>
+
+                  {/* Name label — shows on hover as a floating pill */}
+
+                  <span className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-full border border-white/80 bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wide text-gray-700 opacity-0 shadow-lg backdrop-blur-md transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-gray-900/95 dark:text-gray-200">
+                    {skill.name}
+                  </span>
                 </div>
               ))}
 
@@ -629,19 +650,20 @@ function Hero() {
           }
 
           /* ================================================
-             SKILL BADGE FLOAT + FADE
+             SKILL BADGE FLOAT
              -------------------------------------------------
-             Badge gently floats up and down around its spot,
-             then fades out completely (disappears), stays
-             hidden for a bit, and fades back in to float again.
-             Each badge runs on its own staggered duration/delay
-             so they don't all vanish/appear together.
+             Badge gently and continuously floats/drifts and
+             wobbles around its spot — always visible, never
+             vanishes. Each badge runs its own staggered
+             duration/delay (set via --float-duration /
+             --float-delay inline vars) so the whole ring feels
+             organic instead of synchronized.
           ================================================= */
 
           @keyframes skillRingSpin {
             0%,
             100% {
-              opacity: 0.55;
+              opacity: 0.6;
               filter: hue-rotate(0deg);
             }
 
@@ -651,46 +673,41 @@ function Hero() {
             }
           }
 
-          @keyframes skillFloatFade {
-            0% {
-              transform: translateY(0px) translateX(0px);
-              opacity: 1;
+          @keyframes skillGlowPulse {
+            0%,
+            100% {
+              opacity: 0.55;
+              transform: scale(0.9);
             }
 
-            12% {
-              transform: translateY(-12px) translateX(3px);
-              opacity: 1;
+            50% {
+              opacity: 0.95;
+              transform: scale(1.15);
+            }
+          }
+
+          @keyframes skillFloat {
+            0%,
+            100% {
+              transform: translateY(0px) translateX(0px) rotate(0deg);
             }
 
-            24% {
-              transform: translateY(2px) translateX(-3px);
-              opacity: 1;
+            25% {
+              transform: translateY(-14px) translateX(4px) rotate(-3deg);
             }
 
-            34% {
-              transform: translateY(-6px) translateX(2px);
-              opacity: 1;
-            }
-
-            42% {
-              transform: translateY(-6px) translateX(2px);
-              opacity: 0;
+            50% {
+              transform: translateY(3px) translateX(-4px) rotate(2deg);
             }
 
             75% {
-              transform: translateY(-6px) translateX(2px);
-              opacity: 0;
+              transform: translateY(-9px) translateX(-3px) rotate(-2deg);
             }
+          }
 
-            88% {
-              transform: translateY(-10px) translateX(-2px);
-              opacity: 1;
-            }
-
-            100% {
-              transform: translateY(0px) translateX(0px);
-              opacity: 1;
-            }
+          .skill-float {
+            animation: skillFloat var(--float-duration, 6s) ease-in-out
+              var(--float-delay, 0s) infinite;
           }
 
           /* ================================================
@@ -868,33 +885,49 @@ const skillPositions = [
   // React — top-left
   {
     left: 0,
-    top: 10,
+    top: 6,
     duration: 6,
     delay: 0,
   },
 
   // Node.js — top-right
   {
-    left: 72,
-    top: 8,
+    left: 76,
+    top: 6,
     duration: 6.5,
-    delay: 1.8,
+    delay: 0.8,
   },
 
   // Express — bottom-left
   {
-    left: 2,
-    top: 68,
+    left: 0,
+    top: 72,
     duration: 7,
-    delay: 3.2,
+    delay: 1.6,
   },
 
   // MongoDB — bottom-right
   {
-    left: 70,
-    top: 70,
+    left: 76,
+    top: 74,
     duration: 6.8,
-    delay: 4.6,
+    delay: 2.4,
+  },
+
+  // JavaScript — left-middle (hidden on mobile)
+  {
+    left: -8,
+    top: 40,
+    duration: 6.3,
+    delay: 3.2,
+  },
+
+  // Tailwind — right-middle (hidden on mobile)
+  {
+    left: 84,
+    top: 42,
+    duration: 6.6,
+    delay: 4,
   },
 ];
 
