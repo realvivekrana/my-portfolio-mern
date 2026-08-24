@@ -53,43 +53,13 @@ function Hero() {
   |
   |--------------------------------------------------------------------------
   */
-  /*
-  |--------------------------------------------------------------------------
-  | Public Resume URL
-  |--------------------------------------------------------------------------
-  |
-  | API.defaults.baseURL already contains:
-  |
-  |   /api
-  |
-  | Example:
-  |
-  |   https://backend.example.com/api
-  |
-  | Therefore the public resume endpoint must be:
-  |
-  |   /portfolio/resume/public
-  |
-  | NOT:
-  |
-  |   /portfolio/upload/public-resume
-  |
-  | The /portfolio/resume/public route is registered in
-  | portfolioRoutes.js and redirects to the Cloudinary signed PDF URL.
-  |
-  |--------------------------------------------------------------------------
-  */
-
   const publicResumeBaseURL =
     API.defaults.baseURL || '';
 
-  const normalizedAPIBaseURL =
-    publicResumeBaseURL.endsWith('/')
-      ? publicResumeBaseURL.slice(0, -1)
-      : publicResumeBaseURL;
-
   const publicResumeUrl =
-    `${normalizedAPIBaseURL}/portfolio/resume/public`;
+    `${publicResumeBaseURL.endsWith('/')
+      ? publicResumeBaseURL.slice(0, -1)
+      : publicResumeBaseURL}/portfolio/upload/public-resume`;
 
   const [resumeUrl, setResumeUrl] =
     useState(publicResumeUrl);
@@ -109,86 +79,101 @@ function Hero() {
       icon: <FaReact />,
       color: 'text-cyan-400',
       glow: 'shadow-cyan-400/40',
+      dotColor: 'bg-cyan-400 text-cyan-400',
     },
     {
       name: 'JavaScript',
       icon: <SiJavascript />,
       color: 'text-yellow-400',
       glow: 'shadow-yellow-400/40',
+      dotColor: 'bg-yellow-400 text-yellow-400',
     },
     {
       name: 'Node.js',
       icon: <FaNodeJs />,
       color: 'text-green-500',
       glow: 'shadow-green-500/40',
+      dotColor: 'bg-green-500 text-green-500',
     },
     {
       name: 'Express',
       icon: <SiExpress />,
       color: 'text-gray-700 dark:text-gray-200',
       glow: 'shadow-gray-400/30',
+      dotColor: 'bg-gray-400 text-gray-400',
     },
     {
       name: 'MongoDB',
       icon: <SiMongodb />,
       color: 'text-green-500',
       glow: 'shadow-green-500/40',
+      dotColor: 'bg-green-500 text-green-500',
     },
     {
       name: 'HTML5',
       icon: <FaHtml5 />,
       color: 'text-orange-500',
       glow: 'shadow-orange-500/40',
+      dotColor: 'bg-orange-500 text-orange-500',
     },
     {
       name: 'CSS3',
       icon: <FaCss3Alt />,
       color: 'text-blue-500',
       glow: 'shadow-blue-500/40',
+      dotColor: 'bg-blue-500 text-blue-500',
     },
     {
       name: 'Tailwind',
       icon: <SiTailwindcss />,
       color: 'text-cyan-400',
       glow: 'shadow-cyan-400/40',
+      dotColor: 'bg-cyan-400 text-cyan-400',
     },
     {
       name: 'TypeScript',
       icon: <SiTypescript />,
       color: 'text-blue-500',
       glow: 'shadow-blue-500/40',
+      dotColor: 'bg-blue-500 text-blue-500',
     },
     {
       name: 'Next.js',
       icon: <SiNextdotjs />,
       color: 'text-gray-900 dark:text-white',
       glow: 'shadow-gray-400/30',
+      dotColor: 'bg-gray-500 text-gray-500',
     },
     {
       name: 'Git',
       icon: <FaGitAlt />,
       color: 'text-orange-500',
       glow: 'shadow-orange-500/40',
+      dotColor: 'bg-orange-500 text-orange-500',
     },
     {
       name: 'GitHub',
       icon: <FaGithub />,
       color: 'text-gray-800 dark:text-white',
       glow: 'shadow-gray-400/30',
+      dotColor: 'bg-gray-500 text-gray-500',
     },
     {
       name: 'Postman',
       icon: <SiPostman />,
       color: 'text-orange-500',
       glow: 'shadow-orange-500/40',
+      dotColor: 'bg-orange-500 text-orange-500',
     },
     {
       name: 'MySQL',
       icon: <SiMysql />,
       color: 'text-blue-500',
       glow: 'shadow-blue-500/40',
+      dotColor: 'bg-blue-500 text-blue-500',
     },
   ];
+
 
   /*
   |--------------------------------------------------------------------------
@@ -256,13 +241,7 @@ function Hero() {
     }
 
     try {
-      const response = await fetch(
-        `${resumeUrl}?download=${Date.now()}`,
-        {
-          method: 'GET',
-          cache: 'no-store',
-        }
-      );
+      const response = await fetch(resumeUrl);
 
       if (!response.ok) {
         throw new Error(
@@ -547,35 +526,68 @@ function Hero() {
               </div>
 
               {/* =================================================
-                  FLOATING SKILL BUBBLES
+                  BLINKING SKILL BADGES
+                  (fixed position — only glow/brightness blinks,
+                  nothing drifts or moves away)
               ================================================== */}
 
               {skills.map((skill, index) => (
                 <div
                   key={skill.name}
-                  className="absolute z-20"
+                  className="group absolute z-20"
                   style={{
                     left: `${skillPositions[index].left}%`,
                     top: `${skillPositions[index].top}%`,
-                    animation: `skillFloat ${
-                      skillPositions[index].duration
-                    }s ease-in-out ${
-                      skillPositions[index].delay
-                    }s infinite`,
                   }}
                 >
+                  {/* Blinking glow halo behind the badge */}
+
                   <div
-                    className={`skill-bubble flex items-center gap-2 rounded-full border border-white/50 bg-white/75 px-3 py-2 shadow-lg backdrop-blur-md transition-all duration-500 hover:scale-125 hover:bg-white dark:border-white/10 dark:bg-gray-900/70 dark:hover:bg-gray-800 ${skill.glow}`}
+                    aria-hidden="true"
+                    className={`absolute inset-0 -z-10 rounded-full blur-xl ${skill.glow}`}
+                    style={{
+                      animation: `skillBlink ${
+                        skillPositions[index].duration
+                      }s ease-in-out ${
+                        skillPositions[index].delay
+                      }s infinite`,
+                    }}
+                  />
+
+                  <div
+                    className={`skill-bubble relative flex items-center gap-2 rounded-full border border-white/70 bg-white/85 py-1.5 pl-1.5 pr-3.5 shadow-lg backdrop-blur-md transition-all duration-300 ease-out group-hover:scale-110 group-hover:border-white group-hover:bg-white group-hover:shadow-xl dark:border-white/10 dark:bg-gray-900/80 dark:group-hover:bg-gray-800`}
+                    style={{
+                      animation: `skillBadgeBlink ${
+                        skillPositions[index].duration
+                      }s ease-in-out ${
+                        skillPositions[index].delay
+                      }s infinite`,
+                    }}
                   >
+                    {/* Icon in its own glowing color badge */}
+
                     <span
-                      className={`text-lg ${skill.color}`}
+                      className={`flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-white to-gray-100 text-base shadow-inner dark:from-gray-800 dark:to-gray-900 ${skill.color}`}
                     >
                       {skill.icon}
                     </span>
 
-                    <span className="whitespace-nowrap text-[10px] font-bold text-gray-700 dark:text-gray-200 sm:text-xs">
+                    <span className="whitespace-nowrap text-[10px] font-bold tracking-wide text-gray-700 dark:text-gray-200 sm:text-xs">
                       {skill.name}
                     </span>
+
+                    {/* Tiny blinking status dot — like a power/signal light */}
+
+                    <span
+                      className={`absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ${skill.dotColor}`}
+                      style={{
+                        animation: `skillDotBlink ${
+                          skillPositions[index].duration
+                        }s ease-in-out ${
+                          skillPositions[index].delay
+                        }s infinite`,
+                      }}
+                    />
                   </div>
                 </div>
               ))}
@@ -689,64 +701,53 @@ function Hero() {
           }
 
           /* ================================================
-             SKILL BUBBLE FLOAT
+             SKILL BADGE BLINK
+             -------------------------------------------------
+             ✅ REDESIGNED (per feedback): badges no longer
+             drift/float around — position stays fixed. Instead
+             each badge "blinks" like a soft neon/status light:
+             the glow halo, the badge itself, and its tiny
+             status dot pulse in brightness on a staggered
+             cycle, giving a lively twinkling effect around the
+             photo without anything moving away from its spot.
           ================================================= */
 
-          @keyframes skillFloat {
-            0% {
-              transform:
-                translate3d(0, 40px, 0)
-                scale(0.7);
-              opacity: 0;
-            }
-
-            10% {
-              transform:
-                translate3d(8px, 20px, 0)
-                scale(0.9);
-              opacity: 0.65;
-            }
-
-            25% {
-              transform:
-                translate3d(-12px, -20px, 0)
-                scale(1);
-              opacity: 1;
-            }
-
-            45% {
-              transform:
-                translate3d(15px, -70px, 0)
-                scale(1.03);
-              opacity: 0.95;
-            }
-
-            65% {
-              transform:
-                translate3d(-12px, -120px, 0)
-                scale(0.95);
-              opacity: 0.75;
-            }
-
-            80% {
-              transform:
-                translate3d(10px, -160px, 0)
-                scale(0.8);
-              opacity: 0.35;
-            }
-
-            92% {
-              transform:
-                translate3d(-5px, -185px, 0)
-                scale(0.4);
-              opacity: 0;
-            }
-
+          @keyframes skillBlink {
+            0%,
             100% {
-              transform:
-                translate3d(0, -200px, 0)
-                scale(0.2);
-              opacity: 0;
+              opacity: 0.3;
+              transform: scale(0.85);
+            }
+
+            50% {
+              opacity: 1;
+              transform: scale(1.15);
+            }
+          }
+
+          @keyframes skillBadgeBlink {
+            0%,
+            100% {
+              filter: brightness(1) saturate(1);
+              box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            }
+
+            50% {
+              filter: brightness(1.15) saturate(1.3);
+            }
+          }
+
+          @keyframes skillDotBlink {
+            0%,
+            50% {
+              opacity: 1;
+              box-shadow: 0 0 6px 2px currentColor;
+            }
+
+            51%,
+            100% {
+              opacity: 0.25;
+              box-shadow: 0 0 0 0 transparent;
             }
           }
 
@@ -925,86 +926,86 @@ const skillPositions = [
   {
     left: 5,
     top: 30,
-    duration: 8,
+    duration: 5,
     delay: 0,
   },
   {
     left: 30,
     top: 18,
-    duration: 10,
-    delay: 1.5,
+    duration: 6,
+    delay: 0.6,
   },
   {
     left: 62,
     top: 20,
-    duration: 9,
-    delay: 3,
+    duration: 5.5,
+    delay: 1.2,
   },
   {
     left: 78,
     top: 35,
-    duration: 11,
-    delay: 0.8,
+    duration: 6.5,
+    delay: 0.3,
   },
   {
     left: 4,
     top: 55,
-    duration: 12,
-    delay: 2.5,
+    duration: 7,
+    delay: 1,
   },
   {
     left: 78,
     top: 58,
-    duration: 9,
-    delay: 4,
+    duration: 5,
+    delay: 1.6,
   },
   {
     left: 18,
     top: 72,
-    duration: 10,
-    delay: 1,
+    duration: 6,
+    delay: 0.4,
   },
   {
     left: 65,
     top: 75,
-    duration: 12,
-    delay: 3.5,
+    duration: 6.5,
+    delay: 1.4,
   },
   {
     left: 42,
     top: 5,
-    duration: 11,
-    delay: 5,
+    duration: 5.5,
+    delay: 2,
   },
   {
     left: 88,
     top: 15,
-    duration: 9,
-    delay: 2,
+    duration: 5,
+    delay: 0.8,
   },
   {
     left: 2,
     top: 78,
-    duration: 13,
-    delay: 4.5,
+    duration: 7,
+    delay: 1.8,
   },
   {
     left: 84,
     top: 78,
-    duration: 10,
-    delay: 1.8,
+    duration: 6,
+    delay: 0.7,
   },
   {
     left: 50,
     top: 85,
-    duration: 12,
-    delay: 3,
+    duration: 6.5,
+    delay: 1.2,
   },
   {
     left: 52,
     top: 28,
-    duration: 9,
-    delay: 5,
+    duration: 5,
+    delay: 2,
   },
 ];
 

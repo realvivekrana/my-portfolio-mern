@@ -161,26 +161,6 @@ const uploadResume = async (
 
     /*
     |--------------------------------------------------------------------------
-    | DEBUG — REAL req.file CONTENTS FROM CLOUDINARY
-    |--------------------------------------------------------------------------
-    |
-    | Prints exactly what multer-storage-cloudinary attached to
-    | req.file on THIS machine/version, so if the public-ID lookup
-    | ever fails again we can see the real field names instantly
-    | instead of guessing.
-    |
-    |--------------------------------------------------------------------------
-    */
-
-    console.log(
-      '\n========== RESUME UPLOAD DEBUG =========='
-    );
-    console.log('req.file keys:', Object.keys(req.file));
-    console.log('req.file full object:', req.file);
-    console.log('==========================================\n');
-
-    /*
-    |--------------------------------------------------------------------------
     | Validate PDF
     |--------------------------------------------------------------------------
     */
@@ -411,7 +391,7 @@ const uploadResume = async (
 |--------------------------------------------------------------------------
 | GET PUBLIC RESUME
 |--------------------------------------------------------------------------
-| @route   GET /api/portfolio/resume/public
+| @route   GET /api/portfolio/upload/public-resume
 | @access  Public
 |--------------------------------------------------------------------------
 |
