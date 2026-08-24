@@ -865,6 +865,115 @@ button {
 }
 
 /* =========================================================
+   MOBILE-FIRST RESPONSIVE SAFETY
+   ========================================================= */
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+picture,
+video {
+  height: auto;
+}
+
+iframe {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select {
+  min-width: 0;
+}
+
+textarea {
+  overflow-wrap: anywhere;
+}
+
+pre,
+code {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.break-anywhere,
+.break-anywhere * {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Mobile-first container */
+.site-container {
+  width: calc(100% - 2rem);
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+/* iOS Safari should not zoom form controls on focus. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  .site-container {
+    width: calc(100% - 1.5rem);
+  }
+}
+
+/* Extra-small phones: 320px and 360px */
+@media (max-width: 360px) {
+  .site-container {
+    width: calc(100% - 1rem);
+  }
+
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Remove accidental fixed minimum widths on narrow screens. */
+@media (max-width: 767px) {
+  .min-w-\[320px\],
+  .min-w-\[340px\],
+  .min-w-\[350px\],
+  .min-w-\[360px\] {
+    min-width: 0 !important;
+  }
+}
+
+/* =========================================================
    REDUCED MOTION
    ========================================================= */
 

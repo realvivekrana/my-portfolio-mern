@@ -244,7 +244,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden bg-white/85 px-6 pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-gray-950/85 dark:text-white"
+      className="relative min-h-screen w-full overflow-x-clip overflow-y-hidden bg-white/85 px-4 pt-24 sm:px-6 sm:pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-gray-950/85 dark:text-white"
     >
       {/* =====================================================
           BACKGROUND ANIMATION
@@ -256,15 +256,15 @@ function Hero() {
       >
         {/* Glow 1 */}
 
-        <div className="absolute -left-32 top-20 h-72 w-72 animate-[heroGlowOne_12s_ease-in-out_infinite] rounded-full bg-indigo-300/20 blur-3xl dark:bg-indigo-600/15" />
+        <div className="absolute -left-24 top-20 h-56 w-56 sm:-left-32 sm:h-72 sm:w-72 animate-[heroGlowOne_12s_ease-in-out_infinite] rounded-full bg-indigo-300/20 blur-3xl dark:bg-indigo-600/15" />
 
         {/* Glow 2 */}
 
-        <div className="absolute -right-32 bottom-10 h-80 w-80 animate-[heroGlowTwo_15s_ease-in-out_infinite] rounded-full bg-purple-300/20 blur-3xl dark:bg-purple-600/15" />
+        <div className="absolute -right-24 bottom-10 h-60 w-60 sm:-right-32 sm:h-80 sm:w-80 animate-[heroGlowTwo_15s_ease-in-out_infinite] rounded-full bg-purple-300/20 blur-3xl dark:bg-purple-600/15" />
 
         {/* Glow 3 */}
 
-        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 animate-[heroGlowThree_18s_ease-in-out_infinite] rounded-full bg-blue-200/15 blur-3xl dark:bg-blue-500/10" />
+        <div className="absolute left-1/2 top-1/3 h-48 w-48 sm:h-64 sm:w-64 -translate-x-1/2 animate-[heroGlowThree_18s_ease-in-out_infinite] rounded-full bg-blue-200/15 blur-3xl dark:bg-blue-500/10" />
 
         {/* Moving Light */}
 
@@ -277,8 +277,8 @@ function Hero() {
           MAIN HERO CONTENT
       ====================================================== */}
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-112px)] max-w-7xl items-center justify-center">
-        <div className="grid w-full items-center gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] w-full max-w-7xl items-center justify-center sm:min-h-[calc(100vh-112px)]">
+        <div className="grid w-full min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
 
           {/* =================================================
               LEFT CONTENT
@@ -300,7 +300,7 @@ function Hero() {
 
             {/* Introduction */}
 
-            <p className="mb-4 flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 lg:justify-start">
+            <p className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold sm:text-sm uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 lg:justify-start">
               <HiOutlineSparkles className="text-lg" />
 
               Hello, I'm
@@ -308,7 +308,7 @@ function Hero() {
 
             {/* Name */}
 
-            <h1 className="mb-4 text-5xl font-extrabold leading-tight tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="mb-4 break-words text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
               Vivek kumar
 
               <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
@@ -318,13 +318,13 @@ function Hero() {
 
             {/* Role */}
 
-            <h2 className="mb-6 text-2xl font-bold text-gray-700 sm:text-3xl dark:text-gray-200">
+            <h2 className="mb-6 text-xl font-bold sm:text-3xl text-gray-700 sm:text-3xl dark:text-gray-200">
               MERN Stack Developer
             </h2>
 
             {/* Description */}
 
-            <p className="mx-auto mb-8 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg lg:mx-0 dark:text-gray-400">
+            <p className="mx-auto mb-8 max-w-2xl text-sm leading-7 sm:text-lg sm:leading-8 text-gray-600 sm:text-lg lg:mx-0 dark:text-gray-400">
               I build scalable, responsive, and user-focused web applications
               using modern JavaScript technologies. I love turning ideas into
               clean, functional, and engaging digital experiences.
@@ -380,7 +380,7 @@ function Hero() {
 
             {/* Resume Note */}
 
-            <div className="mb-9 flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500 lg:justify-start">
+            <div className="mb-9 flex flex-wrap items-center justify-center gap-2 text-center text-xs text-gray-500 dark:text-gray-500 lg:justify-start">
               <FaFilePdf className="text-red-500" />
 
               <span>
@@ -390,7 +390,7 @@ function Hero() {
 
             {/* Social */}
 
-            <div className="mb-10 flex items-center justify-center gap-3 lg:justify-start">
+            <div className="mb-10 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
 
               {/* GitHub */}
 
@@ -430,7 +430,7 @@ function Hero() {
 
           <div className="order-1 flex justify-center lg:order-2">
 
-            <div className="relative h-[390px] w-[340px] sm:h-[470px] sm:w-[430px]">
+            <div className="relative h-[330px] w-full max-w-[320px] sm:h-[470px] sm:max-w-[430px]">
 
               {/* =================================================
                   WATER EFFECT
@@ -440,22 +440,22 @@ function Hero() {
                 aria-hidden="true"
                 className="absolute inset-0"
               >
-                <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/5 blur-3xl dark:bg-cyan-400/10" />
+                <div className="absolute left-1/2 top-1/2 h-56 w-56 sm:h-72 sm:w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/5 blur-3xl dark:bg-cyan-400/10" />
 
-                <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 animate-[waterPulse_5s_ease-in-out_infinite] rounded-full border border-cyan-300/10 dark:border-cyan-400/10" />
+                <div className="absolute left-1/2 top-1/2 h-64 w-64 sm:h-80 sm:w-80 -translate-x-1/2 -translate-y-1/2 animate-[waterPulse_5s_ease-in-out_infinite] rounded-full border border-cyan-300/10 dark:border-cyan-400/10" />
               </div>
 
               {/* =================================================
                   PROFILE IMAGE
               ================================================== */}
 
-              <div className="absolute left-1/2 top-1/2 z-10 h-64 w-64 -translate-x-1/2 -translate-y-1/2 sm:h-80 sm:w-80">
+              <div className="absolute left-1/2 top-1/2 z-10 h-52 w-52 -translate-x-1/2 -translate-y-1/2 sm:h-80 sm:w-80">
 
                 {/* Outer Ring */}
 
-                <div className="absolute -inset-5 rounded-[2.5rem] border border-indigo-200/50 dark:border-indigo-500/20" />
+                <div className="absolute -inset-3 rounded-[2rem] sm:-inset-5 sm:rounded-[2.5rem] border border-indigo-200/50 dark:border-indigo-500/20" />
 
-                <div className="absolute -inset-10 rounded-[3rem] border border-purple-200/30 dark:border-purple-500/10" />
+                <div className="absolute -inset-6 rounded-[2.5rem] sm:-inset-10 sm:rounded-[3rem] border border-purple-200/30 dark:border-purple-500/10" />
 
                 {/* Image */}
 
@@ -516,12 +516,12 @@ function Hero() {
                   />
 
                   <div
-                    className="skill-bubble relative flex h-14 w-14 flex-col items-center justify-center rounded-full border border-white/80 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:shadow-2xl sm:h-16 sm:w-16 dark:border-white/10 dark:bg-gray-900/95"
+                    className="skill-bubble relative flex h-12 w-12 sm:h-16 sm:w-16 flex-col items-center justify-center rounded-full border border-white/80 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:shadow-2xl sm:h-16 sm:w-16 dark:border-white/10 dark:bg-gray-900/95"
                   >
                     {/* Icon */}
 
                     <span
-                      className={`text-2xl drop-shadow-sm sm:text-3xl ${skill.color}`}
+                      className={`text-xl drop-shadow-sm sm:text-3xl ${skill.color}`}
                     >
                       {skill.icon}
                     </span>
@@ -545,13 +545,13 @@ function Hero() {
                   SMALL WATER BUBBLES
               ================================================== */}
 
-              <span className="absolute left-[12%] top-[38%] z-20 h-3 w-3 animate-[tinyBubbleOne_7s_ease-in-out_infinite] rounded-full border border-cyan-300/40 bg-cyan-200/20 backdrop-blur-sm dark:bg-cyan-400/10" />
+              <span className="absolute left-[10%] top-[36%] z-20 h-3 w-3 animate-[tinyBubbleOne_7s_ease-in-out_infinite] rounded-full border border-cyan-300/40 bg-cyan-200/20 backdrop-blur-sm dark:bg-cyan-400/10" />
 
-              <span className="absolute right-[12%] top-[58%] z-20 h-2 w-2 animate-[tinyBubbleTwo_9s_ease-in-out_infinite] rounded-full border border-purple-300/40 bg-purple-200/20 backdrop-blur-sm dark:bg-purple-400/10" />
+              <span className="absolute right-[10%] top-[58%] z-20 h-2 w-2 animate-[tinyBubbleTwo_9s_ease-in-out_infinite] rounded-full border border-purple-300/40 bg-purple-200/20 backdrop-blur-sm dark:bg-purple-400/10" />
 
-              <span className="absolute left-[28%] top-[15%] z-20 h-2 w-2 animate-[tinyBubbleThree_8s_ease-in-out_infinite] rounded-full border border-indigo-300/40 bg-indigo-200/20 backdrop-blur-sm dark:bg-indigo-400/10" />
+              <span className="absolute left-[24%] top-[15%] z-20 h-2 w-2 animate-[tinyBubbleThree_8s_ease-in-out_infinite] rounded-full border border-indigo-300/40 bg-indigo-200/20 backdrop-blur-sm dark:bg-indigo-400/10" />
 
-              <span className="absolute bottom-[12%] right-[28%] z-20 h-3 w-3 animate-[tinyBubbleFour_10s_ease-in-out_infinite] rounded-full border border-blue-300/40 bg-blue-200/20 backdrop-blur-sm dark:bg-blue-500/10" />
+              <span className="absolute bottom-[10%] right-[24%] z-20 h-3 w-3 animate-[tinyBubbleFour_10s_ease-in-out_infinite] rounded-full border border-blue-300/40 bg-blue-200/20 backdrop-blur-sm dark:bg-blue-500/10" />
 
               {/* =================================================
                   AVAILABILITY CARD

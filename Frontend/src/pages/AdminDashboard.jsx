@@ -1560,7 +1560,82 @@ function AdminDashboard() {
   // =========================================================
 
   return (
-    <div className="min-h-[100dvh] w-full overflow-x-hidden bg-gray-100 text-gray-900 transition-colors duration-500 dark:bg-gray-950 dark:text-white">
+    <div className="admin-dashboard min-h-[100dvh] w-full overflow-x-hidden bg-gray-100 text-gray-900 transition-colors duration-500 dark:bg-gray-950 dark:text-white">
+        <style>{`
+          .admin-dashboard {
+            min-width: 0;
+          }
+
+          .admin-dashboard form,
+          .admin-dashboard form > div,
+          .admin-dashboard form section {
+            min-width: 0;
+          }
+
+          .admin-dashboard input,
+          .admin-dashboard textarea,
+          .admin-dashboard select {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+          }
+
+          .admin-dashboard textarea {
+            max-width: 100%;
+          }
+
+          .admin-dashboard img {
+            max-width: 100%;
+          }
+
+          @media (max-width: 639px) {
+            .admin-dashboard form .grid {
+              grid-template-columns: minmax(0, 1fr) !important;
+            }
+
+            .admin-dashboard form .flex:not(.items-center) {
+              min-width: 0;
+            }
+
+            .admin-dashboard form button {
+              max-width: 100%;
+            }
+
+            .admin-dashboard .fixed {
+              padding: 0.5rem;
+            }
+
+            .admin-dashboard .fixed > div {
+              width: 100%;
+              max-width: calc(100vw - 1rem);
+              max-height: calc(100dvh - 1rem);
+              border-radius: 1.25rem;
+            }
+
+            .admin-dashboard .fixed > div > div {
+              min-width: 0;
+            }
+
+            .admin-dashboard input,
+            .admin-dashboard textarea,
+            .admin-dashboard select {
+              font-size: 16px;
+            }
+
+            .admin-dashboard form .grid.gap-5,
+            .admin-dashboard form .grid.gap-4 {
+              gap: 1rem;
+            }
+          }
+
+          @media (min-width: 640px) and (max-width: 1023px) {
+            .admin-dashboard form .grid {
+              grid-template-columns: minmax(0, 1fr) !important;
+            }
+          }
+        `}</style>
+
 
 
       {/* =====================================================
