@@ -52,10 +52,11 @@ const allowedOrigins = [
   'http://127.0.0.1:5174',
 
   // ----------------------------------------------------
-  // PRODUCTION — VERCEL
+  // PRODUCTION — VERCEL (hardcoded known URLs)
   // ----------------------------------------------------
 
   'https://my-portfolio-mern-mauve.vercel.app',
+  'https://portfolio-vivek-blue.vercel.app',
 ].filter(Boolean);
 
 // ------------------------------------------------------
@@ -98,6 +99,16 @@ app.use(
 
       if (
         allowedOrigins.includes(normalizedOrigin)
+      ) {
+        return callback(null, true);
+      }
+
+      // ------------------------------------------------
+      // ALLOW ALL VERCEL PREVIEW + PRODUCTION DEPLOYMENTS
+      // ------------------------------------------------
+
+      if (
+        /^https:\/\/[a-z0-9-]+(\.vercel\.app)$/.test(normalizedOrigin)
       ) {
         return callback(null, true);
       }

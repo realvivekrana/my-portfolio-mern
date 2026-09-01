@@ -1,5 +1,9 @@
 const PortfolioContent = require('../models/PortfolioContent');
 
+const {
+  sanitizePortfolioMedia,
+} = require('../utils/mediaUrl');
+
 /*
 |--------------------------------------------------------------------------
 | Helper: Get Main Portfolio
@@ -37,7 +41,7 @@ const getPortfolio = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Portfolio data fetched successfully',
-      data: portfolio,
+      data: sanitizePortfolioMedia(portfolio),
     });
   } catch (error) {
     console.error(

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import API from '../../utils/axios';
 
 import {
@@ -20,6 +20,58 @@ function Contact() {
   });
 
   const [status, setStatus] = useState('idle');
+
+  /*
+  |--------------------------------------------------------------------------
+  | CONTACT INFO — from portfolio API
+  |--------------------------------------------------------------------------
+  */
+
+  const [contactInfo, setContactInfo] = useState({
+    email: 'vivekranaworks@gmail.com',
+    linkedinUrl: 'https://www.linkedin.com/in/mrvivekrana/',
+    githubUrl: 'https://github.com/realvivekrana',
+    location: 'Pune, India',
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchContactInfo = async () => {
+      try {
+        const response = await API.get('/portfolio');
+
+        const portfolio =
+          response?.data?.data || response?.data || {};
+
+        if (!isMounted) return;
+
+        setContactInfo({
+          email:
+            portfolio?.contact?.email ||
+            portfolio?.socialLinks?.email ||
+            'vivekranaworks@gmail.com',
+          linkedinUrl:
+            portfolio?.socialLinks?.linkedin ||
+            'https://www.linkedin.com/in/mrvivekrana/',
+          githubUrl:
+            portfolio?.socialLinks?.github ||
+            'https://github.com/realvivekrana',
+          location:
+            portfolio?.contact?.location || 'Pune, India',
+        });
+      } catch (error) {
+        // Fallback defaults already set in initial state
+        console.warn('Failed to fetch contact info:', error);
+      }
+    };
+
+    fetchContactInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   /*
   |--------------------------------------------------------------------------
@@ -420,7 +472,7 @@ function Contact() {
                 ================================================== */}
 
                 <a
-                  href="mailto:vivekranaworks@gmail.com"
+                  href={`mailto:${contactInfo.email}`}
                   className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)]"
                 >
 
@@ -435,7 +487,7 @@ function Contact() {
                     </span>
 
                     <span className="mt-1 block truncate text-sm font-semibold text-white">
-                      vivekranaworks@gmail.com
+                      {contactInfo.email}
                     </span>
 
                   </span>
@@ -447,7 +499,7 @@ function Contact() {
                 ================================================== */}
 
                 <a
-                  href="https://www.linkedin.com/"
+                  href={contactInfo.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)]"
@@ -476,7 +528,7 @@ function Contact() {
                 ================================================== */}
 
                 <a
-                  href="https://github.com/realvivekrana"
+                  href={contactInfo.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-[0_10px_35px_rgba(0,0,0,0.15)]"
@@ -517,7 +569,7 @@ function Contact() {
                     </span>
 
                     <span className="mt-1 block text-sm font-semibold text-white">
-                      Pune, India
+                      {contactInfo.location}
                     </span>
 
                   </span>
@@ -787,7 +839,7 @@ function Contact() {
             Prefer email?{' '}
 
             <a
-              href="mailto:vivekranaworks@gmail.com"
+              href={`mailto:${contactInfo.email}`}
               className="font-semibold text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
             >
               Send me a direct message

@@ -6,6 +6,7 @@ import {
   FaStar,
   FaEye,
   FaCheckCircle,
+  FaCode,
 } from 'react-icons/fa';
 
 import API from '../../utils/axios';
@@ -16,6 +17,7 @@ function Projects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
+  const [githubUrl, setGithubUrl] = useState('https://github.com/realvivekrana');
 
   /*
   |--------------------------------------------------------------------------
@@ -29,13 +31,26 @@ function Projects() {
         setLoading(true);
         setError('');
 
-        const res = await API.get('/projects');
+        const [projectsRes, portfolioRes] = await Promise.allSettled([
+          API.get('/projects'),
+          API.get('/portfolio'),
+        ]);
 
-        const projectData = Array.isArray(res.data?.data)
-          ? res.data.data
-          : [];
+        if (projectsRes.status === 'fulfilled') {
+          const projectData = Array.isArray(projectsRes.value.data?.data)
+            ? projectsRes.value.data.data
+            : [];
+          setProjects(projectData);
+        }
 
-        setProjects(projectData);
+        if (portfolioRes.status === 'fulfilled') {
+          const portfolio =
+            portfolioRes.value.data?.data ||
+            portfolioRes.value.data ||
+            {};
+          const url = portfolio?.socialLinks?.github;
+          if (url) setGithubUrl(url);
+        }
       } catch (err) {
         setError(
           err.response?.data?.message ||
@@ -174,7 +189,7 @@ function Projects() {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-950/40 via-black to-purple-950/40">
-              <FaCodeFallback />
+              <FaCode className="text-4xl text-indigo-400/40" />
             </div>
           )}
 
@@ -452,7 +467,7 @@ function Projects() {
               <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.08] bg-white/[0.025] px-6 py-12 text-center shadow-[0_0_40px_rgba(99,102,241,0.03)] backdrop-blur-md">
 
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400">
-                  <FaCodeFallback />
+                  <FaCode className="text-2xl" />
                 </div>
 
                 <h3 className="text-xl font-bold text-white">
@@ -578,7 +593,7 @@ function Projects() {
                   </p>
 
                   <a
-                    href="https://github.com/realvivekrana"
+                    href={githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-6 inline-flex items-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-6 py-3 text-sm font-semibold text-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_30px_rgba(99,102,241,0.18)]"
@@ -714,7 +729,7 @@ function Projects() {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-950/40 via-black to-purple-950/40">
-                  <FaCodeFallback />
+                  <FaCode className="text-5xl font-black text-indigo-400/40 drop-shadow-[0_0_20px_rgba(99,102,241,0.3)]" />
                 </div>
               )}
 
@@ -887,20 +902,6 @@ function Projects() {
         </div>
       )}
     </>
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| SIMPLE FALLBACK ICON
-|--------------------------------------------------------------------------
-*/
-
-function FaCodeFallback() {
-  return (
-    <div className="text-5xl font-black text-indigo-400/40 drop-shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-      &lt;/&gt;
-    </div>
   );
 }
 

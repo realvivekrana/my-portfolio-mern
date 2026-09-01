@@ -63,6 +63,8 @@ const strengths = [
 function About() {
   const [experiences, setExperiences] = useState([]);
   const [education, setEducation] = useState([]);
+  const [heroName, setHeroName] = useState('Vivek Rana');
+  const [heroRole, setHeroRole] = useState('MERN Stack Developer');
 
   useEffect(() => {
     let isMounted = true;
@@ -109,6 +111,14 @@ function About() {
                 Number(b?.displayOrder || 0)
             )
         );
+
+        if (portfolio?.hero?.name) {
+          setHeroName(portfolio.hero.name);
+        }
+
+        if (portfolio?.hero?.role) {
+          setHeroRole(portfolio.hero.role);
+        }
       } catch (error) {
         console.error('Failed to fetch About data:', error);
 
@@ -214,11 +224,11 @@ function About() {
               <div className="min-w-0">
 
                 <h3 className="text-lg font-extrabold text-white sm:text-xl">
-                  Vivek Rana
+                  {heroName}
                 </h3>
 
                 <p className="mt-1 text-xs font-semibold text-indigo-400 sm:text-sm">
-                  MERN Stack Developer
+                  {heroRole}
                 </p>
 
               </div>

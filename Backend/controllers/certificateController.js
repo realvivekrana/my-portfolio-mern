@@ -1,47 +1,62 @@
 const fs = require('fs');
 const path = require('path');
 
+const cloudinary = require('../config/cloudinary');
 const Certificate = require('../models/Certificate');
 
 /*
 |--------------------------------------------------------------------------
-| Get Uploaded Certificate Image URL
+| Get Cloudinary Image URL from uploaded file
+|--------------------------------------------------------------------------
+|
+| multer-storage-cloudinary sets:
+|   file.path       → secure_url  (always present)
+|   file.filename   → public_id   (always present)
+|
 |--------------------------------------------------------------------------
 */
 
-const getUploadedImageUrl = (req, filename) => {
-  const protocol = req.protocol;
-  const host = req.get('host');
+const getCloudinaryImageUrl = (file) => {
+  // secure_url is stored in file.path by multer-storage-cloudinary
+  return file.path || file.secure_url || null;
+};
 
-  return `${protocol}://${host}/uploads/${filename}`;
+const getCloudinaryPublicId = (file) => {
+  return file.filename || file.public_id || null;
 };
 
 /*
 |--------------------------------------------------------------------------
-| Delete Uploaded Certificate Image
+| Delete Cloudinary Certificate Image
 |--------------------------------------------------------------------------
 */
 
-const deleteUploadedImage = (imageUrl) => {
+const deleteCloudinaryCertificateImage = async (imageUrl) => {
   try {
-    if (!imageUrl || !imageUrl.includes('/uploads/')) {
+    if (!imageUrl || !imageUrl.includes('cloudinary.com')) {
       return;
     }
 
-    const fileName = path.basename(imageUrl);
+    // Extract public_id from the Cloudinary URL
+    // URL format: https://res.cloudinary.com/<cloud>/image/upload/v<ver>/<folder>/<public_id>.<ext>
+    const urlParts = imageUrl.split('/');
+    const uploadIndex = urlParts.indexOf('upload');
 
-    const filePath = path.join(
-      __dirname,
-      '../uploads',
-      fileName
-    );
+    if (uploadIndex === -1) return;
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    // Everything after 'upload/v<version>/' is folder/public_id.ext
+    const afterUpload = urlParts.slice(uploadIndex + 2).join('/');
+    const publicId = afterUpload.replace(/\.[^/.]+$/, ''); // remove extension
+
+    if (publicId) {
+      await cloudinary.uploader.destroy(publicId, {
+        resource_type: 'image',
+        invalidate: true,
+      });
     }
   } catch (error) {
     console.error(
-      'Failed to delete old certificate image:',
+      'Failed to delete certificate image from Cloudinary:',
       error.message
     );
   }
@@ -72,10 +87,15 @@ const uploadCertificateImage = async (req, res) => {
       });
     }
 
-    const imageUrl = getUploadedImageUrl(
-      req,
-      req.file.filename
-    );
+    // multer-storage-cloudinary puts the secure_url in file.path
+    const imageUrl = getCloudinaryImageUrl(req.file);
+
+    if (!imageUrl) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to get image URL from Cloudinary.',
+      });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -89,7 +109,8 @@ const uploadCertificateImage = async (req, res) => {
       );
 
       if (!certificate) {
-        deleteUploadedImage(imageUrl);
+        // Delete the just-uploaded Cloudinary image since cert not found
+        await deleteCloudinaryCertificateImage(imageUrl);
 
         return res.status(404).json({
           success: false,
@@ -103,8 +124,9 @@ const uploadCertificateImage = async (req, res) => {
 
       await certificate.save();
 
+      // Delete old image from Cloudinary
       if (oldImage && oldImage !== imageUrl) {
-        deleteUploadedImage(oldImage);
+        await deleteCloudinaryCertificateImage(oldImage);
       }
     }
 
@@ -120,31 +142,6 @@ const uploadCertificateImage = async (req, res) => {
       'Upload Certificate Image Error:',
       error
     );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Remove Newly Uploaded File When Something Fails
-    |--------------------------------------------------------------------------
-    */
-
-    if (req.file) {
-      try {
-        const uploadedFilePath = path.join(
-          __dirname,
-          '../uploads',
-          req.file.filename
-        );
-
-        if (fs.existsSync(uploadedFilePath)) {
-          fs.unlinkSync(uploadedFilePath);
-        }
-      } catch (deleteError) {
-        console.error(
-          'Failed to remove uploaded certificate image:',
-          deleteError.message
-        );
-      }
-    }
 
     return res.status(500).json({
       success: false,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import API from '../../utils/axios';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 import {
   FaGithub,
@@ -28,6 +29,17 @@ import {
 } from 'react-icons/fa6';
 
 import profileImg from '../../assets/profile.jpg';
+
+const defaultHero = {
+  name: 'Vivek kumar Rana',
+  role: 'MERN Stack Developer',
+  tagline:
+    'I build scalable, responsive, and user-focused web applications using modern JavaScript technologies. I love turning ideas into clean, functional, and engaging digital experiences.',
+  availability: 'Open to Work',
+  githubUrl: 'https://github.com/realvivekrana',
+  linkedinUrl: 'https://www.linkedin.com/in/mrvivekrana/',
+  location: 'Based in India',
+};
 
 function Hero() {
   /*
@@ -60,6 +72,13 @@ function Hero() {
 
   const [resumeFileName, setResumeFileName] =
     useState('Vivek-Rana-Resume.pdf');
+
+  const [hero, setHero] = useState(defaultHero);
+  const [profileImage, setProfileImage] = useState(profileImg);
+  const [showResume, setShowResume] = useState(true);
+  const [showGithub, setShowGithub] = useState(true);
+  const [showLinkedin, setShowLinkedin] = useState(true);
+  const [showAvailability, setShowAvailability] = useState(true);
 
   /*
   |--------------------------------------------------------------------------
@@ -136,6 +155,40 @@ function Hero() {
           response.data?.data ||
           response.data ||
           {};
+
+        const heroData = portfolio?.hero || {};
+        const settings = portfolio?.settings || {};
+
+        setHero({
+          name: heroData.name || defaultHero.name,
+          role: heroData.role || defaultHero.role,
+          tagline: heroData.tagline || defaultHero.tagline,
+          availability:
+            heroData.availability || defaultHero.availability,
+          githubUrl:
+            portfolio?.socialLinks?.github ||
+            heroData.githubUrl ||
+            defaultHero.githubUrl,
+          linkedinUrl:
+            portfolio?.socialLinks?.linkedin ||
+            heroData.linkedinUrl ||
+            defaultHero.linkedinUrl,
+          location:
+            portfolio?.contact?.location || defaultHero.location,
+        });
+
+        const resolvedImage = resolveMediaUrl(
+          heroData.profileImage
+        );
+
+        setProfileImage(resolvedImage || profileImg);
+
+        setShowResume(settings.showResume !== false);
+        setShowGithub(settings.showGithub !== false);
+        setShowLinkedin(settings.showLinkedin !== false);
+        setShowAvailability(
+          settings.showAvailabilityBadge !== false
+        );
 
         const resume =
           portfolio?.resume;
@@ -241,6 +294,16 @@ function Hero() {
     }
   };
 
+  const nameParts = hero.name.trim().split(/\s+/);
+  const firstName =
+    nameParts.length > 1
+      ? nameParts.slice(0, -1).join(' ')
+      : hero.name;
+  const lastName =
+    nameParts.length > 1
+      ? nameParts[nameParts.length - 1]
+      : '';
+
   return (
     <section
       id="home"
@@ -288,15 +351,17 @@ function Hero() {
 
             {/* Availability */}
 
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50/90 px-4 py-2 text-sm font-medium text-green-700 shadow-sm backdrop-blur-sm dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+            {showAvailability && (
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50/90 px-4 py-2 text-sm font-medium text-green-700 shadow-sm backdrop-blur-sm dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
 
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
-              </span>
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                </span>
 
-              Open to Work
-            </div>
+                {hero.availability}
+              </div>
+            )}
 
             {/* Introduction */}
 
@@ -309,25 +374,25 @@ function Hero() {
             {/* Name */}
 
             <h1 className="mb-4 break-words text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-              Vivek kumar
+              {firstName}
 
-              <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
-                Rana
-              </span>
+              {lastName && (
+                <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
+                  {lastName}
+                </span>
+              )}
             </h1>
 
             {/* Role */}
 
             <h2 className="mb-6 text-xl font-bold sm:text-3xl text-gray-700 sm:text-3xl dark:text-gray-200">
-              MERN Stack Developer
+              {hero.role}
             </h2>
 
             {/* Description */}
 
             <p className="mx-auto mb-8 max-w-2xl text-sm leading-7 sm:text-lg sm:leading-8 text-gray-600 sm:text-lg lg:mx-0 dark:text-gray-400">
-              I build scalable, responsive, and user-focused web applications
-              using modern JavaScript technologies. I love turning ideas into
-              clean, functional, and engaging digital experiences.
+              {hero.tagline}
             </p>
 
             {/* =================================================
@@ -394,32 +459,36 @@ function Hero() {
 
               {/* GitHub */}
 
-              <a
-                href="https://github.com/realvivekrana"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:bg-gray-900 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-white dark:hover:text-gray-900"
-              >
-                <FaGithub className="transition-transform duration-300 group-hover:scale-110" />
-              </a>
+              {showGithub && (
+                <a
+                  href={hero.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:bg-gray-900 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-white dark:hover:text-gray-900"
+                >
+                  <FaGithub className="transition-transform duration-300 group-hover:scale-110" />
+                </a>
+              )}
 
               {/* LinkedIn */}
 
-              <a
-                href="https://www.linkedin.com/in/mrvivekrana/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-600 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-blue-600 dark:hover:text-white"
-              >
-                <FaLinkedin className="transition-transform duration-300 group-hover:scale-110" />
-              </a>
+              {showLinkedin && (
+                <a
+                  href={hero.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-600 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-blue-600 dark:hover:text-white"
+                >
+                  <FaLinkedin className="transition-transform duration-300 group-hover:scale-110" />
+                </a>
+              )}
 
               <span className="ml-2 h-6 w-px bg-gray-200 dark:bg-gray-800" />
 
               <span className="ml-1 text-sm text-gray-500 dark:text-gray-500">
-                Based in India
+                {hero.location}
               </span>
             </div>
           </div>
@@ -464,7 +533,7 @@ function Hero() {
                   <div className="h-full w-full overflow-hidden rounded-[1.5rem] bg-gray-100 dark:bg-gray-800">
 
                     <img
-                      src={profileImg}
+                      src={profileImage}
                       alt="Vivek Rana - MERN Stack Developer"
                       width="320"
                       height="320"

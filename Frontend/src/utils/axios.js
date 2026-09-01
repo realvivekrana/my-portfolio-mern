@@ -5,16 +5,21 @@ import axios from 'axios';
 | API BASE URL
 |--------------------------------------------------------------------------
 |
-| Development:
-|   VITE_API_URL normally:
-|   http://localhost:5000/api
+| Priority order:
+| 1. VITE_API_URL environment variable (set in .env.production for Vercel)
+| 2. localhost:5000 for development
 |
-| Production:
-|   VITE_API_URL will be your deployed backend URL.
+| HOW TO SET FOR PRODUCTION (Vercel):
+| ─────────────────────────────────────────────────────────────
+| Option A — .env.production file (recommended):
+|   VITE_API_URL=https://YOUR-SERVICE.onrender.com/api
 |
-| Example:
-|   https://your-backend.onrender.com/api
-|
+| Option B — Vercel Dashboard:
+|   Project → Settings → Environment Variables
+|   Key:   VITE_API_URL
+|   Value: https://YOUR-SERVICE.onrender.com/api
+|   Env:   Production
+| ─────────────────────────────────────────────────────────────
 |--------------------------------------------------------------------------
 */
 
@@ -22,31 +27,8 @@ const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   'http://localhost:5000/api';
 
-/*
-|--------------------------------------------------------------------------
-| Axios Instance
-|--------------------------------------------------------------------------
-*/
-
 const API = axios.create({
   baseURL: API_BASE_URL,
-
-  /*
-  |--------------------------------------------------------------------------
-  | IMPORTANT
-  |--------------------------------------------------------------------------
-  |
-  | Content-Type ko globally force nahi karenge.
-  |
-  | JSON requests ke liye Axios automatically appropriate headers
-  | handle karega.
-  |
-  | FormData requests ke liye browser ko multipart/form-data ka
-  | boundary automatically generate karne denge.
-  |
-  |--------------------------------------------------------------------------
-  */
-
   withCredentials: true,
 });
 
@@ -54,115 +36,52 @@ const API = axios.create({
 |--------------------------------------------------------------------------
 | REQUEST INTERCEPTOR
 |--------------------------------------------------------------------------
-|
-| Admin login ke baad stored JWT token automatically
-| har protected API request ke saath send hoga.
-|
+| Automatically attaches JWT token for protected admin routes.
+| Removes Content-Type for FormData (browser sets boundary automatically).
 |--------------------------------------------------------------------------
 */
 
 API.interceptors.request.use(
   (config) => {
-    /*
-    |--------------------------------------------------------------------------
-    | JWT TOKEN
-    |--------------------------------------------------------------------------
-    */
-
-    const token =
-      localStorage.getItem(
-        'adminToken'
-      );
+    const token = localStorage.getItem('adminToken');
 
     if (token) {
-      config.headers =
-        config.headers || {};
-
-      config.headers.Authorization =
-        `Bearer ${token}`;
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FORM DATA HANDLING
-    |--------------------------------------------------------------------------
-    |
-    | Resume / profile image / certificate image upload ke time
-    | FormData use hota hai.
-    |
-    | Browser ko:
-    |
-    | multipart/form-data; boundary=...
-    |
-    | khud generate karne dena zaroori hai.
-    |
-    | Isliye FormData request mein manually Content-Type remove kar rahe hain.
-    |
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-      config.data instanceof FormData
-    ) {
+    // Let browser set multipart boundary for file uploads
+    if (config.data instanceof FormData) {
       if (config.headers) {
-        delete config.headers[
-          'Content-Type'
-        ];
-
-        delete config.headers[
-          'content-type'
-        ];
+        delete config.headers['Content-Type'];
+        delete config.headers['content-type'];
       }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | NORMAL JSON REQUESTS
-    |--------------------------------------------------------------------------
-    |
-    | POST / PUT / PATCH mein agar normal JavaScript object bheja ja raha hai,
-    | Axios automatically JSON handle karega.
-    |
-    |--------------------------------------------------------------------------
-    */
-
     return config;
   },
-
-  (error) => {
-    return Promise.reject(
-      error
-    );
-  }
+  (error) => Promise.reject(error)
 );
 
 /*
 |--------------------------------------------------------------------------
 | RESPONSE INTERCEPTOR
 |--------------------------------------------------------------------------
-|
-| Abhi automatically logout nahi kar rahe hain.
-| Existing authentication flow ko change nahi karna hai.
-|
-|--------------------------------------------------------------------------
 */
 
 API.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-
+  (response) => response,
   (error) => {
-    return Promise.reject(
-      error
-    );
+    // Log API errors in development only
+    if (import.meta.env.DEV) {
+      console.error('[API Error]', {
+        url: error.config?.url,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+      });
+    }
+    return Promise.reject(error);
   }
 );
-
-/*
-|--------------------------------------------------------------------------
-| EXPORT
-|--------------------------------------------------------------------------
-*/
 
 export default API;
