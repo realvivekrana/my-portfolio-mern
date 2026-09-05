@@ -4,15 +4,17 @@ import {
   HiOutlineXMark,
   HiOutlinePaperAirplane,
   HiOutlineUser,
+  HiOutlineArrowTopRightOnSquare,
+  HiOutlineArrowDownTray,
+  HiOutlineTrash,
 } from 'react-icons/hi2';
-import { FaRobot } from 'react-icons/fa6';
-import { FaSpinner } from 'react-icons/fa';
+import { FaRobot, FaGithub } from 'react-icons/fa6';
 
-import API from '../../utils/axios';
+import { API_BASE_URL } from '../../utils/axios';
 
 /*
 |--------------------------------------------------------------------------
-| AI CHATBOT WIDGET (MOBILE-FIRST RESPONSIVE)
+| AI CHATBOT WIDGET (MOBILE-FIRST, STREAMING, TOOL-AWARE)
 |--------------------------------------------------------------------------
 |
 | Floating chat button jo portfolio ke har page (public) par bottom-right
@@ -20,52 +22,232 @@ import API from '../../utils/axios';
 | visitor Vivek ke portfolio (skills, projects, experience, education,
 | contact) ke baare me sawal pooch sakta hai.
 |
-| RESPONSIVE STRATEGY (mobile-first):
-|   - Base (no prefix) styles target the smallest phones first.
-|   - no-prefix (<640px) -> full-width bottom sheet, safe-area aware,
-|                        dvh units so the iOS/Android URL bar never
-|                        clips the window, 16px input font so iOS
-|                        Safari does not auto-zoom on focus.
-|   - `sm:` (>=640px)  -> switches to a floating card, docked above
-|                        the toggle button, fixed width/height.
-|   - `md:`             -> slightly wider floating card.
-|   - A tap-outside backdrop is shown only on mobile (`sm:hidden`) so
-|     the sheet behaves like a native bottom sheet; on desktop the
-|     card floats without dimming the page.
-|   - Body scroll is locked while the sheet is open on small screens
-|     so the page behind it doesn't scroll along with the chat.
+| FEATURES:
+|   1. Streaming replies  — tokens ChatGPT-style type hote hue aate hain,
+|      backend se Server-Sent Events (SSE) ke through.
+|   2. Quick-reply chips  — pehli baar chat khulne par kuch suggested
+|      sawal dikhte hain, taaki visitor ko pata chale kya pooch sakta hai.
+|   3. "Function calling" actions — jab visitor resume maange ya kisi
+|      specific project ka link maange, backend AI model se ek "tool"
+|      call karwata hai jo real DB se link nikal kar UI ko `action`
+|      event ke through bhejta hai; hum usko ek asli button/link ki
+|      tarah render karte hain (raw text me URL nahi).
+|   4. Chat history persistence — localStorage me save hoti hai, taaki
+|      page refresh par conversation na ude.
+|   5. Server-side rate limiting (chatbotRoutes.js) — spam/quota abuse
+|      se bachne ke liye; agar limit lag jaaye toh ek friendly error
+|      message dikhta hai.
+|
+| RESPONSIVE STRATEGY (mobile-first) — unchanged from before:
+|   - Base (<640px)  -> full-width bottom sheet using `dvh` units, safe
+|                        area aware, tap-outside-to-close, 16px input
+|                        font (no iOS zoom-on-focus).
+|   - `sm:` (>=640px) -> floating card docked above the toggle button.
+|   - `md:`            -> slightly wider floating card.
 |
 | Backend flow:
 |
 | Chatbot.jsx
-|     ↓
+|     ↓  fetch() (not axios — axios can't stream in the browser)
 | POST /api/chatbot  { message, history }
 |     ↓
-| chatbotController.js (portfolio context + AI provider)
+| chatbotController.js (portfolio context + Groq API, tool calling)
+|     ↓  Server-Sent Events
+| event: chunk  -> { token }     streamed reply text
+| event: action -> { type, ... } resume/project link to render
+| event: error  -> { message }
+| event: done   -> {}
 |     ↓
-| AI response
-|     ↓
-| Chat window
+| Chat window (typewriter effect + action buttons)
 |
 |--------------------------------------------------------------------------
 */
 
+const CHAT_HISTORY_KEY = 'portfolio_chatbot_history_v1';
+
+const MAX_STORED_MESSAGES = 40;
+
+const DEFAULT_GREETING = {
+  role: 'model',
+  text:
+    "Hi! 👋 I'm Vivek's portfolio assistant. Ask me anything about his skills, projects, experience or education!",
+};
+
+const QUICK_REPLIES = [
+  'What are his skills?',
+  'Show me his projects',
+  'Download his resume',
+  'Tell me about his experience',
+];
+
+/*
+|--------------------------------------------------------------------------
+| Helper: Load / Save Chat History (localStorage)
+|--------------------------------------------------------------------------
+*/
+
+const loadStoredMessages = () => {
+  if (typeof window === 'undefined') return [DEFAULT_GREETING];
+
+  try {
+    const raw = window.localStorage.getItem(CHAT_HISTORY_KEY);
+
+    if (!raw) return [DEFAULT_GREETING];
+
+    const parsed = JSON.parse(raw);
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      // Never resume mid-stream — if the tab was closed while a reply
+      // was still streaming, treat whatever text arrived as final.
+      return parsed.map((msg) => ({ ...msg, streaming: false }));
+    }
+
+    return [DEFAULT_GREETING];
+  } catch (error) {
+    return [DEFAULT_GREETING];
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Helper: Parse one SSE "event" block into { event, data }
+|--------------------------------------------------------------------------
+*/
+
+const parseSseBlock = (block) => {
+  let eventName = 'message';
+  const dataLines = [];
+
+  for (const rawLine of block.split('\n')) {
+    if (rawLine.startsWith('event:')) {
+      eventName = rawLine.slice('event:'.length).trim();
+    } else if (rawLine.startsWith('data:')) {
+      dataLines.push(rawLine.slice('data:'.length).trim());
+    }
+  }
+
+  if (dataLines.length === 0) return null;
+
+  try {
+    return { event: eventName, data: JSON.parse(dataLines.join('\n')) };
+  } catch (error) {
+    return null;
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Small presentational bits
+|--------------------------------------------------------------------------
+*/
+
+function TypingDots() {
+  return (
+    <span className="inline-flex items-center gap-1 py-1">
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s] dark:bg-gray-500" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s] dark:bg-gray-500" />
+      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 dark:bg-gray-500" />
+    </span>
+  );
+}
+
+function ActionCard({ action }) {
+  if (!action) return null;
+
+  if (action.type === 'resume') {
+    return (
+      <a
+        href={`${API_BASE_URL}${action.path}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          mt-2 inline-flex items-center gap-2
+          rounded-xl border border-indigo-200 bg-indigo-50
+          px-3 py-2 text-xs font-medium text-indigo-700
+          transition-colors hover:bg-indigo-100
+          dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
+          dark:hover:bg-indigo-500/20
+        "
+      >
+        <HiOutlineArrowDownTray size={15} />
+        {action.label || 'Download Resume'}
+      </a>
+    );
+  }
+
+  if (action.type === 'project') {
+    return (
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        {action.liveLink && (
+          <a
+            href={action.liveLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex items-center gap-1.5
+              rounded-xl border border-indigo-200 bg-indigo-50
+              px-3 py-2 text-xs font-medium text-indigo-700
+              transition-colors hover:bg-indigo-100
+              dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
+              dark:hover:bg-indigo-500/20
+            "
+          >
+            <HiOutlineArrowTopRightOnSquare size={14} />
+            Live Demo
+          </a>
+        )}
+
+        {action.githubLink && (
+          <a
+            href={action.githubLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex items-center gap-1.5
+              rounded-xl border border-gray-200 bg-gray-50
+              px-3 py-2 text-xs font-medium text-gray-700
+              transition-colors hover:bg-gray-100
+              dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200
+              dark:hover:bg-gray-700
+            "
+          >
+            <FaGithub size={13} />
+            GitHub
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [messages, setMessages] = useState([
-    {
-      role: 'model',
-      text:
-        "Hi! 👋 I'm Vivek's portfolio assistant. Ask me anything about his skills, projects, experience or education!",
-    },
-  ]);
+  const [messages, setMessages] = useState(loadStoredMessages);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const abortControllerRef = useRef(null);
+
+  /*
+  |--------------------------------------------------------------------------
+  | PERSIST CHAT HISTORY TO LOCALSTORAGE
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    try {
+      const trimmed = messages.slice(-MAX_STORED_MESSAGES);
+      window.localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(trimmed));
+    } catch (error) {
+      // localStorage unavailable (private mode, quota, etc.) — non-fatal
+    }
+  }, [messages]);
 
   /*
   |--------------------------------------------------------------------------
@@ -83,20 +265,11 @@ function Chatbot() {
   |--------------------------------------------------------------------------
   | LOCK BODY SCROLL ON MOBILE WHILE THE SHEET IS OPEN
   |--------------------------------------------------------------------------
-  |
-  | Sirf small screens (< 640px, Tailwind's `sm` breakpoint) par body
-  | scroll lock karte hain, kyunki wahan chat window ek full-width
-  | bottom sheet ki tarah dikhti hai. Desktop/tablet par ye sirf ek
-  | floating card hai, isliye background page normally scroll hona
-  | chahiye.
-  |
   */
 
   useEffect(() => {
     const mobileQuery = window.matchMedia('(max-width: 639px)');
-
     const shouldLockScroll = isOpen && mobileQuery.matches;
-
     const previousOverflow = document.body.style.overflow;
 
     if (shouldLockScroll) {
@@ -116,8 +289,6 @@ function Chatbot() {
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Small delay lets the open transition finish before focusing,
-      // which avoids the mobile keyboard fighting the layout shift.
       const timer = setTimeout(() => inputRef.current?.focus(), 150);
       return () => clearTimeout(timer);
     }
@@ -125,82 +296,198 @@ function Chatbot() {
 
   /*
   |--------------------------------------------------------------------------
-  | SEND MESSAGE
+  | CANCEL ANY IN-FLIGHT STREAM ON UNMOUNT
   |--------------------------------------------------------------------------
   */
 
-  const handleSend = async (e) => {
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | SEND MESSAGE (STREAMING)
+  |--------------------------------------------------------------------------
+  */
+
+  const handleSend = async (e, overrideText) => {
     e?.preventDefault();
 
-    const trimmed = input.trim();
+    const trimmed = (overrideText ?? input).trim();
 
     if (!trimmed || isLoading) return;
 
-    const updatedMessages = [
-      ...messages,
-      { role: 'user', text: trimmed },
-    ];
+    const updatedMessages = [...messages, { role: 'user', text: trimmed }];
 
-    setMessages(updatedMessages);
+    // Snapshot of history to send to the backend, BEFORE we add the
+    // empty streaming placeholder below.
+    const historyForRequest = updatedMessages.slice(-10);
+
+    setMessages([...updatedMessages, { role: 'model', text: '', streaming: true }]);
     setInput('');
     setIsLoading(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
-      const response = await API.post('/chatbot', {
-        message: trimmed,
-        history: updatedMessages.slice(-10),
+      const response = await fetch(`${API_BASE_URL}/chatbot`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: trimmed,
+          history: historyForRequest,
+        }),
+        signal: controller.signal,
       });
 
-      const reply =
-        response.data?.data?.reply ||
-        "Sorry, I couldn't understand that. Please try again.";
+      if (!response.ok || !response.body) {
+        const errorData = await response.json().catch(() => ({}));
 
-      setMessages((prev) => [...prev, { role: 'model', text: reply }]);
+        throw new Error(
+          errorData?.message ||
+            (response.status === 429
+              ? "You're sending messages a little too quickly. Please wait a few minutes and try again."
+              : 'Chatbot service is unavailable right now.')
+        );
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      let buffer = '';
+      let receivedAnyToken = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE events are separated by a blank line ("\n\n")
+        const blocks = buffer.split('\n\n');
+        buffer = blocks.pop() ?? '';
+
+        for (const block of blocks) {
+          const parsed = parseSseBlock(block);
+          if (!parsed) continue;
+
+          const { event, data } = parsed;
+
+          if (event === 'chunk' && data?.token) {
+            receivedAnyToken = true;
+
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              next[next.length - 1] = {
+                ...last,
+                text: (last.text || '') + data.token,
+              };
+              return next;
+            });
+          } else if (event === 'action' && data?.type) {
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              next[next.length - 1] = { ...last, action: data };
+              return next;
+            });
+          } else if (event === 'error') {
+            throw new Error(
+              data?.message || 'Something went wrong. Please try again.'
+            );
+          }
+        }
+      }
+
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+        next[next.length - 1] = {
+          ...last,
+          streaming: false,
+          text: receivedAnyToken
+            ? last.text
+            : "Sorry, I couldn't generate a response right now. Please try again.",
+        };
+        return next;
+      });
     } catch (error) {
+      if (error.name === 'AbortError') return;
+
       console.error('Chatbot error:', error);
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'model',
-          text:
-            error.response?.data?.message ||
-            "Oops! Something went wrong. Please try again in a moment.",
-        },
-      ]);
+      const errorText =
+        error.message || 'Oops! Something went wrong. Please try again in a moment.';
+
+      setMessages((prev) => {
+        const next = [...prev];
+        const last = next[next.length - 1];
+
+        if (last?.role === 'model' && last.streaming) {
+          next[next.length - 1] = { role: 'model', text: errorText };
+        } else {
+          next.push({ role: 'model', text: errorText });
+        }
+
+        return next;
+      });
     } finally {
       setIsLoading(false);
+      abortControllerRef.current = null;
     }
   };
+
+  /*
+  |--------------------------------------------------------------------------
+  | QUICK REPLY CHIP CLICK
+  |--------------------------------------------------------------------------
+  */
+
+  const handleQuickReply = (text) => {
+    handleSend(undefined, text);
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | CLEAR CHAT HISTORY
+  |--------------------------------------------------------------------------
+  */
+
+  const handleClearChat = () => {
+    abortControllerRef.current?.abort();
+    setIsLoading(false);
+    setMessages([DEFAULT_GREETING]);
+
+    try {
+      window.localStorage.removeItem(CHAT_HISTORY_KEY);
+    } catch (error) {
+      // non-fatal
+    }
+  };
+
+  const showQuickReplies =
+    messages.length === 1 && messages[0]?.text === DEFAULT_GREETING.text && !isLoading;
 
   return (
     <>
       {/* =====================================================
           MOBILE-ONLY BACKDROP
-          -----------------------------------------------------
-          Tap-outside-to-close, native bottom-sheet feel.
-          Hidden from `sm` breakpoint up, since desktop shows a
-          floating card instead of a full sheet.
       ====================================================== */}
 
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
-          className="
-            fixed inset-0 z-[59]
-            bg-black/40 backdrop-blur-[2px]
-            sm:hidden
-          "
+          className="fixed inset-0 z-[59] bg-black/40 backdrop-blur-[2px] sm:hidden"
         />
       )}
 
       {/* =====================================================
           FLOATING TOGGLE BUTTON
-          -----------------------------------------------------
-          Sized down slightly on the smallest phones, safe-area
-          aware so it never sits under a device's home indicator
-          / gesture bar.
       ====================================================== */}
 
       <button
@@ -246,13 +533,6 @@ function Chatbot() {
 
       {/* =====================================================
           CHAT WINDOW
-          -----------------------------------------------------
-          Mobile (base styles)  -> full-width bottom sheet using
-          `dvh` so the dynamic mobile browser chrome never clips
-          it, with safe-area padding at the bottom.
-
-          `sm:` and up          -> floating card docked above the
-          toggle button, fixed width/height, rounded on all sides.
       ====================================================== */}
 
       {isOpen && (
@@ -290,15 +570,8 @@ function Chatbot() {
               dark:border-gray-800
             "
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div
-                className="
-                  flex h-9 w-9 shrink-0
-                  items-center justify-center
-                  rounded-full
-                  bg-white/20
-                "
-              >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
                 <FaRobot size={16} />
               </div>
 
@@ -312,26 +585,38 @@ function Chatbot() {
               </div>
             </div>
 
-            {/* Explicit close button — always reachable, even if the
-                floating toggle button ends up hidden behind the sheet
-                on very small screens. */}
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={handleClearChat}
+                aria-label="Clear chat history"
+                title="Clear chat"
+                className="
+                  flex h-8 w-8 items-center justify-center
+                  rounded-full text-white/90
+                  transition-colors
+                  hover:bg-white/15
+                  active:bg-white/25
+                "
+              >
+                <HiOutlineTrash size={16} />
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close chat"
-              className="
-                flex h-8 w-8 shrink-0
-                items-center justify-center
-                rounded-full
-                text-white/90
-                transition-colors
-                hover:bg-white/15
-                active:bg-white/25
-              "
-            >
-              <HiOutlineXMark size={18} />
-            </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close chat"
+                className="
+                  flex h-8 w-8 items-center justify-center
+                  rounded-full text-white/90
+                  transition-colors
+                  hover:bg-white/15
+                  active:bg-white/25
+                "
+              >
+                <HiOutlineXMark size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -370,26 +655,55 @@ function Chatbot() {
                   )}
                 </div>
 
-                <div
-                  className={`
-                    max-w-[82%] break-words rounded-2xl px-3 py-2 text-sm leading-relaxed
-                    sm:max-w-[75%]
-                    ${
-                      msg.role === 'user'
-                        ? 'rounded-tr-sm bg-indigo-600 text-white'
-                        : 'rounded-tl-sm bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
-                    }
-                  `}
-                >
-                  {msg.text}
+                <div className="flex max-w-[82%] flex-col sm:max-w-[75%]">
+                  <div
+                    className={`
+                      break-words rounded-2xl px-3 py-2 text-sm leading-relaxed
+                      ${
+                        msg.role === 'user'
+                          ? 'rounded-tr-sm bg-indigo-600 text-white'
+                          : 'rounded-tl-sm bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                      }
+                    `}
+                  >
+                    {msg.text ? (
+                      <>
+                        {msg.text}
+                        {msg.streaming && (
+                          <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-current align-middle" />
+                        )}
+                      </>
+                    ) : msg.streaming ? (
+                      <TypingDots />
+                    ) : null}
+                  </div>
+
+                  {msg.role === 'model' && <ActionCard action={msg.action} />}
                 </div>
               </div>
             ))}
 
-            {isLoading && (
-              <div className="flex items-center gap-2 text-gray-400">
-                <FaSpinner size={14} className="animate-spin" />
-                <span className="text-xs">Thinking...</span>
+            {/* Quick reply chips — only shown before the first user message */}
+
+            {showQuickReplies && (
+              <div className="flex flex-wrap gap-2 pl-9">
+                {QUICK_REPLIES.map((reply) => (
+                  <button
+                    key={reply}
+                    type="button"
+                    onClick={() => handleQuickReply(reply)}
+                    className="
+                      rounded-full border border-indigo-200 bg-indigo-50
+                      px-3 py-1.5 text-xs font-medium text-indigo-700
+                      transition-colors
+                      hover:bg-indigo-100
+                      dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
+                      dark:hover:bg-indigo-500/20
+                    "
+                  >
+                    {reply}
+                  </button>
+                ))}
               </div>
             )}
           </div>

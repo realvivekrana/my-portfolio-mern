@@ -120,21 +120,34 @@ A floating assistant widget lets visitors ask natural-language questions about s
 
 ```text
 Chatbot.jsx (Frontend)
-      │  POST /api/chatbot  { message, history }
+      │  fetch() POST /api/chatbot  { message, history }
       ▼
-chatbotRoutes.js
+chatbotRoutes.js  ── express-rate-limit (15 msgs / 10 min / IP)
       ▼
 chatbotController.js
-      │  builds a portfolio context from MongoDB
-      │  (Hero, About, Skills, Experience, Education,
-      │   Projects, Certificates, Contact)
+      │  1. builds a portfolio context from MongoDB
+      │     (Hero, About, Skills, Experience, Education,
+      │      Projects, Certificates, Contact)
+      │  2. PASS 1 (non-streaming, tools enabled) → checks whether
+      │     the model wants to call get_resume_link / get_project_link
+      │  3. PASS 2 (streaming) → the actual visible reply
       ▼
-AI Provider Chat Completions API
+Groq Chat Completions API (OpenAI-compatible)
       ▼
-Reply → rendered in the chat window
+Server-Sent Events → chunk / action / error / done
+      ▼
+Chat window (typewriter effect + real action buttons)
 ```
 
 If a question isn't covered by the stored portfolio data, the bot politely says so and points the visitor to the Contact section instead of making things up.
+
+### 💡 Smart chatbot features
+
+- **Streaming replies** — the reply types out token-by-token (ChatGPT-style) over Server-Sent Events instead of arriving all at once, with an animated cursor while streaming.
+- **Quick-reply chips** — the first time the chat opens, suggested questions ("What are his skills?", "Show me his projects", "Download his resume", "Tell me about his experience") appear as tappable chips.
+- **Function calling for real actions** — when a visitor asks for the resume or a specific project's link, the model calls a backend tool (`get_resume_link` / `get_project_link`) that looks the real link up in MongoDB/Cloudinary and sends it back as a distinct `action` event. The UI renders it as an actual **Download Resume** button or **Live Demo / GitHub** buttons — the model never has to (or is allowed to) hallucinate a URL.
+- **Per-IP rate limiting** — `express-rate-limit` caps each visitor to 15 messages per 10 minutes, so a script (or an over-eager visitor) can't burn through the Groq API quota. `app.set('trust proxy', 1)` in `server.js` makes sure this reads the visitor's real IP behind Render/Railway/Vercel's proxy.
+- **Persisted chat history** — conversations are saved to `localStorage`, so refreshing the page doesn't lose the thread. A trash-icon button in the header clears the history and starts fresh.
 
 ### 📱 Mobile-first & fully responsive
 
@@ -342,6 +355,14 @@ PUT    /api/settings/reset      (protected)
 ### AI Chatbot
 ```text
 POST   /api/chatbot   { message: string, history?: [{ role, text }] }
+
+Response: text/event-stream (Server-Sent Events)
+  event: chunk   { token: string }
+  event: action  { type: 'resume'|'project', ... }   resume/project link to render
+  event: error   { message: string }
+  event: done    {}
+
+Rate limit: 15 requests / 10 minutes / IP (429 on excess)
 ```
 
 ---
@@ -571,6 +592,15 @@ FRONTEND_URL=https://your-frontend-domain.vercel.app
 
 **Chatbot replies with a "not configured" or model error**
 Make sure `GROQ_API_KEY` is set in `Backend/.env` and that the model name in `chatbotController.js` matches a model your Groq account currently has access to — Groq periodically retires older model names.
+
+**Chatbot says "sending messages too quickly"**
+That's the built-in rate limiter (15 messages / 10 minutes / IP). Wait a few minutes, or adjust the `windowMs` / `limit` values in `Backend/routes/chatbotRoutes.js` if you need a different threshold.
+
+**Chatbot streaming works locally but not in production**
+Check that your hosting provider doesn't buffer `text/event-stream` responses. `chatbotController.js` already sends `X-Accel-Buffering: no`, but some platforms need streaming explicitly enabled in their dashboard/config.
+
+**`npm run dev` fails after pulling these chatbot changes**
+Run `npm install` inside `Backend/` — the new rate limiter added `express-rate-limit` as a dependency.
 
 **`git commit` fails with `error: unknown switch`**
 Use the `-m` flag with quotes around the message, e.g. `git commit -m "your message"` (not `git commit -"your message"`).

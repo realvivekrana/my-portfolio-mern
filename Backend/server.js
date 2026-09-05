@@ -39,6 +39,22 @@ connectDB();
 const app = express();
 
 // ======================================================
+// TRUST PROXY
+// ======================================================
+//
+// Render / Railway / Vercel jaise hosts ke peeche app ek reverse
+// proxy ke pichhe chalti hai. Isko trust kiye bina, express-rate-limit
+// (chatbot route par) har request ko proxy ki IP se aata hua samjhega,
+// jisse sab visitors ek hi rate-limit bucket share karenge.
+//
+// `1` matlab: sirf pehle proxy hop ko trust karo (X-Forwarded-For ka
+// sabse right-most entry) — safe default jab app ek single trusted
+// proxy (host provider) ke peeche hai.
+// ======================================================
+
+app.set('trust proxy', 1);
+
+// ======================================================
 // CORS CONFIGURATION
 // ======================================================
 
