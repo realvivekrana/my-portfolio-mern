@@ -20,6 +20,7 @@ const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const {
   notFound,
@@ -339,6 +340,15 @@ app.use(
 app.use(
   '/api/chatbot',
   chatbotRoutes
+);
+
+// ======================================================
+// ANALYTICS & VISITOR INSIGHTS ROUTES
+// ======================================================
+
+app.use(
+  '/api/analytics',
+  analyticsRoutes
 );
 
 // ======================================================
