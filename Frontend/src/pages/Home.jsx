@@ -14,6 +14,7 @@ import Contact from '../components/sections/Contact';
 import Footer from '../components/layout/Footer';
 
 import AnimatedBackground from '../components/ui/AnimatedBackground';
+import Chatbot from '../components/ui/Chatbot';
 
 import API from '../utils/axios';
 
@@ -441,6 +442,12 @@ function Home() {
       <div className="relative z-10">
         <Footer />
       </div>
+
+      {/* =====================================================
+          AI CHATBOT WIDGET
+      ====================================================== */}
+
+      <Chatbot />
     </div>
   );
 }

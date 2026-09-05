@@ -19,6 +19,7 @@ const portfolioRoutes = require('./routes/portfolioRoutes');
 const portfolioUploadRoutes = require('./routes/portfolioUploadRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
 
 const {
   notFound,
@@ -313,6 +314,15 @@ app.use(
 app.use(
   '/api/settings',
   settingsRoutes
+);
+
+// ======================================================
+// AI CHATBOT ROUTES
+// ======================================================
+
+app.use(
+  '/api/chatbot',
+  chatbotRoutes
 );
 
 // ======================================================
