@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import {
+  FaUpload,
+  FaSpinner,
+  FaTimes,
+  FaBookOpen,
+} from 'react-icons/fa';
 import API from '../../utils/axios';
 
 function ProjectForm({ project, onClose, onSuccess }) {
@@ -16,7 +22,19 @@ function ProjectForm({ project, onClose, onSuccess }) {
     category: project?.category || 'Full Stack',
     featured: project?.featured || false,
     featuredType: project?.featuredType || '',
+
+    // Case Study fields
+    hasCaseStudy: project?.hasCaseStudy || false,
+    problem: project?.problem || '',
+    solution: project?.solution || '',
+    techDecisions: project?.techDecisions?.join('\n') || '',
+    challenges: project?.challenges?.join('\n') || '',
   });
+
+  const [screenshots, setScreenshots] = useState(
+    project?.screenshots || []
+  );
+  const [uploadingScreenshots, setUploadingScreenshots] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +47,70 @@ function ProjectForm({ project, onClose, onSuccess }) {
     }));
   };
 
+  /*
+  |--------------------------------------------------------------------------
+  | Case Study — Screenshot Upload (up to 8 at once)
+  |--------------------------------------------------------------------------
+  */
+
+  const handleScreenshotUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+
+    if (!files.length) return;
+
+    if (screenshots.length + files.length > 8) {
+      toast.error('You can upload a maximum of 8 screenshots per project.');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    const invalidFile = files.find(
+      (file) => !file.type.startsWith('image/') || file.size > maxSize
+    );
+
+    if (invalidFile) {
+      toast.error(
+        'Please select image files only, each up to 5 MB in size.'
+      );
+      return;
+    }
+
+    try {
+      setUploadingScreenshots(true);
+
+      const uploadData = new FormData();
+      files.forEach((file) => uploadData.append('screenshots', file));
+
+      const res = await API.post(
+        '/projects/upload-screenshots',
+        uploadData
+      );
+
+      const uploadedUrls = res.data?.data?.screenshots || [];
+
+      if (!uploadedUrls.length) {
+        throw new Error('No screenshot URLs were returned by server.');
+      }
+
+      setScreenshots((previous) => [...previous, ...uploadedUrls]);
+
+      toast.success('Screenshots uploaded successfully.');
+    } catch (err) {
+      console.error('Screenshot upload error:', err);
+
+      toast.error(
+        err.response?.data?.message || 'Failed to upload screenshots'
+      );
+    } finally {
+      setUploadingScreenshots(false);
+    }
+  };
+
+  const removeScreenshot = (url) => {
+    setScreenshots((previous) => previous.filter((item) => item !== url));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,6 +121,16 @@ function ProjectForm({ project, onClose, onSuccess }) {
 
     if (formData.featured && !formData.featuredType) {
       toast.error('Please select a Featured Project type');
+      return;
+    }
+
+    if (formData.hasCaseStudy && !formData.problem.trim()) {
+      toast.error('Please describe the problem statement for the case study');
+      return;
+    }
+
+    if (formData.hasCaseStudy && !formData.solution.trim()) {
+      toast.error('Please describe the solution for the case study');
       return;
     }
 
@@ -70,6 +162,28 @@ function ProjectForm({ project, onClose, onSuccess }) {
       featuredType: formData.featured
         ? formData.featuredType
         : '',
+
+      hasCaseStudy: formData.hasCaseStudy,
+
+      problem: formData.hasCaseStudy ? formData.problem.trim() : '',
+
+      solution: formData.hasCaseStudy ? formData.solution.trim() : '',
+
+      techDecisions: formData.hasCaseStudy
+        ? formData.techDecisions
+            .split('\n')
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [],
+
+      challenges: formData.hasCaseStudy
+        ? formData.challenges
+            .split('\n')
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [],
+
+      screenshots: formData.hasCaseStudy ? screenshots : [],
     };
 
     setLoading(true);
@@ -364,11 +478,197 @@ REST API Integration`}
             )}
           </div>
 
+          {/* Case Study */}
+          <div className="rounded-2xl border border-purple-100 bg-purple-50/60 p-5 dark:border-purple-500/10 dark:bg-purple-500/5">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                id="hasCaseStudy"
+                name="hasCaseStudy"
+                checked={formData.hasCaseStudy}
+                onChange={handleChange}
+                className="mt-1 h-4 w-4 accent-purple-600"
+              />
+
+              <span>
+                <span className="flex items-center gap-2 text-sm font-bold text-gray-800 dark:text-gray-200">
+                  <FaBookOpen className="text-purple-500" />
+                  Add a detailed Case Study
+                </span>
+
+                <span className="mt-1 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+                  Enables a dedicated case-study page for this project, with a
+                  "View Case Study" link on the project card.
+                </span>
+              </span>
+            </label>
+
+            {formData.hasCaseStudy && (
+              <div className="mt-5 space-y-5">
+                {/* Slug info */}
+                {project?.slug && (
+                  <p className="rounded-xl border border-purple-100 bg-white px-4 py-2.5 text-xs font-semibold text-purple-700 dark:border-purple-500/10 dark:bg-gray-900 dark:text-purple-400">
+                    Case study URL: /projects/{project.slug}
+                  </p>
+                )}
+
+                {/* Problem */}
+                <div>
+                  <label
+                    htmlFor="problem"
+                    className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    Problem Statement *
+                  </label>
+
+                  <textarea
+                    id="problem"
+                    name="problem"
+                    value={formData.problem}
+                    onChange={handleChange}
+                    rows="3"
+                    placeholder="What problem was this project solving? What was the situation before?"
+                    className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors focus:border-purple-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Solution */}
+                <div>
+                  <label
+                    htmlFor="solution"
+                    className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    Solution *
+                  </label>
+
+                  <textarea
+                    id="solution"
+                    name="solution"
+                    value={formData.solution}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder="How did you approach and build the solution?"
+                    className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors focus:border-purple-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+                </div>
+
+                {/* Tech Decisions */}
+                <div>
+                  <label
+                    htmlFor="techDecisions"
+                    className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    Tech Decisions
+                  </label>
+
+                  <textarea
+                    id="techDecisions"
+                    name="techDecisions"
+                    value={formData.techDecisions}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder={`Chose MongoDB for flexible schema during rapid iteration\nUsed Redux Toolkit to simplify state management\nJWT auth for stateless, scalable sessions`}
+                    className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors focus:border-purple-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+
+                  <p className="mt-1.5 text-xs text-gray-400">
+                    One tech decision per line — "kyun ye tech chuna".
+                  </p>
+                </div>
+
+                {/* Challenges */}
+                <div>
+                  <label
+                    htmlFor="challenges"
+                    className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300"
+                  >
+                    Challenges Faced
+                  </label>
+
+                  <textarea
+                    id="challenges"
+                    name="challenges"
+                    value={formData.challenges}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder={`Handling concurrent order updates without race conditions\nOptimizing image uploads for slow networks`}
+                    className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors focus:border-purple-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+
+                  <p className="mt-1.5 text-xs text-gray-400">
+                    One challenge per line.
+                  </p>
+                </div>
+
+                {/* Screenshots */}
+                <div>
+                  <label className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Case Study Screenshots
+                  </label>
+
+                  {screenshots.length > 0 && (
+                    <div className="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
+                      {screenshots.map((url) => (
+                        <div
+                          key={url}
+                          className="group relative aspect-video overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900"
+                        >
+                          <img
+                            src={url}
+                            alt="Case study screenshot"
+                            className="h-full w-full object-cover"
+                          />
+
+                          <button
+                            type="button"
+                            onClick={() => removeScreenshot(url)}
+                            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg bg-gray-950/80 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
+                            aria-label="Remove screenshot"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <label className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-purple-300 bg-white px-4 py-3 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-50 dark:border-purple-500/30 dark:bg-gray-900 dark:text-purple-400 dark:hover:bg-purple-500/5">
+                    {uploadingScreenshots ? (
+                      <>
+                        <FaSpinner className="animate-spin" /> Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <FaUpload /> Upload screenshots (up to 8)
+                      </>
+                    )}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleScreenshotUpload}
+                      disabled={
+                        uploadingScreenshots || screenshots.length >= 8
+                      }
+                      className="hidden"
+                    />
+                  </label>
+
+                  <p className="mt-1.5 text-xs text-gray-400">
+                    {screenshots.length}/8 screenshots added. 5 MB max per
+                    image.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Buttons */}
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || uploadingScreenshots}
               className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading

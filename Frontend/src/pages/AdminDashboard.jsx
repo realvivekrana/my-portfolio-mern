@@ -31,6 +31,8 @@ import {
   FaSave,
   FaLink,
   FaEyeSlash,
+  FaNewspaper,
+  FaComments,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
@@ -40,6 +42,8 @@ import ProfileManager from '../components/admin/ProfileManager';
 import ExperienceEducationManager from '../components/admin/ExperienceEducationManager';
 import AdminPasswordManager from '../components/admin/AdminPasswordManager';
 import AnalyticsManager from '../components/admin/AnalyticsManager';
+import BlogManager from '../components/admin/BlogManager';
+import TestimonialManager from '../components/admin/TestimonialManager';
 import Loader from '../components/ui/Loader';
 
 
@@ -1416,6 +1420,18 @@ function AdminDashboard() {
       id: 'messages',
       label: 'Messages',
       icon: <FaEnvelope />,
+    },
+
+    {
+      id: 'blog',
+      label: 'Blog Posts',
+      icon: <FaNewspaper />,
+    },
+
+    {
+      id: 'testimonials',
+      label: 'Testimonials',
+      icon: <FaComments />,
     },
 
     {
@@ -4865,6 +4881,26 @@ function AdminDashboard() {
               )}
 
             </section>
+          )}
+
+
+          {/* =================================================
+              BLOG POSTS MANAGEMENT
+          ================================================== */}
+
+          {activeSection ===
+            'blog' && (
+            <BlogManager />
+          )}
+
+
+          {/* =================================================
+              TESTIMONIALS MANAGEMENT
+          ================================================== */}
+
+          {activeSection ===
+            'testimonials' && (
+            <TestimonialManager />
           )}
 
 
