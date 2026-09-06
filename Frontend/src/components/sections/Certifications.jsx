@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fa';
 
 import API from '../../utils/axios';
+import { optimizeImageUrl } from '../../utils/optimizeImage';
 
 /*
 |--------------------------------------------------------------------------
@@ -328,12 +329,14 @@ function Certifications() {
                       <div className="relative overflow-hidden border-b border-white/[0.06] bg-black/20">
 
                         <img
-                          src={
-                            certificate.image
-                          }
+                          src={optimizeImageUrl(
+                            certificate.image,
+                            { width: 480 }
+                          )}
                           alt={`${certificate?.title || 'Certificate'} certificate`}
                           className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105 sm:h-52"
                           loading="lazy"
+                          decoding="async"
                         />
 
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

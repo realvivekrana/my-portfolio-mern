@@ -59,6 +59,131 @@ const getPortfolio = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
+| DYNAMIC OG IMAGE
+|--------------------------------------------------------------------------
+| GET /api/portfolio/og-image
+|
+| Social share preview (Facebook/LinkedIn/WhatsApp/Twitter) ke liye
+| ek 1200x630 image on-the-fly generate karta hai — Admin Dashboard
+| se hero.name / hero.role / profileImage jab bhi update hoga, share
+| preview bhi automatically update ho jayega (koi manual re-deploy
+| ya static image edit nahi karna padega).
+|
+| Approach:
+|   - Agar Cloudinary profile image maujood hai, us image ke upar
+|     Cloudinary ki khud ki text-overlay transformation use karke
+|     naam + role likh dete hain, aur 302 redirect kar dete hain
+|     us final Cloudinary URL par (Cloudinary hi image generate/
+|     cache karta hai — apna server koi image processing nahi karta).
+|   - Agar profile image nahi hai (ya URL Cloudinary ka nahi hai),
+|     to static fallback OG image par redirect kar dete hain.
+|--------------------------------------------------------------------------
+*/
+
+const getOgImage = async (
+  req,
+  res
+) => {
+  try {
+    const portfolio =
+      await getMainPortfolio();
+
+    const heroData =
+      portfolio.hero?.toObject?.() ||
+      portfolio.hero ||
+      {};
+
+    const name =
+      heroData.name || 'Vivek Kumar Rana';
+
+    const role =
+      heroData.role || 'MERN Stack Developer';
+
+    const profileImage =
+      heroData.profileImage || '';
+
+    /*
+    |----------------------------------------------------------------
+    | STATIC FALLBACK
+    |----------------------------------------------------------------
+    | Frontend/public/og-default.png — jab dynamic image
+    | generate na ho paaye.
+    |----------------------------------------------------------------
+    */
+
+    const fallbackUrl =
+      `${process.env.FRONTEND_URL ||
+        'https://my-portfolio-mern-mauve.vercel.app'}/og-default.png`;
+
+    const cloudinaryMatch =
+      /^https?:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(?:v\d+\/)?(.+)$/i.exec(
+        profileImage
+      );
+
+    if (!cloudinaryMatch) {
+      return res.redirect(302, fallbackUrl);
+    }
+
+    const cloudName = cloudinaryMatch[1];
+    const publicPathWithExt = cloudinaryMatch[2];
+
+    /*
+    |----------------------------------------------------------------
+    | ESCAPE TEXT FOR CLOUDINARY URL OVERLAY
+    |----------------------------------------------------------------
+    | Cloudinary text overlays URL me hi encode hote hain, isliye
+    | commas/slashes waghera escape karna zaroori hai.
+    |----------------------------------------------------------------
+    */
+
+    const escapeForCloudinary = (text) =>
+      encodeURIComponent(text);
+
+    const nameText = escapeForCloudinary(name);
+    const roleText = escapeForCloudinary(role);
+
+    /*
+    |----------------------------------------------------------------
+    | BUILD TRANSFORMATION CHAIN
+    |----------------------------------------------------------------
+    | 1. Base image ko 1200x630 card me fit + crop + darken.
+    | 2. Naam — bada, bold, white text, bottom-left ke paas.
+    | 3. Role — chhota, indigo-ish text, naam ke neeche.
+    |----------------------------------------------------------------
+    */
+
+    const transformation = [
+      'w_1200,h_630,c_fill,g_face,q_auto,f_auto',
+      'e_brightness:-25',
+      `l_text:Arial_64_bold:${nameText},co_white,g_south_west,x_60,y_140`,
+      `l_text:Arial_36:${roleText},co_rgb:A5B4FC,g_south_west,x_60,y_80`,
+    ].join('/');
+
+    const ogImageUrl =
+      `https://res.cloudinary.com/${cloudName}/image/upload/${transformation}/${publicPathWithExt}`;
+
+    res.set(
+      'Cache-Control',
+      'public, max-age=3600'
+    );
+
+    return res.redirect(302, ogImageUrl);
+  } catch (error) {
+    console.error(
+      'OG Image Error:',
+      error
+    );
+
+    return res.redirect(
+      302,
+      `${process.env.FRONTEND_URL ||
+        'https://my-portfolio-mern-mauve.vercel.app'}/og-default.png`
+    );
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
 | UPDATE COMPLETE PORTFOLIO
 |--------------------------------------------------------------------------
 | PUT /api/portfolio
@@ -1309,6 +1434,7 @@ const deletePortfolio = async (
 
 module.exports = {
   getPortfolio,
+  getOgImage,
 
   updatePortfolio,
 

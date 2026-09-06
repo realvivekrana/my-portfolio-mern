@@ -1,0 +1,15 @@
+# my-portfolio-mern — robots.txt
+#
+# Public portfolio pages are open to all crawlers.
+# The /admin section (login, pin, dashboard) is not content
+# meant for search results, so it's excluded here.
+#
+# NOTE: this only asks well-behaved crawlers not to index /admin —
+# it is not a security control. /admin/dashboard is already
+# protected by JWT auth (ProtectedRoute.jsx) regardless of this file.
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://my-portfolio-mern-mauve.vercel.app/sitemap.xml

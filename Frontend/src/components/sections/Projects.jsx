@@ -11,6 +11,7 @@ import {
 
 import API from '../../utils/axios';
 import Loader from '../ui/Loader';
+import { optimizeImageUrl } from '../../utils/optimizeImage';
 import { trackProjectClick } from '../../utils/analytics';
 
 function Projects() {
@@ -183,9 +184,10 @@ function Projects() {
 
           {project.image ? (
             <img
-              src={project.image}
+              src={optimizeImageUrl(project.image, { width: 640 })}
               alt={`${project.title} project screenshot`}
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
@@ -748,8 +750,10 @@ function Projects() {
 
               {selectedProject.image ? (
                 <img
-                  src={selectedProject.image}
+                  src={optimizeImageUrl(selectedProject.image, { width: 900 })}
                   alt={`${selectedProject.title} project screenshot`}
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               ) : (

@@ -1,23 +1,49 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
 import Navbar from '../components/layout/Navbar';
 
+// Hero pehla visible section hai (LCP) — ise eager rakhte hain taaki
+// wo pehle JS chunk ke saath hi turant render ho jaye.
 import Hero from '../components/sections/Hero';
-import About from '../components/sections/About';
-import Skills from '../components/sections/Skills';
-import Experience from '../components/sections/Experience';
-import Education from '../components/sections/Education';
-import Certifications from '../components/sections/Certifications';
-import Projects from '../components/sections/Projects';
-import Contact from '../components/sections/Contact';
 
 import Footer from '../components/layout/Footer';
 
 import AnimatedBackground from '../components/ui/AnimatedBackground';
-import Chatbot from '../components/ui/Chatbot';
+import SectionFallback from '../components/ui/SectionFallback';
+import StructuredData from '../components/seo/StructuredData';
 
 import API from '../utils/axios';
 import { trackPageView } from '../utils/analytics';
+
+/*
+|--------------------------------------------------------------------------
+| CODE SPLITTING — BELOW-THE-FOLD SECTIONS
+|--------------------------------------------------------------------------
+|
+| Hero ke alawa har section (aur Chatbot widget) apne khud ke JS
+| chunk me lazy-load hote hain. Isse initial bundle chhota hota hai
+| aur first paint jaldi hota hai — baaki sections user ke scroll
+| karne se pehle hi background me load ho jaate hain.
+|
+|--------------------------------------------------------------------------
+*/
+
+const About = lazy(() => import('../components/sections/About'));
+const Skills = lazy(() => import('../components/sections/Skills'));
+const Experience = lazy(() =>
+  import('../components/sections/Experience')
+);
+const Education = lazy(() =>
+  import('../components/sections/Education')
+);
+const Certifications = lazy(() =>
+  import('../components/sections/Certifications')
+);
+const Projects = lazy(() =>
+  import('../components/sections/Projects')
+);
+const Contact = lazy(() => import('../components/sections/Contact'));
+const Chatbot = lazy(() => import('../components/ui/Chatbot'));
 
 function Home() {
   /*
@@ -376,6 +402,12 @@ function Home() {
       "
     >
       {/* =====================================================
+          SEO — JSON-LD STRUCTURED DATA
+      ====================================================== */}
+
+      <StructuredData />
+
+      {/* =====================================================
           GLOBAL LIVE ANIMATION
       ====================================================== */}
 
@@ -410,43 +442,57 @@ function Home() {
         {/* About */}
 
         <section className="w-full">
-          <About />
+          <Suspense fallback={<SectionFallback />}>
+            <About />
+          </Suspense>
         </section>
 
         {/* Skills */}
 
         <section className="w-full">
-          <Skills />
+          <Suspense fallback={<SectionFallback />}>
+            <Skills />
+          </Suspense>
         </section>
 
         {/* Experience */}
 
         <section className="w-full">
-          <Experience />
+          <Suspense fallback={<SectionFallback />}>
+            <Experience />
+          </Suspense>
         </section>
 
         {/* Education */}
 
         <section className="w-full">
-          <Education />
+          <Suspense fallback={<SectionFallback />}>
+            <Education />
+          </Suspense>
         </section>
 
         {/* Certifications */}
 
         <section className="w-full">
-          <Certifications />
+          <Suspense fallback={<SectionFallback />}>
+            <Certifications />
+          </Suspense>
         </section>
 
         {/* Projects */}
 
         <section className="w-full">
-          <Projects />
+          <Suspense fallback={<SectionFallback />}>
+            <Projects />
+          </Suspense>
         </section>
 
         {/* Contact */}
 
         <section className="w-full">
-          <Contact />
+          <Suspense fallback={<SectionFallback />}>
+            <Contact />
+          </Suspense>
         </section>
       </main>
 
@@ -462,7 +508,9 @@ function Home() {
           AI CHATBOT WIDGET
       ====================================================== */}
 
-      <Chatbot />
+      <Suspense fallback={null}>
+        <Chatbot />
+      </Suspense>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import API from '../../utils/axios';
 import { resolveMediaUrl } from '../../utils/mediaUrl';
+import { optimizeImageUrl } from '../../utils/optimizeImage';
 import { trackResumeDownload } from '../../utils/analytics';
 
 import {
@@ -182,7 +183,11 @@ function Hero() {
           heroData.profileImage
         );
 
-        setProfileImage(resolvedImage || profileImg);
+        setProfileImage(
+          resolvedImage
+            ? optimizeImageUrl(resolvedImage, { width: 640 })
+            : profileImg
+        );
 
         setShowResume(settings.showResume !== false);
         setShowGithub(settings.showGithub !== false);
@@ -553,6 +558,7 @@ function Hero() {
                       height="320"
                       loading="eager"
                       decoding="async"
+                      fetchPriority="high"
                       className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
                     />
 

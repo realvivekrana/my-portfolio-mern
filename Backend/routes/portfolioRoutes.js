@@ -2,6 +2,7 @@ const express = require('express');
 
 const {
   getPortfolio,
+  getOgImage,
   updatePortfolio,
 
   updateExperience,
@@ -42,6 +43,26 @@ const router = express.Router();
 router.get(
   '/',
   getPortfolio
+);
+
+/*
+|--------------------------------------------------------------------------
+| DYNAMIC OG IMAGE
+|--------------------------------------------------------------------------
+|
+| GET /api/portfolio/og-image
+|
+| Live hero data (name/role/photo) se social share preview image
+| generate karke redirect karta hai. Public route hai (no auth) —
+| Facebook/LinkedIn/WhatsApp/Twitter ke scrapers ko yeh URL directly
+| index.html ke og:image / twitter:image me diya jayega.
+|
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  '/og-image',
+  getOgImage
 );
 
 /*

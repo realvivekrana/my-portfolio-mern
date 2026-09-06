@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react';
+
 import {
   Routes,
   Route,
@@ -7,15 +9,33 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Public route — sabse zyada visitors yahi hit karte hain,
+// isliye eager load rakha hai.
 import Home from './pages/Home';
-import AdminLogin from './pages/AdminLogin';
-import AdminPin from './pages/AdminPin';
-import AdminDashboard from './pages/AdminDashboard';
-import NotFound from './pages/NotFound';
 
 import ProtectedRoute from './components/admin/ProtectedRoute';
+import Loader from './components/ui/Loader';
 
 import GlobalSpaceBackground from './components/ui/GlobalSpaceBackground';
+
+/*
+|--------------------------------------------------------------------------
+| CODE SPLITTING — ADMIN ROUTES
+|--------------------------------------------------------------------------
+|
+| Admin Login / Pin / Dashboard sirf portfolio owner use karta hai,
+| public visitors kabhi nahi. AdminDashboard khud hi sabse bada
+| bundle hai (200KB+) — isko lazy-load karne se public visitors ke
+| initial page load me yeh JS bilkul download hi nahi hota, jo
+| Lighthouse Performance score ko sabse zyada improve karta hai.
+|
+|--------------------------------------------------------------------------
+*/
+
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const AdminPin = lazy(() => import('./pages/AdminPin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 /*
 |--------------------------------------------------------------------------
@@ -81,64 +101,66 @@ function AppContent() {
         }
       >
 
-        <Routes>
+        <Suspense fallback={<Loader fullScreen text="Loading..." />}>
+          <Routes>
 
-          {/* =================================================
-              PUBLIC WEBSITE
-          ================================================== */}
+            {/* =================================================
+                PUBLIC WEBSITE
+            ================================================== */}
 
-          <Route
-            path="/"
-            element={<Home />}
-          />
+            <Route
+              path="/"
+              element={<Home />}
+            />
 
-          {/* =================================================
-              ADMIN LOGIN
-          ================================================== */}
+            {/* =================================================
+                ADMIN LOGIN
+            ================================================== */}
 
-          <Route
-            path="/admin/login"
-            element={
-              <AdminLogin />
-            }
-          />
+            <Route
+              path="/admin/login"
+              element={
+                <AdminLogin />
+              }
+            />
 
-          {/* =================================================
-              ADMIN PIN
-          ================================================== */}
+            {/* =================================================
+                ADMIN PIN
+            ================================================== */}
 
-          <Route
-            path="/admin/pin"
-            element={
-              <AdminPin />
-            }
-          />
+            <Route
+              path="/admin/pin"
+              element={
+                <AdminPin />
+              }
+            />
 
-          {/* =================================================
-              PROTECTED ADMIN DASHBOARD
-          ================================================== */}
+            {/* =================================================
+                PROTECTED ADMIN DASHBOARD
+            ================================================== */}
 
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* =================================================
-              404
-          ================================================== */}
+            {/* =================================================
+                404
+            ================================================== */}
 
-          <Route
-            path="*"
-            element={
-              <NotFound />
-            }
-          />
+            <Route
+              path="*"
+              element={
+                <NotFound />
+              }
+            />
 
-        </Routes>
+          </Routes>
+        </Suspense>
 
       </div>
 

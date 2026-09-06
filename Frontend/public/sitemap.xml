@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  my-portfolio-mern — sitemap.xml
+
+  This is a single-page application: About/Skills/Projects/Contact
+  are all in-page anchor sections (#about, #projects, etc.) on the
+  same document, not separate crawlable routes. Search engines treat
+  anchor URLs as the same page, so listing only the homepage here
+  avoids duplicate-content confusion.
+
+  /admin/* is intentionally excluded — see robots.txt.
+
+  Update <lastmod> whenever you make a significant content change
+  (new project, updated About copy, etc.) so crawlers know to re-scan.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://my-portfolio-mern-mauve.vercel.app/</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

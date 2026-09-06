@@ -53,6 +53,25 @@
     />
 
     <!-- =====================================================
+         RESOURCE HINTS
+         -----------------------------------------------------
+         Cloudinary connection ko browser jaldi shuru kar de,
+         isse hero profile photo (LCP image) aur baaki
+         Cloudinary images thoda jaldi load hote hain.
+    ====================================================== -->
+
+    <link
+      rel="preconnect"
+      href="https://res.cloudinary.com"
+      crossorigin
+    />
+
+    <link
+      rel="dns-prefetch"
+      href="https://res.cloudinary.com"
+    />
+
+    <!-- =====================================================
          FAVICON
     ====================================================== -->
 
@@ -178,7 +197,7 @@
 
     <meta
       property="og:url"
-      content="https://portfolio-vivek-blue.vercel.app/"
+      content="https://my-portfolio-mern-mauve.vercel.app/"
     />
 
     <meta
@@ -189,6 +208,37 @@
     <meta
       property="og:locale"
       content="en_IN"
+    />
+
+    <!--
+      DYNAMIC OG IMAGE
+      -----------------------------------------------------
+      Points at Backend/controllers/portfolioController.js ->
+      getOgImage, which redirects to a live-generated 1200x630
+      Cloudinary image (current name/role/photo from Admin
+      Dashboard). Update the domain below to your actual Render
+      backend URL — same value as VITE_API_URL in
+      Frontend/.env.production, minus the trailing "/api".
+    -->
+
+    <meta
+      property="og:image"
+      content="https://my-portfolio-backend.onrender.com/api/portfolio/og-image"
+    />
+
+    <meta
+      property="og:image:width"
+      content="1200"
+    />
+
+    <meta
+      property="og:image:height"
+      content="630"
+    />
+
+    <meta
+      property="og:image:alt"
+      content="Vivek Rana | MERN Stack Developer"
     />
 
     <!-- =====================================================
@@ -208,6 +258,11 @@
     <meta
       name="twitter:description"
       content="MERN Stack Developer focused on building modern, scalable and user-friendly web applications."
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://my-portfolio-backend.onrender.com/api/portfolio/og-image"
     />
 
     <!-- =====================================================
