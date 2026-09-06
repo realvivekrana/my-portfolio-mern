@@ -996,3 +996,151 @@ code {
     transform: none;
   }
 }
+
+/* =========================================================
+   BLOG — MARKDOWN CONTENT STYLES
+   -----------------------------------------------------------
+   react-markdown renders plain HTML tags with no classes, so we
+   style them here directly instead of pulling in the Tailwind
+   Typography plugin (keeps the bundle smaller).
+   ========================================================= */
+
+.markdown-content {
+  color: rgb(209 213 219); /* gray-300 */
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.markdown-content > * + * {
+  margin-top: 1.25em;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-top: 2em;
+}
+
+.markdown-content h1 {
+  font-size: 1.85rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.5rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-content h4 {
+  font-size: 1.1rem;
+}
+
+.markdown-content p {
+  line-height: 1.85;
+}
+
+.markdown-content a {
+  color: #a5b4fc; /* indigo-300 */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.markdown-content a:hover {
+  color: #c4b5fd; /* purple-300 */
+}
+
+.markdown-content strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5em;
+}
+
+.markdown-content ul {
+  list-style: disc;
+}
+
+.markdown-content ol {
+  list-style: decimal;
+}
+
+.markdown-content li + li {
+  margin-top: 0.5em;
+}
+
+.markdown-content blockquote {
+  border-left: 3px solid rgba(99, 102, 241, 0.5);
+  padding: 0.25em 1em;
+  color: rgb(156 163 175); /* gray-400 */
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.markdown-content code {
+  background: rgba(255, 255, 255, 0.06);
+  color: #c4b5fd;
+  padding: 0.15em 0.4em;
+  border-radius: 0.35rem;
+  font-size: 0.875em;
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
+
+.markdown-content pre {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.1em;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  color: rgb(229 231 235);
+}
+
+.markdown-content img {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 100%;
+}
+
+.markdown-content hr {
+  border-color: rgba(255, 255, 255, 0.08);
+  margin: 2em 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.6em 0.9em;
+  text-align: left;
+}
+
+.markdown-content th {
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  font-weight: 700;
+}

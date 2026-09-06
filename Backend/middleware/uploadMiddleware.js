@@ -752,6 +752,245 @@ const uploadCertificateImage =
 
 /*
 |--------------------------------------------------------------------------
+| BLOG COVER IMAGE UPLOAD
+|--------------------------------------------------------------------------
+|
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
+|
+| Maximum:
+|   5 MB
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadBlogImage =
+  multer({
+    storage,
+
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
+      const allowedImages = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const isValidMime =
+        allowedImages.includes(
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      if (
+        isValidMime ||
+        isValidExtension
+      ) {
+        console.log(
+          '✅ Blog cover image accepted:',
+          file?.originalname
+        );
+
+        return cb(
+          null,
+          true
+        );
+      }
+
+      console.error(
+        '❌ Blog cover image rejected:',
+        file?.originalname
+      );
+
+      return cb(
+        new Error(
+          'Only JPG, JPEG, PNG and WEBP files are allowed for blog cover images.'
+        ),
+        false
+      );
+    },
+
+    limits: {
+      fileSize:
+        5 * 1024 * 1024,
+    },
+  });
+
+/*
+|--------------------------------------------------------------------------
+| TESTIMONIAL AVATAR UPLOAD
+|--------------------------------------------------------------------------
+|
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
+|
+| Maximum:
+|   5 MB
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadTestimonialAvatar =
+  multer({
+    storage,
+
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
+      const allowedImages = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const isValidMime =
+        allowedImages.includes(
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      if (
+        isValidMime ||
+        isValidExtension
+      ) {
+        console.log(
+          '✅ Testimonial avatar accepted:',
+          file?.originalname
+        );
+
+        return cb(
+          null,
+          true
+        );
+      }
+
+      console.error(
+        '❌ Testimonial avatar rejected:',
+        file?.originalname
+      );
+
+      return cb(
+        new Error(
+          'Only JPG, JPEG, PNG and WEBP files are allowed for testimonial avatars.'
+        ),
+        false
+      );
+    },
+
+    limits: {
+      fileSize:
+        5 * 1024 * 1024,
+    },
+  });
+
+/*
+|--------------------------------------------------------------------------
+| PROJECT SCREENSHOT UPLOAD (multiple, for case studies)
+|--------------------------------------------------------------------------
+|
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
+|
+| Maximum:
+|   5 MB each, up to 8 files
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadProjectScreenshots =
+  multer({
+    storage,
+
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
+      const allowedImages = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const isValidMime =
+        allowedImages.includes(
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      if (
+        isValidMime ||
+        isValidExtension
+      ) {
+        return cb(
+          null,
+          true
+        );
+      }
+
+      return cb(
+        new Error(
+          'Only JPG, JPEG, PNG and WEBP files are allowed for project screenshots.'
+        ),
+        false
+      );
+    },
+
+    limits: {
+      fileSize:
+        5 * 1024 * 1024,
+    },
+  });
+
+/*
+|--------------------------------------------------------------------------
 | EXPORTS
 |--------------------------------------------------------------------------
 */
@@ -764,4 +1003,10 @@ module.exports = {
   uploadProfileImage,
 
   uploadCertificateImage,
+
+  uploadBlogImage,
+
+  uploadTestimonialAvatar,
+
+  uploadProjectScreenshots,
 };

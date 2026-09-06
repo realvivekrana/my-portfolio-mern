@@ -21,6 +21,8 @@ const certificateRoutes = require('./routes/certificateRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+const testimonialRoutes = require('./routes/testimonialRoutes');
 
 const {
   notFound,
@@ -349,6 +351,24 @@ app.use(
 app.use(
   '/api/analytics',
   analyticsRoutes
+);
+
+// ======================================================
+// BLOG ROUTES
+// ======================================================
+
+app.use(
+  '/api/blog',
+  blogRoutes
+);
+
+// ======================================================
+// TESTIMONIAL ROUTES
+// ======================================================
+
+app.use(
+  '/api/testimonials',
+  testimonialRoutes
 );
 
 // ======================================================

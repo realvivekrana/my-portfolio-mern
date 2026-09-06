@@ -39,6 +39,21 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 /*
 |--------------------------------------------------------------------------
+| CODE SPLITTING — NEW PUBLIC ROUTES
+|--------------------------------------------------------------------------
+|
+| Blog archive/post aur project case-study pages home page ke baad
+| hi visit hote hain, isliye inko bhi lazy-load rakha gaya hai.
+|
+|--------------------------------------------------------------------------
+*/
+
+const BlogArchive = lazy(() => import('./pages/BlogArchive'));
+const BlogPost = lazy(() => import('./pages/BlogPost'));
+const ProjectCaseStudy = lazy(() => import('./pages/ProjectCaseStudy'));
+
+/*
+|--------------------------------------------------------------------------
 | App Content
 |--------------------------------------------------------------------------
 */
@@ -111,6 +126,33 @@ function AppContent() {
             <Route
               path="/"
               element={<Home />}
+            />
+
+            {/* =================================================
+                BLOG ARCHIVE
+            ================================================== */}
+
+            <Route
+              path="/blog"
+              element={<BlogArchive />}
+            />
+
+            {/* =================================================
+                SINGLE BLOG POST
+            ================================================== */}
+
+            <Route
+              path="/blog/:slug"
+              element={<BlogPost />}
+            />
+
+            {/* =================================================
+                PROJECT CASE STUDY
+            ================================================== */}
+
+            <Route
+              path="/projects/:slug"
+              element={<ProjectCaseStudy />}
             />
 
             {/* =================================================

@@ -39,11 +39,35 @@ const Education = lazy(() =>
 const Certifications = lazy(() =>
   import('../components/sections/Certifications')
 );
+const Timeline = lazy(() =>
+  import('../components/sections/Timeline')
+);
 const Projects = lazy(() =>
   import('../components/sections/Projects')
 );
+const Testimonials = lazy(() =>
+  import('../components/sections/Testimonials')
+);
+const Blog = lazy(() => import('../components/sections/Blog'));
+const GithubStats = lazy(() =>
+  import('../components/ui/GithubStats')
+);
 const Contact = lazy(() => import('../components/sections/Contact'));
 const Chatbot = lazy(() => import('../components/ui/Chatbot'));
+
+/*
+|--------------------------------------------------------------------------
+| GITHUB USERNAME FOR STATS WIDGET
+|--------------------------------------------------------------------------
+|
+| Set VITE_GITHUB_USERNAME in your .env file. Falls back to empty
+| string, in which case the GithubStats section quietly renders
+| nothing.
+|
+|--------------------------------------------------------------------------
+*/
+
+const GITHUB_USERNAME = import.meta.env.VITE_GITHUB_USERNAME || '';
 
 function Home() {
   /*
@@ -479,11 +503,45 @@ function Home() {
           </Suspense>
         </section>
 
+        {/* Timeline (Experience + Education unified) */}
+
+        <section className="w-full">
+          <Suspense fallback={<SectionFallback />}>
+            <Timeline />
+          </Suspense>
+        </section>
+
         {/* Projects */}
 
         <section className="w-full">
           <Suspense fallback={<SectionFallback />}>
             <Projects />
+          </Suspense>
+        </section>
+
+        {/* GitHub Stats */}
+
+        {GITHUB_USERNAME && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <GithubStats username={GITHUB_USERNAME} />
+            </Suspense>
+          </section>
+        )}
+
+        {/* Testimonials */}
+
+        <section className="w-full">
+          <Suspense fallback={<SectionFallback />}>
+            <Testimonials />
+          </Suspense>
+        </section>
+
+        {/* Blog Preview */}
+
+        <section className="w-full">
+          <Suspense fallback={<SectionFallback />}>
+            <Blog />
           </Suspense>
         </section>
 

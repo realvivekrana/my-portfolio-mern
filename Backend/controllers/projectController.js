@@ -1,5 +1,49 @@
 const Project = require('../models/Project');
 
+/*
+|--------------------------------------------------------------------------
+| Slugify Helper
+|--------------------------------------------------------------------------
+*/
+
+const slugify = (text) =>
+  text
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+/*
+|--------------------------------------------------------------------------
+| Ensure Unique Slug
+|--------------------------------------------------------------------------
+*/
+
+const generateUniqueSlug = async (title, excludeId = null) => {
+  const baseSlug = slugify(title) || 'project';
+  let slug = baseSlug;
+  let counter = 2;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const query = { slug };
+
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+
+    const existing = await Project.findOne(query);
+
+    if (!existing) {
+      return slug;
+    }
+
+    slug = `${baseSlug}-${counter}`;
+    counter += 1;
+  }
+};
+
 // @desc    Get all projects
 // @route   GET /api/projects
 // @access  Public
@@ -29,6 +73,39 @@ const getFeaturedProjects = async (req, res) => {
       success: true,
       message: 'Featured projects fetched successfully',
       data: projects,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Get single project case study by slug
+// @route   GET /api/projects/case-study/:slug
+// @access  Public
+//
+// NOTE: This must be registered BEFORE /:id in routes so Express
+// doesn't treat "case-study" as a project ID.
+const getProjectBySlug = async (req, res) => {
+  try {
+    const project = await Project.findOne({
+      slug: req.params.slug,
+      hasCaseStudy: true,
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Case study not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Project case study fetched successfully',
+      data: project,
     });
   } catch (error) {
     res.status(500).json({
@@ -70,7 +147,16 @@ const getProjectById = async (req, res) => {
 // @access  Admin (protected)
 const createProject = async (req, res) => {
   try {
-    const project = await Project.create(req.body);
+    const payload = { ...req.body };
+
+    // Agar case study enable hai to slug generate karo
+    if (payload.hasCaseStudy === true || payload.hasCaseStudy === 'true') {
+      payload.slug = await generateUniqueSlug(payload.title || 'project');
+    } else {
+      delete payload.slug;
+    }
+
+    const project = await Project.create(payload);
     res.status(201).json({
       success: true,
       message: 'Project created successfully',
@@ -89,17 +175,32 @@ const createProject = async (req, res) => {
 // @access  Admin (protected)
 const updateProject = async (req, res) => {
   try {
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const existing = await Project.findById(req.params.id);
 
-    if (!project) {
+    if (!existing) {
       return res.status(404).json({
         success: false,
         message: 'Project not found',
       });
     }
+
+    const payload = { ...req.body };
+    const wantsCaseStudy = payload.hasCaseStudy === true || payload.hasCaseStudy === 'true';
+
+    if (wantsCaseStudy) {
+      // Agar pehle se slug nahi hai ya title badla hai, naya unique slug banao
+      if (!existing.slug || (payload.title && payload.title !== existing.title)) {
+        payload.slug = await generateUniqueSlug(payload.title || existing.title, existing._id);
+      }
+    } else if (payload.hasCaseStudy !== undefined) {
+      // Case study disable ki gayi — slug hata do
+      payload.slug = undefined;
+    }
+
+    const project = await Project.findByIdAndUpdate(req.params.id, payload, {
+      new: true,
+      runValidators: true,
+    });
 
     res.status(200).json({
       success: true,
@@ -144,6 +245,7 @@ const deleteProject = async (req, res) => {
 module.exports = {
   getAllProjects,
   getFeaturedProjects,
+  getProjectBySlug,
   getProjectById,
   createProject,
   updateProject,
