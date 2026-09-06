@@ -11,6 +11,7 @@ import {
 
 import API from '../../utils/axios';
 import Loader from '../ui/Loader';
+import { trackProjectClick } from '../../utils/analytics';
 
 function Projects() {
   const [projects, setProjects] = useState([]);
@@ -219,9 +220,14 @@ function Projects() {
 
           <button
             type="button"
-            onClick={() =>
-              setSelectedProject(project)
-            }
+            onClick={() => {
+              setSelectedProject(project);
+              trackProjectClick(
+                project._id,
+                project.title,
+                'view'
+              );
+            }}
             className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-2 text-xs font-bold text-white opacity-100 shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] sm:opacity-0 sm:group-hover:opacity-100"
           >
             <FaEye />
@@ -327,6 +333,13 @@ function Projects() {
                 href={project.liveLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackProjectClick(
+                    project._id,
+                    project.title,
+                    'live'
+                  )
+                }
                 className="group/link inline-flex items-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-3.5 py-2.5 text-xs font-semibold text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(99,102,241,0.15)] sm:px-4 sm:text-sm"
               >
                 <FaExternalLinkAlt className="text-[10px] transition-transform duration-300 group-hover/link:translate-x-0.5" />
@@ -340,6 +353,13 @@ function Projects() {
                 href={project.githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackProjectClick(
+                    project._id,
+                    project.title,
+                    'github'
+                  )
+                }
                 className="group/link inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-3.5 py-2.5 text-xs font-semibold text-gray-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.08] hover:text-white sm:px-4 sm:text-sm"
               >
                 <FaGithub className="text-sm transition-transform duration-300 group-hover/link:scale-110" />
@@ -350,9 +370,14 @@ function Projects() {
 
             <button
               type="button"
-              onClick={() =>
-                setSelectedProject(project)
-              }
+              onClick={() => {
+                setSelectedProject(project);
+                trackProjectClick(
+                  project._id,
+                  project.title,
+                  'view'
+                );
+              }}
               className="ml-auto inline-flex items-center gap-2 rounded-xl px-2.5 py-2.5 text-xs font-semibold text-gray-500 transition-colors hover:text-indigo-300 sm:text-sm"
             >
               <FaEye className="text-sm" />
@@ -870,6 +895,13 @@ function Projects() {
                     }
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() =>
+                      trackProjectClick(
+                        selectedProject._id,
+                        selectedProject.title,
+                        'live'
+                      )
+                    }
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-5 py-3 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(99,102,241,0.15)]"
                   >
                     <FaExternalLinkAlt className="text-xs" />
@@ -885,6 +917,13 @@ function Projects() {
                     }
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() =>
+                      trackProjectClick(
+                        selectedProject._id,
+                        selectedProject.title,
+                        'github'
+                      )
+                    }
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-5 py-3 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
                   >
                     <FaGithub className="text-lg" />

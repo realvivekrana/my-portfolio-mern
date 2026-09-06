@@ -50,6 +50,7 @@ const adminSettingsSchema = new mongoose.Schema(
           'projects',
           'certificates',
           'messages',
+          'analytics',
           'profile',
           'settings',
           'resume',

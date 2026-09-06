@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import API from '../../utils/axios';
 import { resolveMediaUrl } from '../../utils/mediaUrl';
+import { trackResumeDownload } from '../../utils/analytics';
 
 import {
   FaGithub,
@@ -238,6 +239,19 @@ function Hero() {
     if (!resumeUrl) {
       return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRACK RESUME DOWNLOAD
+    |--------------------------------------------------------------------------
+    |
+    | Fire-and-forget — Admin Dashboard > Analytics me resume
+    | download count aur trend dikhega.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    trackResumeDownload();
 
     try {
       const response = await fetch(resumeUrl);

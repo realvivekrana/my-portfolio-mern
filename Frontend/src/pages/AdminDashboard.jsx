@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 
 import {
   FaChartPie,
+  FaChartLine,
   FaFolderOpen,
   FaEnvelope,
   FaUserCircle,
@@ -38,6 +39,7 @@ import ProjectForm from '../components/admin/ProjectForm';
 import ProfileManager from '../components/admin/ProfileManager';
 import ExperienceEducationManager from '../components/admin/ExperienceEducationManager';
 import AdminPasswordManager from '../components/admin/AdminPasswordManager';
+import AnalyticsManager from '../components/admin/AnalyticsManager';
 import Loader from '../components/ui/Loader';
 
 
@@ -1417,6 +1419,12 @@ function AdminDashboard() {
     },
 
     {
+      id: 'analytics',
+      label: 'Analytics',
+      icon: <FaChartLine />,
+    },
+
+    {
       id: 'profile',
       label: 'Profile',
       icon: <FaUserCircle />,
@@ -2116,6 +2124,10 @@ function AdminDashboard() {
                 {activeSection ===
                   'messages' &&
                   'Messages'}
+
+                {activeSection ===
+                  'analytics' &&
+                  'Analytics & Visitor Insights'}
 
                 {activeSection ===
                   'profile' &&
@@ -4857,6 +4869,16 @@ function AdminDashboard() {
 
 
           {/* =================================================
+              ANALYTICS & VISITOR INSIGHTS
+          ================================================== */}
+
+          {activeSection ===
+            'analytics' && (
+            <AnalyticsManager />
+          )}
+
+
+          {/* =================================================
               PROFILE
           ================================================== */}
 
@@ -5393,6 +5415,9 @@ function AdminDashboard() {
                           </option>
                           <option value="messages">
                             Messages
+                          </option>
+                          <option value="analytics">
+                            Analytics
                           </option>
                           <option value="profile">
                             Profile

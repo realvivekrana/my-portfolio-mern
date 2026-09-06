@@ -17,6 +17,7 @@ import AnimatedBackground from '../components/ui/AnimatedBackground';
 import Chatbot from '../components/ui/Chatbot';
 
 import API from '../utils/axios';
+import { trackPageView } from '../utils/analytics';
 
 function Home() {
   /*
@@ -67,6 +68,20 @@ function Home() {
           setIsPrivate(true);
         } else {
           setIsPrivate(false);
+
+          /*
+          |--------------------------------------------------------------------------
+          | TRACK PAGE VIEW
+          |--------------------------------------------------------------------------
+          |
+          | Portfolio public hai aur visitor ne isse load kiya —
+          | isko ek pageview ke roop me record karte hain (Admin
+          | Dashboard > Analytics me dikhega).
+          |
+          |--------------------------------------------------------------------------
+          */
+
+          trackPageView('/');
         }
       } catch (error) {
         console.error(
