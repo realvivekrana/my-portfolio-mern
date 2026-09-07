@@ -3,6 +3,7 @@ const path = require('path');
 
 const cloudinary = require('../config/cloudinary');
 const Certificate = require('../models/Certificate');
+const { logAudit, diffChangedFields } = require('../utils/auditLogger');
 
 /*
 |--------------------------------------------------------------------------
@@ -403,6 +404,14 @@ const createCertificate = async (
             : true,
       });
 
+    await logAudit({
+      req,
+      action: 'create',
+      resourceType: 'Certificate',
+      resourceId: certificate._id,
+      resourceLabel: certificate.title,
+    });
+
     res.status(201).json({
       success: true,
       message:
@@ -447,6 +456,9 @@ const updateCertificate = async (
         message: 'Certificate not found',
       });
     }
+
+    // Audit diff ke liye save karne se pehle ka snapshot
+    const beforeSnapshot = certificate.toObject();
 
     /*
     |--------------------------------------------------------------------------
@@ -529,6 +541,34 @@ const updateCertificate = async (
     const updatedCertificate =
       await certificate.save();
 
+    const changes = diffChangedFields(
+      beforeSnapshot,
+      updatedCertificate.toObject()
+    );
+
+    // isVisible flip hua to alag se publish/unpublish action log karo
+    if (
+      beforeSnapshot.isVisible !== updatedCertificate.isVisible &&
+      req.body.isVisible !== undefined
+    ) {
+      await logAudit({
+        req,
+        action: updatedCertificate.isVisible ? 'publish' : 'unpublish',
+        resourceType: 'Certificate',
+        resourceId: updatedCertificate._id,
+        resourceLabel: updatedCertificate.title,
+      });
+    } else if (changes.length > 0) {
+      await logAudit({
+        req,
+        action: 'update',
+        resourceType: 'Certificate',
+        resourceId: updatedCertificate._id,
+        resourceLabel: updatedCertificate.title,
+        changes,
+      });
+    }
+
     res.status(200).json({
       success: true,
       message:
@@ -542,6 +582,62 @@ const updateCertificate = async (
     );
 
     res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
+| Reorder Certificates
+|--------------------------------------------------------------------------
+| @route   PATCH /api/certificates/reorder
+| @access  Protected Admin
+|--------------------------------------------------------------------------
+|
+| Body: { order: [{ id: '...', displayOrder: 0 }, { id: '...', displayOrder: 1 }, ...] }
+|
+*/
+
+const reorderCertificates = async (req, res) => {
+  try {
+    const { order } = req.body;
+
+    if (!Array.isArray(order) || order.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'order array is required',
+      });
+    }
+
+    await Promise.all(
+      order.map(({ id, displayOrder }) =>
+        Certificate.findByIdAndUpdate(id, { displayOrder })
+      )
+    );
+
+    await logAudit({
+      req,
+      action: 'reorder',
+      resourceType: 'Certificate',
+      resourceLabel: `${order.length} certificates reordered`,
+    });
+
+    const certificates = await Certificate.find().sort({
+      displayOrder: 1,
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Certificates reordered successfully',
+      data: certificates,
+    });
+  } catch (error) {
+    console.error('Reorder Certificates Error:', error);
+
+    res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -573,6 +669,14 @@ const deleteCertificate = async (
         message: 'Certificate not found',
       });
     }
+
+    await logAudit({
+      req,
+      action: 'delete',
+      resourceType: 'Certificate',
+      resourceId: certificate._id,
+      resourceLabel: certificate.title,
+    });
 
     res.status(200).json({
       success: true,
@@ -608,4 +712,5 @@ module.exports = {
   createCertificate,
   updateCertificate,
   deleteCertificate,
+  reorderCertificates,
 };

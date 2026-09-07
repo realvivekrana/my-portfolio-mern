@@ -1,4 +1,5 @@
 const PortfolioContent = require('../models/PortfolioContent');
+const { logAudit } = require('../utils/auditLogger');
 
 const {
   sanitizePortfolioMedia,
@@ -627,6 +628,50 @@ const updatePortfolio = async (
 
     await portfolio.save();
 
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUDIT LOG
+    |--------------------------------------------------------------------------
+    |
+    | Skills sirf reorder ke liye bhi save hote hain (drag-and-drop), isliye
+    | usko alag se 'reorder' action ke roop me log karte hain. Baaki sections
+    | (hero/about/contact/etc.) jo bheje gaye unko ek generic 'update' me
+    | list kar dete hain.
+    |
+    */
+
+    const updatedSections = [
+      hero && 'hero',
+      about && 'about',
+      contact && 'contact',
+      socialLinks && 'socialLinks',
+      resume && 'resume',
+      experience && 'experience',
+      education && 'education',
+      seo && 'seo',
+      settings && 'settings',
+    ].filter(Boolean);
+
+    if (Array.isArray(skills)) {
+      await logAudit({
+        req,
+        action: 'reorder',
+        resourceType: 'Skills',
+        resourceLabel: 'Skills section updated/reordered',
+      });
+    }
+
+    if (updatedSections.length > 0) {
+      await logAudit({
+        req,
+        action: 'update',
+        resourceType: 'Portfolio',
+        resourceLabel: `Sections updated: ${updatedSections.join(', ')}`,
+      });
+    }
     /*
     |--------------------------------------------------------------------------
     | RESPONSE

@@ -23,6 +23,7 @@ const chatbotRoutes = require('./routes/chatbotRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const testimonialRoutes = require('./routes/testimonialRoutes');
+const auditLogRoutes = require('./routes/auditLogRoutes');
 
 const {
   notFound,
@@ -369,6 +370,15 @@ app.use(
 app.use(
   '/api/testimonials',
   testimonialRoutes
+);
+
+// ======================================================
+// AUDIT LOG ROUTES
+// ======================================================
+
+app.use(
+  '/api/audit-logs',
+  auditLogRoutes
 );
 
 // ======================================================

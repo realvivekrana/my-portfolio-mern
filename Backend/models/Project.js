@@ -157,6 +157,33 @@ const projectSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Display Order — Admin drag-and-drop reordering ke liye
+    |--------------------------------------------------------------------------
+    */
+
+    displayOrder: {
+      type: Number,
+      default: 0,
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | Draft vs Published State
+    |--------------------------------------------------------------------------
+    |
+    | 'draft'     — sirf admin dashboard me dikhega, public site par nahi
+    | 'published' — public GET /api/projects me dikhega
+    |
+    */
+
+    status: {
+      type: String,
+      enum: ['draft', 'published'],
+      default: 'published',
+    },
   },
   {
     timestamps: true,

@@ -4,11 +4,13 @@ const { protect } = require('../middleware/authMiddleware');
 const { uploadProjectScreenshots } = require('../middleware/uploadMiddleware');
 const {
   getAllProjects,
+  getAdminProjects,
   getFeaturedProjects,
   getProjectBySlug,
   getProjectById,
   createProject,
   updateProject,
+  reorderProjects,
   deleteProject,
 } = require('../controllers/projectController');
 
@@ -17,6 +19,13 @@ router.get('/', getAllProjects);
 
 // @route   GET /api/projects/featured (Public)
 router.get('/featured', getFeaturedProjects);
+
+// @route   GET /api/projects/admin (Protected) — includes drafts
+router.get('/admin', protect, getAdminProjects);
+
+// @route   PATCH /api/projects/reorder (Protected)
+// Must come before /:id so Express doesn't treat "reorder" as a project ID.
+router.patch('/reorder', protect, reorderProjects);
 
 // @route   GET /api/projects/case-study/:slug (Public)
 // IMPORTANT: must come before /:id so Express doesn't treat

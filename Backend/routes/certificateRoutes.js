@@ -15,6 +15,7 @@ const {
   updateCertificate,
   deleteCertificate,
   uploadCertificateImage,
+  reorderCertificates,
 } = require('../controllers/certificateController');
 
 const {
@@ -90,6 +91,24 @@ router.post(
   protect,
   certificateImageUpload.single('certificateImage'),
   uploadCertificateImage
+);
+
+/*
+|--------------------------------------------------------------------------
+| REORDER
+|--------------------------------------------------------------------------
+|
+| PATCH /api/certificates/reorder
+|
+| Protected Admin. Must come before /:id so Express doesn't treat
+| "reorder" as a certificate ID.
+|
+*/
+
+router.patch(
+  '/reorder',
+  protect,
+  reorderCertificates
 );
 
 /*

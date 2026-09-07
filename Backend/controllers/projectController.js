@@ -1,4 +1,5 @@
 const Project = require('../models/Project');
+const { logAudit, diffChangedFields } = require('../utils/auditLogger');
 
 /*
 |--------------------------------------------------------------------------
@@ -49,10 +50,35 @@ const generateUniqueSlug = async (title, excludeId = null) => {
 // @access  Public
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().sort({ createdAt: -1 });
+    const projects = await Project.find({ status: 'published' }).sort({
+      displayOrder: 1,
+      createdAt: -1,
+    });
     res.status(200).json({
       success: true,
       message: 'Projects fetched successfully',
+      data: projects,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Get all projects for admin (includes drafts)
+// @route   GET /api/projects/admin
+// @access  Admin (protected)
+const getAdminProjects = async (req, res) => {
+  try {
+    const projects = await Project.find().sort({
+      displayOrder: 1,
+      createdAt: -1,
+    });
+    res.status(200).json({
+      success: true,
+      message: 'Admin projects fetched successfully',
       data: projects,
     });
   } catch (error) {
@@ -68,7 +94,10 @@ const getAllProjects = async (req, res) => {
 // @access  Public
 const getFeaturedProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ featured: true }).sort({ createdAt: -1 });
+    const projects = await Project.find({ featured: true, status: 'published' }).sort({
+      displayOrder: 1,
+      createdAt: -1,
+    });
     res.status(200).json({
       success: true,
       message: 'Featured projects fetched successfully',
@@ -157,6 +186,15 @@ const createProject = async (req, res) => {
     }
 
     const project = await Project.create(payload);
+
+    await logAudit({
+      req,
+      action: 'create',
+      resourceType: 'Project',
+      resourceId: project._id,
+      resourceLabel: project.title,
+    });
+
     res.status(201).json({
       success: true,
       message: 'Project created successfully',
@@ -184,6 +222,8 @@ const updateProject = async (req, res) => {
       });
     }
 
+    const beforeSnapshot = existing.toObject();
+
     const payload = { ...req.body };
     const wantsCaseStudy = payload.hasCaseStudy === true || payload.hasCaseStudy === 'true';
 
@@ -202,6 +242,30 @@ const updateProject = async (req, res) => {
       runValidators: true,
     });
 
+    const changes = diffChangedFields(beforeSnapshot, project.toObject());
+
+    if (
+      payload.status !== undefined &&
+      beforeSnapshot.status !== project.status
+    ) {
+      await logAudit({
+        req,
+        action: project.status === 'published' ? 'publish' : 'unpublish',
+        resourceType: 'Project',
+        resourceId: project._id,
+        resourceLabel: project.title,
+      });
+    } else if (changes.length > 0) {
+      await logAudit({
+        req,
+        action: 'update',
+        resourceType: 'Project',
+        resourceId: project._id,
+        resourceLabel: project.title,
+        changes,
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: 'Project updated successfully',
@@ -209,6 +273,52 @@ const updateProject = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Reorder projects
+// @route   PATCH /api/projects/reorder
+// @access  Admin (protected)
+// Body: { order: [{ id: '...', displayOrder: 0 }, ...] }
+const reorderProjects = async (req, res) => {
+  try {
+    const { order } = req.body;
+
+    if (!Array.isArray(order) || order.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'order array is required',
+      });
+    }
+
+    await Promise.all(
+      order.map(({ id, displayOrder }) =>
+        Project.findByIdAndUpdate(id, { displayOrder })
+      )
+    );
+
+    await logAudit({
+      req,
+      action: 'reorder',
+      resourceType: 'Project',
+      resourceLabel: `${order.length} projects reordered`,
+    });
+
+    const projects = await Project.find().sort({
+      displayOrder: 1,
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Projects reordered successfully',
+      data: projects,
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -229,6 +339,14 @@ const deleteProject = async (req, res) => {
       });
     }
 
+    await logAudit({
+      req,
+      action: 'delete',
+      resourceType: 'Project',
+      resourceId: project._id,
+      resourceLabel: project.title,
+    });
+
     res.status(200).json({
       success: true,
       message: 'Project deleted successfully',
@@ -244,10 +362,12 @@ const deleteProject = async (req, res) => {
 
 module.exports = {
   getAllProjects,
+  getAdminProjects,
   getFeaturedProjects,
   getProjectBySlug,
   getProjectById,
   createProject,
   updateProject,
+  reorderProjects,
   deleteProject,
 };
