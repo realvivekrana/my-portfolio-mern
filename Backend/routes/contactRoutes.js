@@ -14,12 +14,19 @@ const {
   protect,
 } = require('../middleware/authMiddleware');
 
+const {
+  contactLimiter,
+} = require('../middleware/rateLimiter');
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC
 |--------------------------------------------------------------------------
 |
 | Portfolio contact form se koi bhi visitor message send kar sakta hai.
+| `contactLimiter` isko spam/abuse se bachata hai (5 requests / 15 min
+| per IP) — protect se PEHLE lagaya gaya hai kyunki yeh route khud hi
+| public/unauthenticated hai.
 |
 | POST /api/contact
 |
@@ -28,6 +35,7 @@ const {
 
 router.post(
   '/',
+  contactLimiter,
   createContact
 );
 

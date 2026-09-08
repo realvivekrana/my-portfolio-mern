@@ -1,5 +1,56 @@
+const jwt = require('jsonwebtoken');
+
 const Admin = require('../models/Admin');
-const generateToken = require('../utils/generateToken');
+
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require('../utils/generateToken');
+
+// ======================================================
+// REFRESH TOKEN COOKIE OPTIONS
+// ======================================================
+//
+// httpOnly       -> browser JS (document.cookie) isko kabhi read nahi
+//                   kar sakta, XSS se refresh token safe rehta hai.
+// secure         -> production me sirf HTTPS par bheja jaata hai.
+// sameSite:'none'-> production me isliye zaroori hai kyunki frontend
+//                   (vercel.app) aur backend (render.com) alag domains
+//                   par hain — cross-site cookie ke liye 'none' + secure
+//                   dono chahiye. Local dev me 'lax' kaafi hai.
+// path           -> cookie sirf /api/auth/* routes ko hi bheja jaata
+//                   hai, har request ke saath nahi (bandwidth + safety).
+// ======================================================
+
+const getRefreshCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/api/auth',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days (JWT_REFRESH_EXPIRE se match rakho)
+  };
+};
+
+// ======================================================
+// ISSUE TOKENS (access token return karo, refresh token cookie me set karo)
+// ======================================================
+
+const issueTokens = async (res, admin) => {
+  const accessToken = generateAccessToken(admin._id);
+  const refreshToken = generateRefreshToken(admin._id);
+
+  const decodedRefresh = jwt.decode(refreshToken);
+  const expiresAt = new Date(decodedRefresh.exp * 1000);
+
+  await admin.setRefreshToken(refreshToken, expiresAt);
+
+  res.cookie('refreshToken', refreshToken, getRefreshCookieOptions());
+
+  return accessToken;
+};
 
 // ======================================================
 // REGISTER ADMIN
@@ -54,6 +105,12 @@ const registerAdmin = async (req, res) => {
     });
 
     // ==================================================
+    // ISSUE TOKENS
+    // ==================================================
+
+    const accessToken = await issueTokens(res, admin);
+
+    // ==================================================
     // RESPONSE
     // ==================================================
 
@@ -64,7 +121,7 @@ const registerAdmin = async (req, res) => {
         _id: admin._id,
         username: admin.username,
         email: admin.email,
-        token: generateToken(admin._id),
+        token: accessToken,
       },
     });
   } catch (error) {
@@ -137,6 +194,12 @@ const loginAdmin = async (req, res) => {
     }
 
     // ==================================================
+    // ISSUE TOKENS
+    // ==================================================
+
+    const accessToken = await issueTokens(res, admin);
+
+    // ==================================================
     // RESPONSE
     // ==================================================
 
@@ -147,7 +210,7 @@ const loginAdmin = async (req, res) => {
         _id: admin._id,
         username: admin.username,
         email: admin.email,
-        token: generateToken(admin._id),
+        token: accessToken,
       },
     });
   } catch (error) {
@@ -159,6 +222,171 @@ const loginAdmin = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+// ======================================================
+// REFRESH ACCESS TOKEN
+// POST /api/auth/refresh-token
+// Access: Public (refresh token httpOnly cookie ke through aata hai)
+// ======================================================
+//
+// Frontend jab bhi ek protected API call par 401 paata hai (access
+// token expire ho chuka), tab yeh endpoint call karke bina dubara
+// login kiye naya access token le sakta hai — jab tak refresh cookie
+// valid hai (max 30 din, ya jab tak logout na ho).
+//
+// ======================================================
+
+const refreshAccessToken = async (req, res) => {
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+
+    if (!incomingRefreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'No refresh token provided, please login again',
+      });
+    }
+
+    // ==================================================
+    // VERIFY REFRESH TOKEN SIGNATURE + EXPIRY
+    // ==================================================
+
+    let decoded;
+
+    try {
+      decoded = jwt.verify(
+        incomingRefreshToken,
+        process.env.JWT_REFRESH_SECRET
+      );
+    } catch (error) {
+      res.clearCookie('refreshToken', getRefreshCookieOptions());
+
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token expired or invalid, please login again',
+      });
+    }
+
+    // ==================================================
+    // FIND ADMIN + STORED (HASHED) REFRESH TOKEN
+    // ==================================================
+
+    const admin = await Admin.findById(decoded.id).select(
+      '+refreshToken +refreshTokenExpiresAt'
+    );
+
+    if (!admin) {
+      res.clearCookie('refreshToken', getRefreshCookieOptions());
+
+      return res.status(401).json({
+        success: false,
+        message: 'Admin not found, please login again',
+      });
+    }
+
+    // ==================================================
+    // MATCH AGAINST STORED HASH
+    // ==================================================
+    //
+    // Yeh check zaroori hai kyunki isse purane / logout-out ho chuke
+    // refresh tokens reject ho jaate hain, chahe unki JWT signature
+    // abhi bhi valid ho (revocation ka andar-se-support).
+    //
+    // ==================================================
+
+    const isValidRefreshToken =
+      await admin.matchRefreshToken(incomingRefreshToken);
+
+    if (
+      !isValidRefreshToken ||
+      !admin.refreshTokenExpiresAt ||
+      admin.refreshTokenExpiresAt.getTime() < Date.now()
+    ) {
+      res.clearCookie('refreshToken', getRefreshCookieOptions());
+
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token no longer valid, please login again',
+      });
+    }
+
+    // ==================================================
+    // ROTATE REFRESH TOKEN + ISSUE NEW ACCESS TOKEN
+    // ==================================================
+    //
+    // Rotation: har refresh call par ek NAYA refresh token bhi issue
+    // hota hai aur purana turant invalidate ho jaata hai. Isse agar
+    // koi purana refresh token chori bhi ho jaaye, woh reuse hote hi
+    // pakda jaayega (dono clients ka refresh fail hoga -> re-login).
+    //
+    // ==================================================
+
+    const newAccessToken = await issueTokens(res, admin);
+
+    res.status(200).json({
+      success: true,
+      message: 'Access token refreshed successfully',
+      data: {
+        token: newAccessToken,
+      },
+    });
+  } catch (error) {
+    console.error(
+      'Refresh token error:',
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to refresh access token',
+    });
+  }
+};
+
+// ======================================================
+// LOGOUT ADMIN
+// POST /api/auth/logout
+// Access: Public (bas cookie clear karta hai + DB se refresh token hataata hai)
+// ======================================================
+
+const logoutAdmin = async (req, res) => {
+  try {
+    const incomingRefreshToken = req.cookies?.refreshToken;
+
+    if (incomingRefreshToken) {
+      try {
+        const decoded = jwt.decode(incomingRefreshToken);
+
+        if (decoded?.id) {
+          const admin = await Admin.findById(decoded.id);
+
+          if (admin) {
+            await admin.clearRefreshToken();
+          }
+        }
+      } catch (error) {
+        // Token already invalid/garbage — bas cookie clear karke aage badho
+      }
+    }
+
+    res.clearCookie('refreshToken', getRefreshCookieOptions());
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    console.error(
+      'Logout admin error:',
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to logout',
     });
   }
 };
@@ -426,6 +654,8 @@ const changePassword = async (req, res) => {
 module.exports = {
   registerAdmin,
   loginAdmin,
+  refreshAccessToken,
+  logoutAdmin,
   verifyAdminPin,
   getMe,
   changePassword,

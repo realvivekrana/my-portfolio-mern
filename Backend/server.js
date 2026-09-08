@@ -9,6 +9,7 @@ dotenv.config();
 
 const cors = require('cors');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const connectDB = require('./config/db');
 
@@ -30,6 +31,8 @@ const {
   errorHandler,
 } = require('./middleware/errorMiddleware');
 
+const { initCronJobs } = require('./utils/cronJobs');
+
 // ======================================================
 // CONNECT TO MONGODB
 // ======================================================
@@ -48,7 +51,7 @@ const app = express();
 //
 // Render / Railway / Vercel jaise hosts ke peeche app ek reverse
 // proxy ke pichhe chalti hai. Isko trust kiye bina, express-rate-limit
-// (chatbot route par) har request ko proxy ki IP se aata hua samjhega,
+// (contact + chatbot routes par) har request ko proxy ki IP se aata hua samjhega,
 // jisse sab visitors ek hi rate-limit bucket share karenge.
 //
 // `1` matlab: sirf pehle proxy hop ko trust karo (X-Forwarded-For ka
@@ -96,6 +99,12 @@ if (process.env.FRONTEND_URL) {
 
 // ------------------------------------------------------
 // CORS MIDDLEWARE
+// ------------------------------------------------------
+//
+// `credentials: true` yahan already tha, aur ab refresh-token cookie
+// ke liye bhi zaroori hai — cross-site cookie sirf tabhi bhejta/padhta
+// hai browser jab dono taraf (server CORS + frontend fetch/axios call)
+// credentials enabled hon.
 // ------------------------------------------------------
 
 app.use(
@@ -196,6 +205,17 @@ app.use(
     limit: '10mb',
   })
 );
+
+// ======================================================
+// COOKIE PARSER
+// ======================================================
+//
+// Refresh token httpOnly cookie ke through aata hai
+// (`/api/auth/refresh-token`, `/api/auth/logout`) — `req.cookies`
+// tabhi populate hota hai jab yeh middleware laga ho.
+// ======================================================
+
+app.use(cookieParser());
 
 // ======================================================
 // STATIC UPLOADS
@@ -441,5 +461,11 @@ app.listen(
         `🔗 Frontend URL: ${process.env.FRONTEND_URL}`
       );
     }
+
+    // ==================================================
+    // START CRON JOBS (automated DB backup, if enabled)
+    // ==================================================
+
+    initCronJobs();
   }
 );

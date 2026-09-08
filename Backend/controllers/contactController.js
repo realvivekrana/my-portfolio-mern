@@ -1,5 +1,7 @@
 const Contact = require('../models/Contact');
 
+const { sendEmail } = require('../utils/sendEmail');
+
 // @desc    Submit contact form
 // @route   POST /api/contact
 // @access  Public
@@ -21,6 +23,42 @@ const createContact = async (req, res) => {
       message: 'Your message has been sent successfully!',
       data: contact,
     });
+
+    // ======================================================
+    // EMAIL NOTIFICATION (fire-and-forget)
+    // ======================================================
+    //
+    // Response client ko response bhej diya gaya hai (upar). Email
+    // yahan se aage ASYNC bheja jaata hai taaki agar SMTP slow ho ya
+    // fail ho jaaye, toh visitor ko response dene me delay ya error
+    // na ho. Sirf server console me error log hota hai.
+    //
+    // ======================================================
+
+    const notifyEmail =
+      process.env.ADMIN_NOTIFY_EMAIL || process.env.EMAIL_USER;
+
+    if (notifyEmail) {
+      sendEmail({
+        to: notifyEmail,
+        subject: `New Portfolio Contact: ${subject || 'No subject'}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto;">
+            <h2 style="color:#111;">📩 New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject || '—'}</p>
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap; background:#f5f5f5; padding:12px; border-radius:6px;">${message}</p>
+            <hr style="margin:20px 0; border:none; border-top:1px solid #eee;" />
+            <p style="font-size:12px; color:#888;">Sent from your portfolio contact form at ${new Date().toLocaleString()}</p>
+          </div>
+        `,
+        text: `New contact form submission\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject || '—'}\nMessage: ${message}`,
+      }).catch((error) => {
+        console.error('Contact notification email failed:', error.message);
+      });
+    }
   } catch (error) {
     res.status(400).json({
       success: false,

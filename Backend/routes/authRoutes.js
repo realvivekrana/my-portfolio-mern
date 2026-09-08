@@ -5,12 +5,16 @@ const router = express.Router();
 const {
   registerAdmin,
   loginAdmin,
+  refreshAccessToken,
+  logoutAdmin,
   verifyAdminPin,
   getMe,
   changePassword,
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/authMiddleware');
+
+const { authLimiter } = require('../middleware/rateLimiter');
 
 // ======================================================
 // REGISTER
@@ -27,11 +31,37 @@ router.post(
 // LOGIN
 // POST /api/auth/login
 // Access: Public
+//
+// `authLimiter` brute-force login attempts ko rokta hai
+// (10 attempts / 15 minutes per IP).
 // ======================================================
 
 router.post(
   '/login',
+  authLimiter,
   loginAdmin
+);
+
+// ======================================================
+// REFRESH ACCESS TOKEN
+// POST /api/auth/refresh-token
+// Access: Public (httpOnly refresh cookie ke through)
+// ======================================================
+
+router.post(
+  '/refresh-token',
+  refreshAccessToken
+);
+
+// ======================================================
+// LOGOUT
+// POST /api/auth/logout
+// Access: Public (bas cookie clear + DB se refresh token hataata hai)
+// ======================================================
+
+router.post(
+  '/logout',
+  logoutAdmin
 );
 
 // ======================================================

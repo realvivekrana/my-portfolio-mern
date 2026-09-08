@@ -25,6 +25,30 @@ const adminSchema = new mongoose.Schema(
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
     },
+
+    // ==================================================
+    // REFRESH TOKEN (hashed)
+    // ==================================================
+    //
+    // Refresh token kabhi bhi plain text me DB me store nahi hota —
+    // sirf uska bcrypt hash rakha jaata hai (password ki tarah).
+    // `select: false` hai isliye normal queries me yeh field
+    // automatically nahi aata — explicitly `.select('+refreshToken')`
+    // karna padega jab zaroorat ho (refresh/logout controllers me).
+    //
+    // ==================================================
+
+    refreshToken: {
+      type: String,
+      select: false,
+      default: null,
+    },
+
+    refreshTokenExpiresAt: {
+      type: Date,
+      select: false,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -44,6 +68,38 @@ adminSchema.pre('save', async function (next) {
 // Login ke time entered password ko hashed password se match karne ka method
 adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// ======================================================
+// SET REFRESH TOKEN (hash karke save karo)
+// ======================================================
+
+adminSchema.methods.setRefreshToken = async function (rawRefreshToken, expiresAt) {
+  const salt = await bcrypt.genSalt(10);
+  this.refreshToken = await bcrypt.hash(rawRefreshToken, salt);
+  this.refreshTokenExpiresAt = expiresAt;
+  await this.save({ validateBeforeSave: false });
+};
+
+// ======================================================
+// VERIFY REFRESH TOKEN (raw token ko stored hash se compare karo)
+// ======================================================
+
+adminSchema.methods.matchRefreshToken = async function (rawRefreshToken) {
+  if (!this.refreshToken) {
+    return false;
+  }
+  return await bcrypt.compare(rawRefreshToken, this.refreshToken);
+};
+
+// ======================================================
+// CLEAR REFRESH TOKEN (logout par)
+// ======================================================
+
+adminSchema.methods.clearRefreshToken = async function () {
+  this.refreshToken = null;
+  this.refreshTokenExpiresAt = null;
+  await this.save({ validateBeforeSave: false });
 };
 
 module.exports = mongoose.model('Admin', adminSchema);
