@@ -24,6 +24,8 @@ import {
 } from 'react-icons/fa';
 
 import API from '../../utils/axios';
+import SortableList, { DragHandle } from './shared/SortableList';
+import ImageCropModal from './shared/ImageCropModal';
 
 function CertificateManager() {
   /*
@@ -60,6 +62,12 @@ function CertificateManager() {
   const [imagePreview, setImagePreview] = useState('');
 
   const imageInputRef = useRef(null);
+
+  // File pending crop (opens ImageCropModal when set)
+  const [cropFile, setCropFile] = useState(null);
+
+  // Local reorder-in-progress flag (disables drag while a save is happening)
+  const [reordering, setReordering] = useState(false);
 
   /*
   |--------------------------------------------------------------------------
@@ -319,22 +327,23 @@ function CertificateManager() {
 
     /*
     |--------------------------------------------------------------------------
-    | Local Preview
+    | Open Crop Modal — actual upload happens on crop confirm
     |--------------------------------------------------------------------------
     */
 
-    const localPreview =
-      URL.createObjectURL(file);
+    setCropFile(file);
+  };
 
-    setImagePreview(
-      localPreview
-    );
+  /*
+  |--------------------------------------------------------------------------
+  | Crop Confirmed — upload the cropped/compressed image to backend
+  |--------------------------------------------------------------------------
+  */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Upload To Backend
-    |--------------------------------------------------------------------------
-    */
+  const handleCropConfirm = async (croppedFile, previewUrl) => {
+    setCropFile(null);
+
+    setImagePreview(previewUrl);
 
     try {
       setUploadingImage(true);
@@ -344,7 +353,7 @@ function CertificateManager() {
 
       uploadData.append(
         'certificateImage',
-        file
+        croppedFile
       );
 
       if (
@@ -648,6 +657,45 @@ function CertificateManager() {
 
   /*
   |--------------------------------------------------------------------------
+  | Reorder (drag-and-drop)
+  |--------------------------------------------------------------------------
+  */
+
+  const handleReorder = async (newItems) => {
+    // Optimistic UI update first
+    const reordered = newItems.map(({ id, ...rest }, index) => ({
+      ...rest,
+      displayOrder: index,
+    }));
+
+    setCertificates(reordered);
+
+    try {
+      setReordering(true);
+
+      await API.patch('/certificates/reorder', {
+        order: reordered.map((certificate, index) => ({
+          id: certificate._id,
+          displayOrder: index,
+        })),
+      });
+    } catch (error) {
+      console.error('Reorder certificates error:', error);
+
+      toast.error(
+        error.response?.data?.message ||
+          'Failed to save new order'
+      );
+
+      // Roll back by refetching authoritative order
+      fetchCertificates();
+    } finally {
+      setReordering(false);
+    }
+  };
+
+  /*
+  |--------------------------------------------------------------------------
   | Toggle Visibility
   |--------------------------------------------------------------------------
   */
@@ -883,10 +931,12 @@ function CertificateManager() {
            CERTIFICATE GRID
         ==================================================== */
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-
-          {certificates.map(
-            (certificate) => (
+        <SortableList
+          className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+          items={certificates.map((certificate) => ({ ...certificate, id: certificate._id }))}
+          onReorder={handleReorder}
+          disabled={reordering}
+          renderItem={(certificate, certIndex, { attributes, listeners }) => (
               <article
                 key={
                   certificate._id
@@ -923,6 +973,12 @@ function CertificateManager() {
 
                     </div>
                   )}
+
+                  {/* Drag Handle */}
+
+                  <div className="absolute right-3 top-3 rounded-lg bg-white/90 shadow dark:bg-gray-900/90">
+                    <DragHandle attributes={attributes} listeners={listeners} />
+                  </div>
 
                   {/* Status */}
 
@@ -1114,10 +1170,8 @@ function CertificateManager() {
                 </div>
 
               </article>
-            )
           )}
-
-        </div>
+        />
       )}
 
       {/* =====================================================
@@ -1614,6 +1668,19 @@ function CertificateManager() {
           </div>
 
         </div>
+      )}
+
+      {/* =====================================================
+          IMAGE CROP MODAL — shown before certificate image upload
+      ====================================================== */}
+
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspectRatio={16 / 10}
+          onCancel={() => setCropFile(null)}
+          onConfirm={handleCropConfirm}
+        />
       )}
 
     </div>

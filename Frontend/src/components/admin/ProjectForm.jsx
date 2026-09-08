@@ -7,6 +7,7 @@ import {
   FaBookOpen,
 } from 'react-icons/fa';
 import API from '../../utils/axios';
+import ImageCropModal from './shared/ImageCropModal';
 
 function ProjectForm({ project, onClose, onSuccess }) {
   const isEditing = Boolean(project);
@@ -36,6 +37,9 @@ function ProjectForm({ project, onClose, onSuccess }) {
   );
   const [uploadingScreenshots, setUploadingScreenshots] = useState(false);
 
+  // Queue of raw screenshot files waiting to be cropped, one at a time
+  const [cropQueue, setCropQueue] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -50,6 +54,10 @@ function ProjectForm({ project, onClose, onSuccess }) {
   /*
   |--------------------------------------------------------------------------
   | Case Study — Screenshot Upload (up to 8 at once)
+  |--------------------------------------------------------------------------
+  |
+  | Files pehle crop-queue me jaate hain — har screenshot ImageCropModal
+  | se crop/compress hone ke baad hi Cloudinary pe upload hota hai.
   |--------------------------------------------------------------------------
   */
 
@@ -76,11 +84,21 @@ function ProjectForm({ project, onClose, onSuccess }) {
       return;
     }
 
+    setCropQueue((previous) => [...previous, ...files]);
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Upload a single cropped screenshot, then advance the crop queue
+  |--------------------------------------------------------------------------
+  */
+
+  const uploadCroppedScreenshot = async (croppedFile) => {
     try {
       setUploadingScreenshots(true);
 
       const uploadData = new FormData();
-      files.forEach((file) => uploadData.append('screenshots', file));
+      uploadData.append('screenshots', croppedFile);
 
       const res = await API.post(
         '/projects/upload-screenshots',
@@ -90,21 +108,30 @@ function ProjectForm({ project, onClose, onSuccess }) {
       const uploadedUrls = res.data?.data?.screenshots || [];
 
       if (!uploadedUrls.length) {
-        throw new Error('No screenshot URLs were returned by server.');
+        throw new Error('No screenshot URL was returned by server.');
       }
 
       setScreenshots((previous) => [...previous, ...uploadedUrls]);
 
-      toast.success('Screenshots uploaded successfully.');
+      toast.success('Screenshot uploaded successfully.');
     } catch (err) {
       console.error('Screenshot upload error:', err);
 
       toast.error(
-        err.response?.data?.message || 'Failed to upload screenshots'
+        err.response?.data?.message || 'Failed to upload screenshot'
       );
     } finally {
       setUploadingScreenshots(false);
     }
+  };
+
+  const handleCropConfirm = async (croppedFile) => {
+    await uploadCroppedScreenshot(croppedFile);
+    setCropQueue((previous) => previous.slice(1));
+  };
+
+  const handleCropCancel = () => {
+    setCropQueue((previous) => previous.slice(1));
   };
 
   const removeScreenshot = (url) => {
@@ -688,6 +715,16 @@ REST API Integration`}
           </div>
         </form>
       </div>
+
+      {/* Crop the next screenshot in the queue, one at a time */}
+      {cropQueue.length > 0 && (
+        <ImageCropModal
+          file={cropQueue[0]}
+          aspectRatio={16 / 9}
+          onCancel={handleCropCancel}
+          onConfirm={handleCropConfirm}
+        />
+      )}
     </div>
   );
 }

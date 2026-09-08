@@ -11,6 +11,30 @@ import {
 } from 'react-icons/fa';
 
 import API from '../../utils/axios';
+import SortableList, { DragHandle } from './shared/SortableList';
+
+/*
+|--------------------------------------------------------------------------
+| Stable UID Helper
+|--------------------------------------------------------------------------
+|
+| dnd-kit ko har list item ke liye ek stable, unique `id` chahiye. Mongoose
+| subdocuments (existing categories/skills) ke paas `_id` hota hai, par
+| naye add kiye gaye (unsaved) items ke paas nahi — unke liye random uid
+| generate karte hain. Yeh sirf client-side tracking ke liye hai, backend
+| payload me nahi jaata.
+|--------------------------------------------------------------------------
+*/
+
+const makeUid = () =>
+  (typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : `uid-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+
+const withUid = (item) => ({
+  ...item,
+  _uid: item._uid || item._id || makeUid(),
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -267,11 +291,17 @@ function SkillsManager() {
         portfolio.skills.length > 0
       ) {
         setCategories(
-          portfolio.skills
+          portfolio.skills.map((category) => ({
+            ...withUid(category),
+            skills: (category.skills || []).map(withUid),
+          }))
         );
       } else {
         setCategories(
-          defaultSkills
+          defaultSkills.map((category) => ({
+            ...withUid(category),
+            skills: (category.skills || []).map(withUid),
+          }))
         );
       }
     } catch (err) {
@@ -287,7 +317,10 @@ function SkillsManager() {
       */
 
       setCategories(
-        defaultSkills
+        defaultSkills.map((category) => ({
+          ...withUid(category),
+          skills: (category.skills || []).map(withUid),
+        }))
       );
 
       setError(
@@ -372,10 +405,55 @@ function SkillsManager() {
         {
           ...createEmptyCategory(),
 
+          _uid: makeUid(),
+
           displayOrder:
             previous.length,
         },
       ]
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Reorder Categories (drag-and-drop)
+  |--------------------------------------------------------------------------
+  */
+
+  const handleReorderCategories = (newItems) => {
+    clearMessages();
+
+    setCategories(
+      newItems.map(({ id, ...rest }, index) => ({
+        ...rest,
+        displayOrder: index,
+      }))
+    );
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Reorder Skills within a category (drag-and-drop)
+  |--------------------------------------------------------------------------
+  */
+
+  const handleReorderSkills = (categoryIndex, newItems) => {
+    clearMessages();
+
+    setCategories((previous) =>
+      previous.map((category, index) => {
+        if (index !== categoryIndex) {
+          return category;
+        }
+
+        return {
+          ...category,
+          skills: newItems.map(({ id, ...rest }, skillIndex) => ({
+            ...rest,
+            displayOrder: skillIndex,
+          })),
+        };
+      })
     );
   };
 
@@ -461,6 +539,8 @@ function SkillsManager() {
 
                 {
                   ...createEmptySkill(),
+
+                  _uid: makeUid(),
 
                   displayOrder:
                     currentSkills.length,
@@ -906,13 +986,12 @@ function SkillsManager() {
           CATEGORIES
       ====================================================== */}
 
-      {categories.map(
-        (
-          category,
-          categoryIndex
-        ) => (
+      <SortableList
+        items={categories.map((category) => ({ ...category, id: category._uid }))}
+        onReorder={handleReorderCategories}
+        renderItem={(category, categoryIndex, { attributes, listeners }) => (
           <div
-            key={`category-${categoryIndex}`}
+            key={`category-${category._uid}`}
             className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-6"
           >
 
@@ -923,6 +1002,8 @@ function SkillsManager() {
             <div className="flex flex-col gap-4 border-b border-gray-100 pb-5 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between">
 
               <div className="flex items-center gap-3">
+
+                <DragHandle attributes={attributes} listeners={listeners} />
 
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-800 dark:bg-white/10 dark:text-white">
                   <CategoryIcon
@@ -1156,22 +1237,22 @@ function SkillsManager() {
                 SKILL LIST
             ================================================== */}
 
-            <div className="mt-4 space-y-4">
-
-              {(
-                category.skills ||
-                []
-              ).map(
-                (
-                  skill,
-                  skillIndex
-                ) => (
+            <SortableList
+              className="mt-4 space-y-4"
+              items={(category.skills || []).map((skill) => ({ ...skill, id: skill._uid }))}
+              onReorder={(newItems) => handleReorderSkills(categoryIndex, newItems)}
+              renderItem={(skill, skillIndex, { attributes: skillAttrs, listeners: skillListeners }) => (
                   <div
-                    key={`skill-${categoryIndex}-${skillIndex}`}
+                    key={`skill-${skill._uid}`}
                     className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-950"
                   >
 
-                    <div className="grid gap-4 lg:grid-cols-5">
+                    <div className="flex items-center gap-2">
+                      <DragHandle attributes={skillAttrs} listeners={skillListeners} />
+                      <span className="text-xs font-semibold text-gray-400">Skill #{skillIndex + 1}</span>
+                    </div>
+
+                    <div className="mt-3 grid gap-4 lg:grid-cols-5">
 
                       {/* Skill Name */}
 
@@ -1435,14 +1516,12 @@ function SkillsManager() {
                     </div>
 
                   </div>
-                )
               )}
-
-            </div>
+            />
 
           </div>
-        )
-      )}
+        )}
+      />
 
       {/* =====================================================
           EMPTY STATE
