@@ -6,6 +6,8 @@ import {
   useLocation,
 } from 'react-router-dom';
 
+import { AnimatePresence } from 'framer-motion';
+
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,6 +19,13 @@ import ProtectedRoute from './components/admin/ProtectedRoute';
 import Loader from './components/ui/Loader';
 
 import GlobalSpaceBackground from './components/ui/GlobalSpaceBackground';
+
+import PageTransition, {
+  FadeOnlyTransition,
+} from './components/ui/PageTransition';
+
+import CommandPalette from './components/ui/CommandPalette';
+import PWAInstallPrompt from './components/ui/PWAInstallPrompt';
 
 /*
 |--------------------------------------------------------------------------
@@ -117,94 +126,141 @@ function AppContent() {
       >
 
         <Suspense fallback={<Loader fullScreen text="Loading..." />}>
-          <Routes>
+          <AnimatePresence mode="wait" initial={false}>
+            <Routes location={location} key={location.pathname}>
 
-            {/* =================================================
-                PUBLIC WEBSITE
-            ================================================== */}
+              {/* =================================================
+                  PUBLIC WEBSITE
+                  -----------------------------------------------
+                  Home nests a `position: fixed` Navbar, so it uses
+                  the opacity-only FadeOnlyTransition (see
+                  PageTransition.jsx) instead of the slide transition
+                  — a transform on this wrapper would otherwise
+                  briefly break the fixed navbar during the
+                  animation.
+              ================================================== */}
 
-            <Route
-              path="/"
-              element={<Home />}
-            />
+              <Route
+                path="/"
+                element={
+                  <FadeOnlyTransition>
+                    <Home />
+                  </FadeOnlyTransition>
+                }
+              />
 
-            {/* =================================================
-                BLOG ARCHIVE
-            ================================================== */}
+              {/* =================================================
+                  BLOG ARCHIVE
+              ================================================== */}
 
-            <Route
-              path="/blog"
-              element={<BlogArchive />}
-            />
+              <Route
+                path="/blog"
+                element={
+                  <PageTransition>
+                    <BlogArchive />
+                  </PageTransition>
+                }
+              />
 
-            {/* =================================================
-                SINGLE BLOG POST
-            ================================================== */}
+              {/* =================================================
+                  SINGLE BLOG POST
+              ================================================== */}
 
-            <Route
-              path="/blog/:slug"
-              element={<BlogPost />}
-            />
+              <Route
+                path="/blog/:slug"
+                element={
+                  <PageTransition>
+                    <BlogPost />
+                  </PageTransition>
+                }
+              />
 
-            {/* =================================================
-                PROJECT CASE STUDY
-            ================================================== */}
+              {/* =================================================
+                  PROJECT CASE STUDY
+              ================================================== */}
 
-            <Route
-              path="/projects/:slug"
-              element={<ProjectCaseStudy />}
-            />
+              <Route
+                path="/projects/:slug"
+                element={
+                  <PageTransition>
+                    <ProjectCaseStudy />
+                  </PageTransition>
+                }
+              />
 
-            {/* =================================================
-                ADMIN LOGIN
-            ================================================== */}
+              {/* =================================================
+                  ADMIN LOGIN
+              ================================================== */}
 
-            <Route
-              path="/admin/login"
-              element={
-                <AdminLogin />
-              }
-            />
+              <Route
+                path="/admin/login"
+                element={
+                  <PageTransition>
+                    <AdminLogin />
+                  </PageTransition>
+                }
+              />
 
-            {/* =================================================
-                ADMIN PIN
-            ================================================== */}
+              {/* =================================================
+                  ADMIN PIN
+              ================================================== */}
 
-            <Route
-              path="/admin/pin"
-              element={
-                <AdminPin />
-              }
-            />
+              <Route
+                path="/admin/pin"
+                element={
+                  <PageTransition>
+                    <AdminPin />
+                  </PageTransition>
+                }
+              />
 
-            {/* =================================================
-                PROTECTED ADMIN DASHBOARD
-            ================================================== */}
+              {/* =================================================
+                  PROTECTED ADMIN DASHBOARD
+                  -----------------------------------------------
+                  No page transition here on purpose — the
+                  dashboard has its own internal fixed sidebar/topbar
+                  chrome, same reasoning as Home above.
+              ================================================== */}
 
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* =================================================
-                404
-            ================================================== */}
+              {/* =================================================
+                  404
+              ================================================== */}
 
-            <Route
-              path="*"
-              element={
-                <NotFound />
-              }
-            />
+              <Route
+                path="*"
+                element={
+                  <PageTransition>
+                    <NotFound />
+                  </PageTransition>
+                }
+              />
 
-          </Routes>
+            </Routes>
+          </AnimatePresence>
         </Suspense>
 
       </div>
+
+      {/* =====================================================
+          COMMAND PALETTE (Cmd/Ctrl + K)
+      ====================================================== */}
+
+      <CommandPalette />
+
+      {/* =====================================================
+          PWA INSTALL PROMPT
+      ====================================================== */}
+
+      <PWAInstallPrompt />
 
       {/* =====================================================
           TOAST NOTIFICATIONS

@@ -7,6 +7,8 @@ import {
   FaAward,
 } from 'react-icons/fa';
 
+import { useLanguage } from '../../context/LanguageContext';
+
 import API from '../../utils/axios';
 
 /*
@@ -27,6 +29,7 @@ import API from '../../utils/axios';
 */
 
 const Education = () => {
+  const { t } = useLanguage();
   const [education, setEducation] =
     useState([]);
 
@@ -274,19 +277,17 @@ const Education = () => {
           <span className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
             <FaGraduationCap />
 
-            Education
+            {t('education.eyebrow')}
           </span>
 
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">
-            Academic Journey
+            {t('education.heading')}
           </h2>
 
           <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-400" />
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
-            My academic background and the
-            knowledge that has helped shape my
-            development journey.
+            {t('education.subtitle')}
           </p>
 
         </div>

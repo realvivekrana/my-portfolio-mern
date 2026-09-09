@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 import {
   FaQuoteLeft,
@@ -23,6 +24,7 @@ import { optimizeImageUrl } from '../../utils/optimizeImage';
 */
 
 function Testimonials() {
+  const { t } = useLanguage();
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -92,20 +94,20 @@ function Testimonials() {
         <div className="mb-10 text-center sm:mb-14 md:mb-16">
           <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
             <FaComments className="text-sm" />
-            Kind Words
+            {t('testimonials.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            What People{' '}
+            {t('testimonials.heading')}{' '}
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Say
+              {t('testimonials.headingHighlight')}
             </span>
           </h2>
 
           <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
-            Feedback from clients and colleagues I've had the pleasure of working with.
+            {t('testimonials.subtitle')}
           </p>
         </div>
 

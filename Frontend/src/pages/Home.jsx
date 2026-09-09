@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Navbar from '../components/layout/Navbar';
 
@@ -80,6 +81,69 @@ function Home() {
 
   const [checkingVisibility, setCheckingVisibility] =
     useState(true);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  /*
+  |--------------------------------------------------------------------------
+  | HASH-SCROLL (Command Palette / Footer / external links)
+  |--------------------------------------------------------------------------
+  |
+  | When something navigates to "/#projects" from a different route
+  | (e.g. the Cmd+K Command Palette while on /blog), the target
+  | section is lazy-loaded and may not exist in the DOM yet on the
+  | very first render. We retry for a short window instead of
+  | scrolling once and giving up.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    const sectionId = location.hash?.replace('#', '');
+
+    if (!sectionId || checkingVisibility || isPrivate) {
+      return undefined;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    const scrollTimer = window.setInterval(() => {
+      const target = document.getElementById(sectionId);
+
+      attempts += 1;
+
+      if (target) {
+        const navbarOffset = 90;
+
+        const targetPosition =
+          target.getBoundingClientRect().top +
+          window.scrollY -
+          navbarOffset;
+
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth',
+        });
+
+        // Clean the hash out of the URL once we've scrolled so a
+        // page refresh doesn't re-trigger the jump unexpectedly.
+        window.setTimeout(() => {
+          navigate(location.pathname, { replace: true });
+        }, 400);
+
+        window.clearInterval(scrollTimer);
+      } else if (attempts >= maxAttempts) {
+        window.clearInterval(scrollTimer);
+      }
+    }, 150);
+
+    return () => {
+      window.clearInterval(scrollTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.hash, checkingVisibility, isPrivate]);
 
   /*
   |--------------------------------------------------------------------------

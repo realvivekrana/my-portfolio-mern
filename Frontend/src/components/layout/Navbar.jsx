@@ -6,39 +6,52 @@ import {
   FaMoon,
   FaSun,
   FaLock,
+  FaLanguage,
 } from 'react-icons/fa';
 
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
-const navLinks = [
-  {
-    name: 'Home',
-    href: '#home',
-  },
-  {
-    name: 'About',
-    href: '#about',
-  },
-  {
-    name: 'Skills',
-    href: '#skills',
-  },
-  {
-    name: 'Experience',
-    href: '#experience',
-  },
-  {
-    name: 'Projects',
-    href: '#projects',
-  },
-  {
-    name: 'Contact',
-    href: '#contact',
-  },
-];
+function useNavLinks(t) {
+  return [
+    {
+      key: 'home',
+      name: t('nav.home'),
+      href: '#home',
+    },
+    {
+      key: 'about',
+      name: t('nav.about'),
+      href: '#about',
+    },
+    {
+      key: 'skills',
+      name: t('nav.skills'),
+      href: '#skills',
+    },
+    {
+      key: 'experience',
+      name: t('nav.experience'),
+      href: '#experience',
+    },
+    {
+      key: 'projects',
+      name: t('nav.projects'),
+      href: '#projects',
+    },
+    {
+      key: 'contact',
+      name: t('nav.contact'),
+      href: '#contact',
+    },
+  ];
+}
 
 function Navbar() {
   const { isDark, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const navLinks = useNavLinks(t);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -224,7 +237,7 @@ function Navbar() {
 
               return (
                 <button
-                  key={link.name}
+                  key={link.key}
                   type="button"
                   onClick={() =>
                     handleNavigation(link.href)
@@ -255,15 +268,9 @@ function Navbar() {
             <button
               type="button"
               onClick={handleThemeToggle}
-              aria-label={
-                isDark
-                  ? 'Switch to light mode'
-                  : 'Switch to dark mode'
-              }
+              aria-label={t('theme.dark')}
               title={
-                isDark
-                  ? 'Switch to light mode'
-                  : 'Switch to dark mode'
+                isDark ? t('theme.light') : t('theme.dark')
               }
               className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
@@ -272,6 +279,21 @@ function Navbar() {
               ) : (
                 <FaMoon className="text-sm transition-transform duration-300 group-hover:-rotate-12" />
               )}
+            </button>
+
+            {/* Language Toggle */}
+
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              aria-label={t('language.switchTo')}
+              title={t('language.switchTo')}
+              className="group flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-2.5 text-xs font-bold text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+            >
+              <FaLanguage className="text-sm" />
+              <span className="uppercase">
+                {language === 'en' ? 'हिं' : 'EN'}
+              </span>
             </button>
 
             {/* Admin */}
@@ -283,7 +305,7 @@ function Navbar() {
               className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
               <FaLock className="text-xs" />
-              <span>Admin</span>
+              <span>{t('nav.admin')}</span>
             </a>
           </div>
 
@@ -341,7 +363,7 @@ function Navbar() {
 
                 return (
                   <button
-                    key={link.name}
+                    key={link.key}
                     type="button"
                     onClick={() =>
                       handleNavigation(link.href)
@@ -372,23 +394,38 @@ function Navbar() {
               type="button"
               onClick={handleThemeToggle}
               aria-label={
-                isDark
-                  ? 'Switch to light mode'
-                  : 'Switch to dark mode'
+                isDark ? t('theme.light') : t('theme.dark')
               }
               className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
               {isDark ? (
                 <>
                   <FaSun className="text-yellow-400" />
-                  <span>Switch to Light Mode</span>
+                  <span>{t('theme.switchToLight')}</span>
                 </>
               ) : (
                 <>
                   <FaMoon />
-                  <span>Switch to Dark Mode</span>
+                  <span>{t('theme.switchToDark')}</span>
                 </>
               )}
+            </button>
+
+            {/* =================================================
+                MOBILE LANGUAGE TOGGLE
+            ================================================== */}
+
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+            >
+              <FaLanguage />
+              <span>
+                {language === 'en'
+                  ? 'हिंदी में देखें'
+                  : 'View in English'}
+              </span>
             </button>
 
             {/* =================================================
@@ -401,7 +438,7 @@ function Navbar() {
               className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.99] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
             >
               <FaLock className="text-xs" />
-              Admin Access
+              {t('nav.admin')} Access
             </a>
           </div>
         </div>

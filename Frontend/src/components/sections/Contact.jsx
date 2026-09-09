@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import API from '../../utils/axios';
+import { useLanguage } from '../../context/LanguageContext';
 
 import {
   FaEnvelope,
@@ -13,6 +14,7 @@ import {
 } from 'react-icons/fa';
 
 function Contact() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -340,22 +342,21 @@ function Contact() {
           <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
             <FaEnvelope className="text-sm animate-[contactIconPulse_3s_ease-in-out_infinite]" />
 
-            Get In Touch
+            {t('contact.eyebrow')}
           </p>
 
           <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-            Let's{' '}
+            {t('contact.heading')}{' '}
 
             <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
-              Connect
+              {t('contact.headingHighlight')}
             </span>
           </h2>
 
           <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-[0_0_18px_rgba(99,102,241,0.4)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg dark:text-gray-400">
-            Have a project, opportunity or just want to talk about
-            development? Feel free to reach out.
+            {t('contact.subtitle')}
           </p>
 
         </div>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { useLanguage } from '../../context/LanguageContext';
+
 import {
   FaHtml5,
   FaCss3Alt,
@@ -252,6 +254,7 @@ const defaultSkillCategories = [
 */
 
 function Skills() {
+  const { t } = useLanguage();
   /*
   |--------------------------------------------------------------------------
   | STATE
@@ -428,13 +431,13 @@ function Skills() {
           <div className="mb-12 text-center sm:mb-16">
 
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 sm:text-sm">
-              My Tech Stack
+              {t('skills.eyebrow')}
             </p>
 
             <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-              Skills &{' '}
+              {t('skills.heading')}{' '}
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                Technologies
+                {t('skills.headingHighlight')}
               </span>
             </h2>
 
@@ -539,13 +542,13 @@ function Skills() {
         <div className="mb-12 text-center sm:mb-16">
 
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 sm:text-sm">
-            My Tech Stack
+            {t('skills.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Skills &{' '}
+            {t('skills.heading')}{' '}
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Technologies
+              {t('skills.headingHighlight')}
             </span>
           </h2>
 

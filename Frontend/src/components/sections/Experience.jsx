@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../../utils/axios';
+import { useLanguage } from '../../context/LanguageContext';
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,7 @@ import axios from '../../utils/axios';
 */
 
 const Experience = () => {
+  const { t } = useLanguage();
   const [experiences, setExperiences] =
     useState([]);
 
@@ -209,17 +211,15 @@ const Experience = () => {
 
         <div className="mx-auto mb-14 max-w-3xl text-center">
           <span className="mb-3 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
-            Career
+            {t('experience.eyebrow')}
           </span>
 
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">
-            Professional Experience
+            {t('experience.heading')}
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 dark:text-gray-400 sm:text-lg">
-            My professional journey,
-            responsibilities and the
-            technologies I have worked with.
+            {t('experience.subtitle')}
           </p>
         </div>
 

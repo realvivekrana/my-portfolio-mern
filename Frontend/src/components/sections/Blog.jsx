@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 import {
   FaRegNewspaper,
@@ -22,6 +23,7 @@ import { optimizeImageUrl } from '../../utils/optimizeImage';
 */
 
 function Blog() {
+  const { t } = useLanguage();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -80,13 +82,13 @@ function Blog() {
         <div className="mb-10 flex flex-col items-center gap-4 text-center sm:mb-14 md:mb-16">
           <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
             <FaRegNewspaper className="text-sm" />
-            From the Blog
+            {t('blog.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Latest{' '}
+            {t('blog.heading')}{' '}
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Articles
+              {t('blog.headingHighlight')}
             </span>
           </h2>
 

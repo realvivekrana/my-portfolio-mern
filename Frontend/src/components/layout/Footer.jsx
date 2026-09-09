@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import API from '../../utils/axios';
+import { useLanguage } from '../../context/LanguageContext';
 
 function Footer() {
+  const { t } = useLanguage();
+
   /*
   |--------------------------------------------------------------------------
   | STATE
@@ -480,7 +483,7 @@ const handleSectionClick = (
                     bg-indigo-500
                   "
                 />
-                Open to opportunities
+                {t('footer.ctaBadge')}
               </span>
 
               <h2
@@ -494,8 +497,7 @@ const handleSectionClick = (
                   sm:text-3xl
                 "
               >
-                Let&apos;s build something
-                meaningful together.
+                {t('footer.ctaHeading')}
               </h2>
 
               <p
@@ -509,9 +511,7 @@ const handleSectionClick = (
                   sm:text-base
                 "
               >
-                Have a project, opportunity or
-                idea in mind? Feel free to get in
-                touch and let&apos;s talk.
+                {t('footer.ctaSubtitle')}
               </p>
             </div>
 
@@ -549,7 +549,7 @@ const handleSectionClick = (
                 dark:hover:text-white
               "
             >
-              Get in touch
+              {t('footer.ctaButton')}
               <span
                 className="
                   text-base
@@ -785,7 +785,7 @@ const handleSectionClick = (
                 dark:text-white
               "
             >
-              Quick Links
+              {t('footer.quickLinks')}
             </h3>
 
             <div
@@ -802,11 +802,11 @@ const handleSectionClick = (
 
             <ul className="mt-5 space-y-3">
               {[
-                ['Home', 'home'],
-                ['About', 'about'],
-                ['Skills', 'skills'],
-                ['Projects', 'projects'],
-                ['Contact', 'contact'],
+                [t('nav.home'), 'home'],
+                [t('nav.about'), 'about'],
+                [t('nav.skills'), 'skills'],
+                [t('nav.projects'), 'projects'],
+                [t('nav.contact'), 'contact'],
               ].map(([label, id]) => (
                 <li key={id}>
                   <a
@@ -861,7 +861,7 @@ const handleSectionClick = (
                 dark:text-white
               "
             >
-              Contact
+              {t('footer.contact')}
             </h3>
 
             <div
@@ -905,7 +905,7 @@ const handleSectionClick = (
                       text-gray-400
                     "
                   >
-                    Email
+                    {t('footer.email')}
                   </p>
 
                   <p
@@ -952,7 +952,7 @@ const handleSectionClick = (
                       text-gray-400
                     "
                   >
-                    Phone
+                    {t('footer.phone')}
                   </p>
 
                   <p
@@ -987,7 +987,7 @@ const handleSectionClick = (
                       text-gray-400
                     "
                   >
-                    Location
+                    {t('footer.location')}
                   </p>
 
                   <p
@@ -1017,7 +1017,7 @@ const handleSectionClick = (
                 dark:text-white
               "
             >
-              Resume
+              {t('footer.resume')}
             </h3>
 
             <div
@@ -1351,7 +1351,7 @@ const handleSectionClick = (
             "
           >
             © {currentYear} Vivek Kumar
-            Rana. All rights reserved.
+            Rana. {t('footer.rights')}
           </p>
 
           <div
@@ -1367,7 +1367,7 @@ const handleSectionClick = (
             "
           >
             <span>
-              Built with
+              {t('footer.builtWith')}
             </span>
 
             <span

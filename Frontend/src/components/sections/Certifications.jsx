@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 
 import {
   FaCertificate,
@@ -75,6 +76,7 @@ const getCertificateIcon = (
 */
 
 function Certifications() {
+  const { t } = useLanguage();
   const [certificates, setCertificates] =
     useState([]);
 
@@ -240,23 +242,21 @@ function Certifications() {
           <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
             <FaCertificate className="text-sm" />
 
-            Credentials
+            {t('certifications.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Certifications &{' '}
+            {t('certifications.heading')}{' '}
 
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Learning
+              {t('certifications.headingHighlight')}
             </span>
           </h2>
 
           <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_18px_rgba(99,102,241,0.5)] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
-            Certifications and learning milestones
-            that support my technical skills and
-            continuous professional growth.
+            {t('certifications.subtitle')}
           </p>
 
         </div>

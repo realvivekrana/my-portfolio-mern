@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030712" />
+    <title>You're offline | Vivek Rana</title>
+    <link rel="icon" href="/apple-touch-icon.png" />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px;
+        background: radial-gradient(
+            circle at 20% 20%,
+            rgba(99, 102, 241, 0.18),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(168, 85, 247, 0.15),
+            transparent 40%
+          ),
+          #030712;
+        color: #f9fafb;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          Helvetica, Arial, sans-serif;
+        text-align: center;
+      }
+
+      .card {
+        max-width: 480px;
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        padding: 40px 32px;
+      }
+
+      .icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 24px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+      }
+
+      h1 {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 0 12px;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0 0 28px;
+        color: #9ca3af;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+      }
+
+      .status {
+        margin-top: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #f87171;
+      }
+
+      .status .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ef4444;
+      }
+
+      .status.online {
+        color: #4ade80;
+      }
+
+      .status.online .dot {
+        background: #22c55e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="icon">📡</div>
+      <h1>You're offline</h1>
+      <p>
+        It looks like you've lost your internet connection. Some parts of
+        this portfolio need a connection to load — reconnect and try again.
+      </p>
+      <button type="button" onclick="window.location.reload()">
+        Try again
+      </button>
+      <div>
+        <span id="status" class="status">
+          <span class="dot"></span>
+          <span id="status-text">Offline</span>
+        </span>
+      </div>
+    </div>
+
+    <script>
+      function updateStatus() {
+        const statusEl = document.getElementById('status');
+        const statusTextEl = document.getElementById('status-text');
+        const isOnline = navigator.onLine;
+
+        statusEl.classList.toggle('online', isOnline);
+        statusTextEl.textContent = isOnline ? 'Back online' : 'Offline';
+
+        if (isOnline) {
+          window.location.reload();
+        }
+      }
+
+      window.addEventListener('online', updateStatus);
+      window.addEventListener('offline', updateStatus);
+      updateStatus();
+    </script>
+  </body>
+</html>
