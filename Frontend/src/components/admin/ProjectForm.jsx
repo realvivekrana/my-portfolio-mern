@@ -40,6 +40,17 @@ function ProjectForm({ project, onClose, onSuccess }) {
   // Queue of raw screenshot files waiting to be cropped, one at a time
   const [cropQueue, setCropQueue] = useState([]);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Project Cover Image — direct upload (replaces the old "paste a URL"
+  | field). Only one file is ever pending crop at a time, so a single
+  | nullable value is enough (unlike the screenshots array-queue below).
+  |--------------------------------------------------------------------------
+  */
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [coverImageToCrop, setCoverImageToCrop] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -48,6 +59,84 @@ function ProjectForm({ project, onClose, onSuccess }) {
     setFormData((previous) => ({
       ...previous,
       [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cover Image — Direct Upload (single image, shows on the project card)
+  |--------------------------------------------------------------------------
+  |
+  | Pehle yeh field ek plain text input tha jisme visitor/admin ko khud
+  | ek public image URL paste karna padta tha (Imgur, Cloudinary, etc.
+  | par manually upload karke). Ab yeh screenshots ki tarah hi seedha
+  | Admin Dashboard se upload hota hai — crop/compress ke baad Cloudinary
+  | par jaata hai aur uska URL yahin `formData.image` me save ho jaata hai.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  const handleCoverImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!file.type.startsWith('image/') || file.size > maxSize) {
+      toast.error('Please select an image file up to 5 MB in size.');
+      return;
+    }
+
+    setCoverImageToCrop(file);
+  };
+
+  const uploadCoverImage = async (croppedFile) => {
+    try {
+      setUploadingImage(true);
+
+      const uploadData = new FormData();
+      uploadData.append('image', croppedFile);
+
+      const res = await API.post('/projects/upload-image', uploadData);
+
+      const uploadedUrl = res.data?.data?.image;
+
+      if (!uploadedUrl) {
+        throw new Error('No image URL was returned by server.');
+      }
+
+      setFormData((previous) => ({
+        ...previous,
+        image: uploadedUrl,
+      }));
+
+      toast.success('Project image uploaded successfully.');
+    } catch (err) {
+      console.error('Project image upload error:', err);
+
+      toast.error(
+        err.response?.data?.message || 'Failed to upload project image'
+      );
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleCoverImageCropConfirm = async (croppedFile) => {
+    await uploadCoverImage(croppedFile);
+    setCoverImageToCrop(null);
+  };
+
+  const handleCoverImageCropCancel = () => {
+    setCoverImageToCrop(null);
+  };
+
+  const removeCoverImage = () => {
+    setFormData((previous) => ({
+      ...previous,
+      image: '',
     }));
   };
 
@@ -305,27 +394,66 @@ function ProjectForm({ project, onClose, onSuccess }) {
             />
           </div>
 
-          {/* Image */}
+          {/* =====================================================
+              PROJECT COVER IMAGE — DIRECT UPLOAD
+              -----------------------------------------------------
+              Pehle yaha "Project Screenshot URL" text input tha
+              (manual public URL paste karna padta tha). Ab seedha
+              upload hota hai, screenshots ki tarah hi.
+          ====================================================== */}
+
           <div>
-            <label
-              htmlFor="image"
-              className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300"
-            >
-              Project Screenshot URL
+            <label className="mb-1.5 block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Project Cover Image
             </label>
 
-            <input
-              id="image"
-              type="text"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://..."
-              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition-colors focus:border-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-            />
+            {/* Current / newly uploaded image preview */}
+
+            {formData.image && (
+              <div className="group relative mb-3 aspect-video w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-900">
+                <img
+                  src={formData.image}
+                  alt="Project cover"
+                  className="h-full w-full object-cover"
+                />
+
+                <button
+                  type="button"
+                  onClick={removeCoverImage}
+                  className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-gray-950/80 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
+                  aria-label="Remove project cover image"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            )}
+
+            {/* Upload / Replace button */}
+
+            <label className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-indigo-300 bg-white px-4 py-3 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-50 dark:border-indigo-500/30 dark:bg-gray-900 dark:text-indigo-400 dark:hover:bg-indigo-500/5">
+              {uploadingImage ? (
+                <>
+                  <FaSpinner className="animate-spin" /> Uploading...
+                </>
+              ) : (
+                <>
+                  <FaUpload />
+                  {formData.image ? 'Replace image' : 'Upload project image'}
+                </>
+              )}
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverImageSelect}
+                disabled={uploadingImage}
+                className="hidden"
+              />
+            </label>
 
             <p className="mt-1.5 text-xs text-gray-400">
-              Use a public image URL for the project screenshot.
+              This shows on the project card. Recommended 16:9, up to 5 MB —
+              you'll be able to crop it before it uploads.
             </p>
           </div>
 
@@ -695,7 +823,7 @@ REST API Integration`}
           <div className="flex flex-col gap-3 pt-2 sm:flex-row">
             <button
               type="submit"
-              disabled={loading || uploadingScreenshots}
+              disabled={loading || uploadingScreenshots || uploadingImage}
               className="flex-1 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/20 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading
@@ -716,8 +844,18 @@ REST API Integration`}
         </form>
       </div>
 
+      {/* Crop the cover image (single) */}
+      {coverImageToCrop && (
+        <ImageCropModal
+          file={coverImageToCrop}
+          aspectRatio={16 / 9}
+          onCancel={handleCoverImageCropCancel}
+          onConfirm={handleCoverImageCropConfirm}
+        />
+      )}
+
       {/* Crop the next screenshot in the queue, one at a time */}
-      {cropQueue.length > 0 && (
+      {!coverImageToCrop && cropQueue.length > 0 && (
         <ImageCropModal
           file={cropQueue[0]}
           aspectRatio={16 / 9}

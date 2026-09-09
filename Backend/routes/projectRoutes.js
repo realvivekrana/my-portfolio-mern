@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-const { uploadProjectScreenshots } = require('../middleware/uploadMiddleware');
+const {
+  uploadProjectCoverImage,
+  uploadProjectScreenshots,
+} = require('../middleware/uploadMiddleware');
 const {
   getAllProjects,
   getAdminProjects,
@@ -31,6 +34,48 @@ router.patch('/reorder', protect, reorderProjects);
 // IMPORTANT: must come before /:id so Express doesn't treat
 // "case-study" as a project ID.
 router.get('/case-study/:slug', getProjectBySlug);
+
+// @route   POST /api/projects/upload-image (Protected)
+// Returns a single Cloudinary URL for the project's main cover/thumbnail
+// image — this is what shows on the project card. Replaces the old
+// "paste a public image URL" field in the Admin Dashboard.
+router.post(
+  '/upload-image',
+  protect,
+  uploadProjectCoverImage.single('image'),
+  (req, res) => {
+    try {
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please select an image to upload.',
+        });
+      }
+
+      const url = file.path || file.secure_url;
+
+      if (!url) {
+        return res.status(500).json({
+          success: false,
+          message: 'Image upload succeeded but no URL was returned.',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Project image uploaded successfully',
+        data: { image: url },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+);
 
 // @route   POST /api/projects/upload-screenshots (Protected)
 // Returns Cloudinary URLs for up to 8 screenshots at once.

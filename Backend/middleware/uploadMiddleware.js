@@ -918,6 +918,94 @@ const uploadTestimonialAvatar =
 
 /*
 |--------------------------------------------------------------------------
+| PROJECT COVER IMAGE UPLOAD (single — main project card thumbnail)
+|--------------------------------------------------------------------------
+|
+| Yeh wahi image hai jo project card par dikhti hai (pehle isko manually
+| ek public URL paste karke set kiya jaata tha — ab Admin Dashboard se
+| seedha upload hota hai, baaki image uploads (screenshots, profile,
+| certificates, blog, testimonial) ki tarah).
+|
+| Allowed:
+|   JPG
+|   JPEG
+|   PNG
+|   WEBP
+|
+| Maximum:
+|   5 MB
+|
+|--------------------------------------------------------------------------
+*/
+
+const uploadProjectCoverImage =
+  multer({
+    storage,
+
+    fileFilter: (
+      req,
+      file,
+      cb
+    ) => {
+      const fileName =
+        (
+          file?.originalname ||
+          ''
+        ).toLowerCase();
+
+      const allowedImages = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
+
+      const isValidMime =
+        allowedImages.includes(
+          file?.mimetype
+        );
+
+      const isValidExtension =
+        /\.(jpe?g|png|webp)$/i.test(
+          fileName
+        );
+
+      if (
+        isValidMime ||
+        isValidExtension
+      ) {
+        console.log(
+          '✅ Project cover image accepted:',
+          file?.originalname
+        );
+
+        return cb(
+          null,
+          true
+        );
+      }
+
+      console.error(
+        '❌ Project cover image rejected:',
+        file?.originalname
+      );
+
+      return cb(
+        new Error(
+          'Only JPG, JPEG, PNG and WEBP images are allowed for the project cover image.'
+        ),
+        false
+      );
+    },
+
+    limits: {
+      fileSize:
+        5 * 1024 * 1024,
+    },
+  });
+
+/*
+|--------------------------------------------------------------------------
 | PROJECT SCREENSHOT UPLOAD (multiple, for case studies)
 |--------------------------------------------------------------------------
 |
@@ -1007,6 +1095,8 @@ module.exports = {
   uploadBlogImage,
 
   uploadTestimonialAvatar,
+
+  uploadProjectCoverImage,
 
   uploadProjectScreenshots,
 };
