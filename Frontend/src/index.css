@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
+@import "./premium-theme.css";
+@import "./final-polish.css";
+@import "./responsive-mobile-first.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -309,7 +312,7 @@ html:not(.dark) .text-indigo-600 {
 .dark .text-indigo-400,
 .dark .text-indigo-500,
 .dark .text-indigo-600 {
-  color: #f3f4f6 !important;
+  color: #a78bfa !important;
 }
 
 /* =========================================================
@@ -327,7 +330,7 @@ html:not(.dark) .text-purple-600 {
 .dark .text-purple-400,
 .dark .text-purple-500,
 .dark .text-purple-600 {
-  color: #e5e7eb !important;
+  color: #c4b5fd !important;
 }
 
 /* =========================================================
@@ -345,7 +348,7 @@ html:not(.dark) .text-blue-600 {
 .dark .text-blue-400,
 .dark .text-blue-500,
 .dark .text-blue-600 {
-  color: #d1d5db !important;
+  color: #60a5fa !important;
 }
 
 /* =========================================================
@@ -363,7 +366,7 @@ html:not(.dark) .text-cyan-600 {
 .dark .text-cyan-400,
 .dark .text-cyan-500,
 .dark .text-cyan-600 {
-  color: #9ca3af !important;
+  color: #67e8f9 !important;
 }
 
 /* =========================================================

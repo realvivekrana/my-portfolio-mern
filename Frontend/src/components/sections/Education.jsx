@@ -250,7 +250,7 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="relative overflow-hidden py-20 sm:py-24"
+      className="relative overflow-hidden py-20 sm:py-24 premium-section premium-section-education"
     >
       {/* --------------------------------------------------------------- */}
       {/* Background Decoration */}

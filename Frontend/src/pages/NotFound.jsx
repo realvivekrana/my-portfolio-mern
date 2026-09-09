@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 function NotFound() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center px-6 text-center transition-colors">
+    <div className="min-h-screen bg-white dark:bg-[#050505] flex flex-col items-center justify-center px-6 text-center transition-colors">
       <h1 className="text-8xl font-bold text-purple-400 mb-4">404</h1>
       <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
         Page Not Found

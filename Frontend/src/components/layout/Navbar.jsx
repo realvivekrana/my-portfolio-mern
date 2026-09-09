@@ -189,14 +189,14 @@ function Navbar() {
       ====================================================== */}
 
       <header
-        className={`fixed inset-x-0 top-0 z-50 px-3 transition-all duration-500 sm:px-4 md:px-6 ${
+        className={`premium-navbar fixed inset-x-0 top-0 z-50 px-3 transition-all duration-500 sm:px-4 md:px-6 ${
           isScrolled
             ? 'pt-2 sm:pt-3'
             : 'pt-3 sm:pt-4'
         }`}
       >
         <nav
-          className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border transition-all duration-500 ${
+          className={`premium-navbar-inner mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border transition-all duration-500 ${
             isScrolled
               ? 'border-gray-200/80 bg-white/90 px-3 py-2.5 shadow-lg shadow-gray-900/5 backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/90 dark:shadow-[0_8px_32px_rgba(139,92,246,0.12)] sm:px-5 sm:py-3'
               : 'border-gray-200/60 bg-white/70 px-3 py-2.5 backdrop-blur-lg dark:border-white/[0.08] dark:bg-[#0b0b12]/70 sm:px-5 sm:py-3'

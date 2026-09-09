@@ -25,7 +25,7 @@ function SectionFallback() {
       className="flex min-h-[40vh] w-full items-center justify-center py-20"
     >
       <div className="flex flex-col items-center gap-3">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600 dark:border-gray-800 dark:border-t-purple-400" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-indigo-600 dark:border-white/[0.08] dark:border-t-purple-400" />
       </div>
     </div>
   );

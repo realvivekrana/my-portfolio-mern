@@ -70,7 +70,7 @@ function Blog() {
   return (
     <section
       id="blog"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24 premium-section premium-section-blog"
     >
       <div
         aria-hidden="true"

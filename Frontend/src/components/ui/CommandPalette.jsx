@@ -375,7 +375,7 @@ function CommandPalette() {
       role="presentation"
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-800 dark:bg-gray-950"
+        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -383,7 +383,7 @@ function CommandPalette() {
       >
         {/* Search Input */}
 
-        <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3.5 dark:border-gray-800">
+        <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3.5 dark:border-white/[0.08]">
           <FaSearch className="shrink-0 text-sm text-gray-400" />
 
           <input
@@ -398,7 +398,7 @@ function CommandPalette() {
             spellCheck="false"
           />
 
-          <kbd className="hidden shrink-0 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-semibold text-gray-500 sm:inline-block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+          <kbd className="hidden shrink-0 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-semibold text-gray-500 sm:inline-block dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-400">
             Esc
           </kbd>
         </div>
@@ -452,23 +452,23 @@ function CommandPalette() {
 
         {/* Footer Hints */}
 
-        <div className="flex items-center justify-end gap-4 border-t border-gray-200 px-4 py-2.5 text-[11px] text-gray-400 dark:border-gray-800 dark:text-gray-500">
+        <div className="flex items-center justify-end gap-4 border-t border-gray-200 px-4 py-2.5 text-[11px] text-gray-400 dark:border-white/[0.08] dark:text-gray-500">
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-gray-700 dark:bg-gray-900">
+            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-white/[0.08] dark:bg-white/[0.04]">
               ↑↓
             </kbd>
             {t('commandPalette.hint')}
           </span>
 
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-gray-700 dark:bg-gray-900">
+            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-white/[0.08] dark:bg-white/[0.04]">
               ↵
             </kbd>
             {t('commandPalette.hintSelect')}
           </span>
 
           <span className="flex items-center gap-1">
-            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-gray-700 dark:bg-gray-900">
+            <kbd className="rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 dark:border-white/[0.08] dark:bg-white/[0.04]">
               Esc
             </kbd>
             {t('commandPalette.hintClose')}

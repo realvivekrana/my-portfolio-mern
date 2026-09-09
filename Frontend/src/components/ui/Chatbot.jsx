@@ -207,8 +207,8 @@ function ActionCard({ action }) {
               rounded-xl border border-gray-200 bg-gray-50
               px-3 py-2 text-xs font-medium text-gray-700
               transition-colors hover:bg-gray-100
-              dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200
-              dark:hover:bg-gray-700
+              dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-gray-200
+              dark:hover:bg-white/[0.08] dark:hover:border-purple-400/30
             "
           >
             <FaGithub size={13} />
@@ -502,12 +502,12 @@ function Chatbot() {
           flex h-12 w-12
           items-center justify-center
           rounded-full
-          bg-indigo-600
+          bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6]
           text-white
-          shadow-lg shadow-indigo-600/30
+          shadow-lg shadow-[#8B5CF6]/30
           transition-transform duration-300
           hover:scale-110
-          hover:bg-indigo-500
+          hover:brightness-110
           active:scale-95
           dark:bg-purple-500
           dark:hover:bg-purple-400
@@ -548,7 +548,7 @@ function Chatbot() {
             border border-b-0 border-gray-200
             bg-white
             shadow-2xl
-            dark:border-gray-800 dark:bg-gray-900
+            dark:border-purple-500/15 dark:bg-[#0b0b12]/98 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)]
 
             sm:inset-x-auto sm:bottom-24 sm:right-6
             sm:h-[70vh] sm:max-h-[600px] sm:w-[380px]
@@ -567,7 +567,8 @@ function Chatbot() {
               bg-indigo-600
               px-4 py-3
               text-white
-              dark:border-gray-800
+              dark:border-white/[0.08]
+              dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6]
             "
           >
             <div className="flex min-w-0 items-center gap-3">
@@ -643,8 +644,8 @@ function Chatbot() {
                     flex h-7 w-7 shrink-0 items-center justify-center rounded-full
                     ${
                       msg.role === 'user'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-purple-300'
+                        ? 'bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6]'
+                        : 'bg-gray-100 text-indigo-600 dark:bg-white/[0.06] dark:text-purple-300'
                     }
                   `}
                 >
@@ -661,8 +662,8 @@ function Chatbot() {
                       break-words rounded-2xl px-3 py-2 text-sm leading-relaxed
                       ${
                         msg.role === 'user'
-                          ? 'rounded-tr-sm bg-indigo-600 text-white'
-                          : 'rounded-tl-sm bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                          ? 'rounded-tr-sm bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6]'
+                          : 'rounded-tl-sm bg-gray-100 text-gray-800 dark:bg-white/[0.06] dark:text-gray-100'
                       }
                     `}
                   >
@@ -718,7 +719,7 @@ function Chatbot() {
               border-t border-gray-100
               p-3
               pb-[calc(0.75rem+env(safe-area-inset-bottom))]
-              dark:border-gray-800
+              dark:border-white/[0.08]
               sm:pb-3
             "
           >
@@ -741,9 +742,10 @@ function Chatbot() {
                 outline-none
                 focus:border-indigo-500
                 disabled:opacity-60
-                dark:border-gray-700
-                dark:bg-gray-800
+                dark:border-white/[0.08]
+                dark:bg-white/[0.04]
                 dark:text-gray-100
+                dark:focus:border-purple-400/60
 
                 sm:py-2 sm:text-sm
               "
@@ -761,6 +763,7 @@ function Chatbot() {
                 text-white
                 transition-colors
                 hover:bg-indigo-500
+                dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:hover:brightness-110
                 disabled:cursor-not-allowed
                 disabled:opacity-50
 

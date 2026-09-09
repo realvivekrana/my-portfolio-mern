@@ -201,7 +201,7 @@ const Experience = () => {
   return (
     <section
       id="experience"
-      className="relative overflow-hidden py-20 sm:py-24"
+      className="relative overflow-hidden py-20 sm:py-24 premium-section premium-section-experience"
     >
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
 

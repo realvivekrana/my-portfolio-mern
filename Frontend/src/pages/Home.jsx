@@ -477,6 +477,7 @@ function Home() {
   return (
     <div
       className="
+        premium-portfolio
         relative
         min-h-screen
         w-full
@@ -494,12 +495,6 @@ function Home() {
       ====================================================== */}
 
       <StructuredData />
-
-      {/* =====================================================
-          GLOBAL LIVE ANIMATION
-      ====================================================== */}
-
-      <AnimatedBackground />
 
       {/* =====================================================
           NAVBAR

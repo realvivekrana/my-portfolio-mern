@@ -147,7 +147,7 @@ function Contact() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-gray-50 px-6 py-24 text-gray-900 transition-colors duration-500 dark:bg-gray-900 dark:text-white"
+      className="relative overflow-hidden bg-gray-50 px-6 py-24 text-gray-900 transition-colors duration-500 dark:bg-gray-900 dark:text-white premium-section premium-section-contact"
     >
 
       {/* =====================================================

@@ -1,0 +1,445 @@
+/* ==============================================================
+   MOBILE-FIRST RESPONSIVE SYSTEM
+   Premium Portfolio — 320px → 4K
+   Visual/responsive layer only. No data/API/functionality changes.
+   ============================================================== */
+
+:root {
+  --responsive-gutter: 1rem;
+  --responsive-section-y: 4rem;
+  --responsive-content: 80rem;
+  --responsive-radius: 1rem;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Base mobile layout ---------- */
+.premium-portfolio {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.premium-portfolio main,
+.premium-portfolio main > section,
+.premium-portfolio main > section > section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.premium-portfolio main > section > section[id] {
+  padding-left: var(--responsive-gutter) !important;
+  padding-right: var(--responsive-gutter) !important;
+  padding-top: var(--responsive-section-y) !important;
+  padding-bottom: var(--responsive-section-y) !important;
+}
+
+.premium-portfolio main > section > section[id] > .relative,
+.premium-portfolio main > section > section[id] > .container,
+.premium-portfolio main > section > section[id] > div.relative {
+  width: 100%;
+  max-width: var(--responsive-content);
+  min-width: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Prevent long content from creating mobile overflow. */
+.premium-portfolio h1,
+.premium-portfolio h2,
+.premium-portfolio h3,
+.premium-portfolio h4,
+.premium-portfolio p,
+.premium-portfolio a,
+.premium-portfolio button,
+.premium-portfolio span {
+  overflow-wrap: anywhere;
+}
+
+.premium-portfolio h1 {
+  font-size: clamp(2.25rem, 11vw, 4.75rem);
+}
+
+.premium-portfolio h2 {
+  font-size: clamp(1.9rem, 8vw, 3.5rem);
+}
+
+/* ---------- Navbar: phone first ---------- */
+.premium-navbar {
+  padding-left: .625rem !important;
+  padding-right: .625rem !important;
+}
+
+.premium-navbar-inner {
+  min-height: 3.5rem;
+  width: 100%;
+  max-width: var(--responsive-content);
+}
+
+.premium-navbar-inner > * {
+  min-width: 0;
+}
+
+.premium-navbar-inner .group {
+  min-width: 0;
+}
+
+/* ---------- Hero ---------- */
+.premium-hero {
+  min-height: 100svh !important;
+  min-height: 100dvh !important;
+  padding-top: 6rem !important;
+  padding-bottom: 3rem !important;
+}
+
+.premium-hero-inner {
+  min-height: calc(100svh - 5rem) !important;
+  min-height: calc(100dvh - 5rem) !important;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+.premium-hero-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 2.25rem !important;
+}
+
+.premium-hero-copy,
+.premium-hero-visual,
+.premium-hero-grid > * {
+  min-width: 0;
+}
+
+.premium-hero-copy {
+  text-align: center;
+}
+
+.premium-hero-copy h1 {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: .98;
+}
+
+.premium-hero-copy p {
+  max-width: 38rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: .9375rem;
+  line-height: 1.7;
+}
+
+.premium-hero-copy .flex,
+.premium-hero-copy [class*="flex"] {
+  min-width: 0;
+}
+
+.premium-hero-visual {
+  width: min(100%, 22rem);
+  margin-inline: auto;
+}
+
+.premium-hero-visual img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Keep decorative glows inside the viewport on narrow screens. */
+.premium-hero > .pointer-events-none {
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+/* ---------- Buttons / CTAs ---------- */
+.premium-portfolio a[class*="rounded"],
+.premium-portfolio button[class*="rounded"] {
+  max-width: 100%;
+}
+
+.premium-portfolio .premium-cta-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: .75rem;
+}
+
+/* ---------- Cards / grids ---------- */
+.premium-portfolio .grid {
+  min-width: 0;
+}
+
+.premium-portfolio .grid > * {
+  min-width: 0;
+}
+
+.premium-portfolio [class*="rounded-3xl"],
+.premium-portfolio [class*="rounded-2xl"] {
+  max-width: 100%;
+}
+
+/* Project / blog media should never force a fixed desktop width. */
+.premium-portfolio [class*="h-56"],
+.premium-portfolio [class*="h-60"],
+.premium-portfolio [class*="h-64"] {
+  max-width: 100%;
+}
+
+/* ---------- Forms ---------- */
+.premium-portfolio input,
+.premium-portfolio textarea,
+.premium-portfolio select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 16px; /* prevents iOS Safari zoom */
+}
+
+.premium-portfolio textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+/* ---------- Timeline ---------- */
+.premium-section-timeline {
+  overflow: hidden;
+}
+
+.premium-section-timeline [class*="absolute"] {
+  max-width: 100%;
+}
+
+/* ---------- Contact ---------- */
+.premium-section-contact {
+  padding-left: var(--responsive-gutter) !important;
+  padding-right: var(--responsive-gutter) !important;
+}
+
+.premium-section-contact form {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ---------- Footer ---------- */
+.premium-portfolio footer {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.premium-portfolio footer .grid,
+.premium-portfolio footer [class*="grid"] {
+  min-width: 0;
+}
+
+/* ---------- 480px ---------- */
+@media (min-width: 30rem) {
+  :root {
+    --responsive-gutter: 1.25rem;
+    --responsive-section-y: 4.5rem;
+  }
+
+  .premium-hero {
+    padding-top: 6.5rem !important;
+  }
+
+  .premium-hero-grid {
+    gap: 2.75rem !important;
+  }
+
+  .premium-hero-visual {
+    width: min(100%, 25rem);
+  }
+
+  .premium-cta-group {
+    flex-direction: row !important;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- 640px ---------- */
+@media (min-width: 40rem) {
+  :root {
+    --responsive-gutter: 1.5rem;
+    --responsive-section-y: 5rem;
+  }
+
+  .premium-hero-copy {
+    text-align: center;
+  }
+
+  .premium-hero-copy p {
+    font-size: 1rem;
+  }
+
+  .premium-hero-grid {
+    gap: 3rem !important;
+  }
+
+  .premium-portfolio main > section > section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+}
+
+/* ---------- 768px ---------- */
+@media (min-width: 48rem) {
+  :root {
+    --responsive-gutter: 2rem;
+    --responsive-section-y: 5.5rem;
+  }
+
+  .premium-hero {
+    padding-top: 7rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .premium-hero-inner {
+    min-height: calc(100svh - 6rem) !important;
+    min-height: calc(100dvh - 6rem) !important;
+  }
+
+  .premium-hero-grid {
+    gap: 3.5rem !important;
+  }
+
+  .premium-hero-visual {
+    width: min(100%, 28rem);
+  }
+}
+
+/* ---------- 900px ---------- */
+@media (min-width: 56.25rem) {
+  :root {
+    --responsive-gutter: 2.5rem;
+  }
+
+  .premium-hero-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(18rem, .9fr) !important;
+    gap: 4rem !important;
+  }
+
+  .premium-hero-copy {
+    text-align: left;
+  }
+
+  .premium-hero-copy h1,
+  .premium-hero-copy p {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .premium-cta-group {
+    justify-content: flex-start;
+  }
+
+  .premium-hero-visual {
+    width: 100%;
+    max-width: 32rem;
+    margin-left: auto;
+  }
+}
+
+/* ---------- 1024px ---------- */
+@media (min-width: 64rem) {
+  :root {
+    --responsive-gutter: 2rem;
+    --responsive-section-y: 6rem;
+  }
+
+  .premium-navbar {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .premium-navbar-inner {
+    min-height: 4rem;
+  }
+
+  .premium-hero {
+    padding-top: 7.5rem !important;
+  }
+
+  .premium-hero-grid {
+    gap: 5rem !important;
+  }
+
+  .premium-portfolio main > section > section[id] {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* ---------- 1280px ---------- */
+@media (min-width: 80rem) {
+  :root {
+    --responsive-section-y: 7rem;
+  }
+
+  .premium-hero-grid {
+    gap: 6rem !important;
+  }
+}
+
+/* ---------- 1536px ---------- */
+@media (min-width: 96rem) {
+  :root {
+    --responsive-gutter: 2.5rem;
+    --responsive-section-y: 7.5rem;
+  }
+
+  .premium-portfolio main > section > section[id] {
+    padding-left: max(var(--responsive-gutter), calc((100vw - var(--responsive-content)) / 2)) !important;
+    padding-right: max(var(--responsive-gutter), calc((100vw - var(--responsive-content)) / 2)) !important;
+  }
+}
+
+/* ---------- Touch devices ---------- */
+@media (hover: none) and (pointer: coarse) {
+  .premium-portfolio .group:hover,
+  .premium-portfolio a:hover,
+  .premium-portfolio button:hover {
+    transform: none;
+  }
+
+  .premium-portfolio .group-hover\:scale-105 {
+    transform: none !important;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .premium-portfolio *,
+  .premium-portfolio *::before,
+  .premium-portfolio *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

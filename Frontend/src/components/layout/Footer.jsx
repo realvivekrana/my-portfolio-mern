@@ -368,6 +368,7 @@ const handleSectionClick = (
     <footer
       id="footer"
       className="
+        premium-footer
         relative
         z-10
         overflow-hidden

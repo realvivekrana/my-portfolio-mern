@@ -1,0 +1,214 @@
+/* ================================================================
+   PREMIUM SECTIONS — VISUAL POLISH LAYER
+   Black / Purple / Electric Blue. No data or behavior changes.
+   ================================================================ */
+
+.premium-section {
+  scroll-margin-top: 92px;
+}
+
+.premium-section > div {
+  position: relative;
+}
+
+/* Section heading eyebrow */
+.premium-section p.text-xs.font-bold.uppercase,
+.premium-section p.text-sm.font-semibold.uppercase,
+.premium-section span.mb-3.inline-block {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .42rem .75rem;
+  border: 1px solid rgba(139, 92, 246, .18);
+  border-radius: 999px;
+  background: rgba(139, 92, 246, .055);
+  box-shadow: inset 0 0 18px rgba(139, 92, 246, .025);
+}
+
+/* Premium surface treatment for the common cards */
+.premium-section article,
+.premium-section a.group,
+.premium-section > div > div > div.rounded-3xl,
+.premium-section > div > div > div.rounded-2xl {
+  position: relative;
+}
+
+.premium-section article::before,
+.premium-section a.group::before,
+.premium-section .group.rounded-3xl::before,
+.premium-section .group.rounded-2xl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(255,255,255,.035), transparent 28%, transparent 72%, rgba(139,92,246,.035));
+  opacity: .7;
+}
+
+.premium-section article:hover,
+.premium-section a.group:hover,
+.premium-section .group.rounded-3xl:hover,
+.premium-section .group.rounded-2xl:hover {
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, .28),
+    0 0 35px rgba(139, 92, 246, .08);
+}
+
+/* Project imagery */
+.premium-section-projects article img,
+.premium-section-blog a.group img {
+  transition: transform .7s cubic-bezier(.2,.75,.25,1), filter .7s ease;
+}
+
+.premium-section-projects article:hover img,
+.premium-section-blog a.group:hover img {
+  transform: scale(1.045);
+  filter: saturate(1.08) contrast(1.03);
+}
+
+/* Skill icons */
+.premium-section-skills .group\/skill:hover svg,
+.premium-section-skills .group\/skill:hover > div:first-child svg {
+  filter: drop-shadow(0 0 9px rgba(139, 92, 246, .45));
+}
+
+/* Experience / Education timeline polish */
+.premium-section-experience article,
+.premium-section-education article,
+.premium-section-timeline article {
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+
+.premium-section-experience article:hover,
+.premium-section-education article:hover,
+.premium-section-timeline article:hover {
+  transform: translateY(-4px);
+}
+
+/* Certification cards */
+.premium-section-certifications article {
+  overflow: hidden;
+}
+
+.premium-section-certifications article::after {
+  content: '';
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  right: -65px;
+  top: -65px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(139,92,246,.13), transparent 68%);
+  pointer-events: none;
+  transition: transform .5s ease;
+}
+
+.premium-section-certifications article:hover::after {
+  transform: scale(1.25);
+}
+
+/* Testimonials */
+.premium-section-testimonials article::after {
+  content: '“';
+  position: absolute;
+  right: 1.25rem;
+  top: .3rem;
+  font-size: 5rem;
+  line-height: 1;
+  font-family: Georgia, serif;
+  color: rgba(139, 92, 246, .10);
+  pointer-events: none;
+}
+
+/* Blog cards */
+.premium-section-blog a.group {
+  box-shadow: 0 14px 45px rgba(0,0,0,.22);
+}
+
+/* Contact: force the public contact area into the same dark visual system */
+.premium-section-contact {
+  background:
+    radial-gradient(circle at 10% 15%, rgba(139,92,246,.10), transparent 28%),
+    radial-gradient(circle at 90% 75%, rgba(59,130,246,.07), transparent 28%),
+    #05060b !important;
+  color: #f8fafc !important;
+}
+
+.premium-section-contact [class*="dark:bg-gray-900"],
+.premium-section-contact [class*="dark:bg-[#0b0b12]"] {
+  background: rgba(11, 12, 20, .78) !important;
+}
+
+.premium-section-contact input,
+.premium-section-contact textarea,
+.premium-section-contact select {
+  background: rgba(255,255,255,.035) !important;
+  border-color: rgba(255,255,255,.09) !important;
+  color: #f8fafc !important;
+  box-shadow: inset 0 0 20px rgba(0,0,0,.08);
+}
+
+.premium-section-contact input:focus,
+.premium-section-contact textarea:focus,
+.premium-section-contact select:focus {
+  border-color: rgba(139,92,246,.65) !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,.10), 0 0 24px rgba(139,92,246,.08) !important;
+  outline: none;
+}
+
+/* Footer */
+.premium-footer {
+  background:
+    linear-gradient(180deg, #05060b 0%, #070811 100%) !important;
+  border-top-color: rgba(139,92,246,.15) !important;
+}
+
+.premium-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(900px, 85vw);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(139,92,246,.45), rgba(59,130,246,.35), transparent);
+  box-shadow: 0 0 30px rgba(139,92,246,.16);
+}
+
+.premium-footer a {
+  transition: color .25s ease, transform .25s ease, text-shadow .25s ease;
+}
+
+.premium-footer a:hover {
+  transform: translateY(-1px);
+  text-shadow: 0 0 18px rgba(139,92,246,.35);
+}
+
+/* Better selection */
+.premium-portfolio ::selection {
+  background: rgba(139,92,246,.35);
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .premium-section {
+    scroll-margin-top: 78px;
+  }
+
+  .premium-section article:hover,
+  .premium-section a.group:hover,
+  .premium-section .group.rounded-3xl:hover,
+  .premium-section .group.rounded-2xl:hover {
+    box-shadow: 0 12px 32px rgba(0,0,0,.22), 0 0 24px rgba(139,92,246,.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-section article,
+  .premium-section a.group,
+  .premium-section img,
+  .premium-footer a {
+    transition: none !important;
+  }
+}

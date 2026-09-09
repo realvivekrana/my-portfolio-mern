@@ -326,7 +326,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen w-full overflow-x-clip overflow-y-hidden bg-white/85 px-4 pt-24 sm:px-6 sm:pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-[#050505]/80 dark:text-white"
+      className="premium-hero relative min-h-screen w-full overflow-x-clip overflow-y-hidden bg-white/85 px-4 pt-24 sm:px-6 sm:pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-[#050505]/80 dark:text-white"
     >
       {/* =====================================================
           BACKGROUND ANIMATION
@@ -359,14 +359,14 @@ function Hero() {
           MAIN HERO CONTENT
       ====================================================== */}
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] w-full max-w-7xl items-center justify-center sm:min-h-[calc(100vh-112px)]">
-        <div className="grid w-full min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+      <div className="premium-hero-inner relative z-10 mx-auto flex min-h-[calc(100vh-96px)] w-full max-w-7xl items-center justify-center sm:min-h-[calc(100vh-112px)]">
+        <div className="premium-hero-grid grid w-full min-w-0 items-center gap-10 sm:gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
 
           {/* =================================================
               LEFT CONTENT
           ================================================== */}
 
-          <div className="order-2 text-center lg:order-1 lg:text-left">
+          <div className="premium-hero-copy order-2 text-center lg:order-1 lg:text-left">
 
             {/* Availability */}
 
@@ -518,7 +518,7 @@ function Hero() {
               RIGHT PROFILE + FLOATING SKILLS
           ================================================== */}
 
-          <div className="order-1 flex justify-center lg:order-2">
+          <div className="premium-hero-visual order-1 flex justify-center lg:order-2">
 
             <div className="relative h-[330px] w-full max-w-[320px] sm:h-[470px] sm:max-w-[430px]">
 
