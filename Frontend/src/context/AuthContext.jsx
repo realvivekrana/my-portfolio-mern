@@ -83,12 +83,39 @@ export function AuthProvider({ children }) {
     return res.data;
   };
 
-  const logout = () => {
-    localStorage.removeItem('adminToken');
-    sessionStorage.removeItem('adminPinVerified');
+  /*
+  |--------------------------------------------------------------------------
+  | LOGOUT
+  |--------------------------------------------------------------------------
+  |
+  | Local session data ke saath-saath ab backend ke `/api/auth/logout`
+  | ko bhi call karta hai — isse refresh token httpOnly cookie clear
+  | hoti hai AUR uska hashed version DB me bhi invalidate ho jaata hai
+  | (Backend/controllers/authController.js -> logoutAdmin).
+  |
+  | Isse "logout" sach me session khatam kar deta hai — sirf localStorage
+  | token hatane se refresh cookie abhi bhi valid rehti, aur koi usse
+  | (theoretically) naya access token nikalwa sakta tha.
+  |
+  | Backend call fail bhi ho (e.g. network issue), tab bhi local session
+  | zaroor clear hoti hai — admin UI se turant logged-out dikhna chahiye,
+  | chahe server-side cleanup thoda slow/fail ho.
+  |
+  |--------------------------------------------------------------------------
+  */
 
-    setAdmin(null);
-    setPinVerified(false);
+  const logout = async () => {
+    try {
+      await API.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout request failed:', error);
+    } finally {
+      localStorage.removeItem('adminToken');
+      sessionStorage.removeItem('adminPinVerified');
+
+      setAdmin(null);
+      setPinVerified(false);
+    }
   };
 
   return (
