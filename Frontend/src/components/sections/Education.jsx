@@ -168,7 +168,7 @@ const Education = () => {
     return (
       <section
         id="education"
-        className="relative overflow-hidden py-20 sm:py-24"
+        className="relative overflow-hidden py-8 sm:py-10"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center">
@@ -192,7 +192,7 @@ const Education = () => {
     return (
       <section
         id="education"
-        className="relative overflow-hidden py-20 sm:py-24"
+        className="relative overflow-hidden py-8 sm:py-10"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl rounded-2xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-900/40 dark:bg-red-950/20">
@@ -221,7 +221,7 @@ const Education = () => {
     return (
       <section
         id="education"
-        className="relative overflow-hidden py-20 sm:py-24"
+        className="relative overflow-hidden py-8 sm:py-10"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-white/[0.08] dark:bg-white/[0.025]">
@@ -250,7 +250,7 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="relative overflow-hidden py-20 sm:py-24 premium-section premium-section-education"
+      className="relative overflow-hidden py-8 sm:py-10 premium-section premium-section-education"
     >
       {/* --------------------------------------------------------------- */}
       {/* Background Decoration */}

@@ -52,7 +52,7 @@ function Blog() {
 
   if (loading) {
     return (
-      <section id="blog" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section id="blog" className="relative overflow-hidden bg-transparent px-4 py-6 text-white sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <div className="relative z-10 mx-auto flex max-w-7xl justify-center">
           <div
             className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
@@ -70,7 +70,7 @@ function Blog() {
   return (
     <section
       id="blog"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24 premium-section premium-section-blog"
+      className="relative overflow-hidden bg-transparent px-4 py-6 text-white transition-colors duration-500 sm:px-6 sm:py-10 lg:px-8 lg:py-12 premium-section premium-section-blog"
     >
       <div
         aria-hidden="true"

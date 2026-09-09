@@ -111,7 +111,7 @@ function Timeline() {
 
   if (loading) {
     return (
-      <section id="timeline" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section id="timeline" className="relative overflow-hidden bg-transparent px-4 py-6 text-white sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <div className="relative z-10 mx-auto flex max-w-5xl justify-center">
           <div
             className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
@@ -124,7 +124,7 @@ function Timeline() {
 
   if (error) {
     return (
-      <section id="timeline" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section id="timeline" className="relative overflow-hidden bg-transparent px-4 py-6 text-white sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         <div className="relative z-10 mx-auto max-w-5xl">
           <div className="rounded-2xl border border-red-400/10 bg-red-500/[0.05] p-8 text-center">
             <FaRoute className="mx-auto text-3xl text-red-400" />
@@ -143,7 +143,7 @@ function Timeline() {
   return (
     <section
       id="timeline"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24 premium-section premium-section-timeline"
+      className="relative overflow-hidden bg-transparent px-4 py-6 text-white transition-colors duration-500 sm:px-6 sm:py-10 lg:px-8 lg:py-12 premium-section premium-section-timeline"
     >
       <div
         aria-hidden="true"
@@ -157,7 +157,7 @@ function Timeline() {
 
       <div className="relative z-10 mx-auto max-w-5xl">
         {/* Header */}
-        <div className="mb-10 text-center sm:mb-14 md:mb-16">
+        <div className="mb-8 text-center sm:mb-10 md:mb-12">
           <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             <FaRoute className="text-sm" />
             {t('timeline.eyebrow')}

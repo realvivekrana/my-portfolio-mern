@@ -147,7 +147,7 @@ function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-transparent px-4 py-16 text-white transition-colors duration-500 sm:px-6 sm:py-20 lg:px-8 lg:py-24 premium-section premium-section-about"
+      className="relative overflow-hidden bg-transparent px-4 py-6 text-white transition-colors duration-500 sm:px-6 sm:py-10 lg:px-8 lg:py-12 premium-section premium-section-about"
     >
       {/* =====================================================
           COSMIC BACKGROUND DECORATION
@@ -178,7 +178,7 @@ function About() {
             SECTION HEADER
         ====================================================== */}
 
-        <div className="mb-10 text-center sm:mb-14 md:mb-16">
+        <div className="mb-8 text-center sm:mb-10 md:mb-12">
 
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             {t('about.eyebrow')}
