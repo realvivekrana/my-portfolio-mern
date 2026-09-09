@@ -388,7 +388,7 @@ const handleSectionClick = (
           rounded-full
           bg-indigo-500/10
           blur-3xl
-          dark:bg-indigo-500/10
+          dark:bg-purple-500/10
         "
       />
 
@@ -439,7 +439,7 @@ const handleSectionClick = (
             dark:border-white/10
             dark:from-white/[0.06]
             dark:via-white/[0.03]
-            dark:to-indigo-500/[0.08]
+            dark:to-blue-500/[0.08]
             sm:p-8
           "
         >
@@ -470,9 +470,9 @@ const handleSectionClick = (
                   uppercase
                   tracking-wider
                   text-indigo-600
-                  dark:border-indigo-400/20
-                  dark:bg-indigo-500/10
-                  dark:text-indigo-300
+                  dark:border-purple-400/20
+                  dark:bg-purple-500/10
+                  dark:text-purple-200
                 "
               >
                 <span
@@ -545,7 +545,7 @@ const handleSectionClick = (
                 hover:shadow-indigo-500/20
                 dark:bg-white
                 dark:text-gray-900
-                dark:hover:bg-indigo-400
+                dark:hover:bg-purple-400
                 dark:hover:text-white
               "
             >
@@ -627,7 +627,7 @@ const handleSectionClick = (
                     text-xs
                     font-medium
                     text-indigo-600
-                    dark:text-indigo-400
+                    dark:text-purple-300
                   "
                 >
                   MERN Stack Developer
@@ -764,8 +764,8 @@ const handleSectionClick = (
                     dark:border-white/10
                     dark:bg-white/[0.04]
                     dark:text-gray-300
-                    dark:hover:border-indigo-500
-                    dark:hover:bg-indigo-500
+                    dark:hover:border-purple-500
+                    dark:hover:bg-purple-500
                   "
                 >
                   @
@@ -829,7 +829,7 @@ const handleSectionClick = (
                       hover:translate-x-1
                       hover:text-indigo-600
                       dark:text-gray-400
-                      dark:hover:text-indigo-400
+                      dark:hover:text-purple-300
                     "
                   >
                     <span
@@ -916,7 +916,7 @@ const handleSectionClick = (
                       text-gray-700
                       group-hover:text-indigo-600
                       dark:text-gray-300
-                      dark:group-hover:text-indigo-400
+                      dark:group-hover:text-purple-300
                     "
                   >
                     {email}
@@ -962,7 +962,7 @@ const handleSectionClick = (
                       text-gray-700
                       group-hover:text-indigo-600
                       dark:text-gray-300
-                      dark:group-hover:text-indigo-400
+                      dark:group-hover:text-purple-300
                     "
                   >
                     {phone}
@@ -1098,8 +1098,8 @@ const handleSectionClick = (
                     from-indigo-50
                     to-purple-50
                     p-5
-                    dark:border-indigo-500/20
-                    dark:from-indigo-500/10
+                    dark:border-purple-500/25
+                    dark:from-purple-500/10
                     dark:to-purple-500/10
                   "
                 >
@@ -1206,7 +1206,7 @@ const handleSectionClick = (
                         disabled:opacity-60
                         dark:bg-white
                         dark:text-gray-900
-                        dark:hover:bg-indigo-400
+                        dark:hover:bg-purple-400
                         dark:hover:text-white
                       "
                     >
@@ -1245,11 +1245,11 @@ const handleSectionClick = (
                         hover:bg-indigo-50
                         disabled:cursor-not-allowed
                         disabled:opacity-60
-                        dark:border-indigo-400/20
+                        dark:border-purple-400/20
                         dark:bg-gray-900/60
-                        dark:text-indigo-300
-                        dark:hover:border-indigo-400
-                        dark:hover:bg-indigo-500/10
+                        dark:text-purple-200
+                        dark:hover:border-purple-400
+                        dark:hover:bg-purple-500/10
                       "
                     >
                       <span>↓</span>

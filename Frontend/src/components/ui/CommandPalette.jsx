@@ -436,7 +436,7 @@ function CommandPalette() {
                       onMouseEnter={() => setActiveIndex(currentIndex)}
                       className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors duration-100 ${
                         isActive
-                          ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400'
+                          ? 'bg-indigo-50 text-indigo-600 dark:bg-purple-500/10 dark:text-purple-300'
                           : 'text-gray-700 dark:text-gray-300'
                       }`}
                     >

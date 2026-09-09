@@ -99,7 +99,7 @@ function AppContent() {
       className={`relative min-h-screen overflow-x-hidden ${
         isAdminRoute
           ? 'bg-white text-gray-900 dark:bg-[#050505] dark:text-white'
-          : 'bg-black text-white'
+          : 'bg-[#050505] text-white'
       }`}
     >
 

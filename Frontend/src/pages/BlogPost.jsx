@@ -63,7 +63,7 @@ function BlogPost() {
       <main className="relative z-10 mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <Link
           to="/blog"
-          className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-indigo-300"
+          className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-purple-200"
         >
           <FaArrowLeft className="text-xs" />
           Back to Blog
@@ -71,7 +71,7 @@ function BlogPost() {
 
         {loading && (
           <div className="flex justify-center py-20">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent" />
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent" />
           </div>
         )}
 
@@ -93,7 +93,7 @@ function BlogPost() {
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-300"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-purple-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-purple-200"
                   >
                     <FaTag className="text-[9px]" />
                     {tag}

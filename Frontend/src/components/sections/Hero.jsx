@@ -326,7 +326,7 @@ function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen w-full overflow-x-clip overflow-y-hidden bg-white/85 px-4 pt-24 sm:px-6 sm:pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-gray-950/85 dark:text-white"
+      className="relative min-h-screen w-full overflow-x-clip overflow-y-hidden bg-white/85 px-4 pt-24 sm:px-6 sm:pt-28 text-gray-900 backdrop-blur-[1px] transition-colors duration-500 dark:bg-[#050505]/80 dark:text-white"
     >
       {/* =====================================================
           BACKGROUND ANIMATION
@@ -338,7 +338,7 @@ function Hero() {
       >
         {/* Glow 1 */}
 
-        <div className="absolute -left-24 top-20 h-56 w-56 sm:-left-32 sm:h-72 sm:w-72 animate-[heroGlowOne_12s_ease-in-out_infinite] rounded-full bg-indigo-300/20 blur-3xl dark:bg-indigo-600/15" />
+        <div className="absolute -left-24 top-20 h-56 w-56 sm:-left-32 sm:h-72 sm:w-72 animate-[heroGlowOne_12s_ease-in-out_infinite] rounded-full bg-indigo-300/20 blur-3xl dark:bg-blue-600/15" />
 
         {/* Glow 2 */}
 
@@ -384,7 +384,7 @@ function Hero() {
 
             {/* Introduction */}
 
-            <p className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold sm:text-sm uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 lg:justify-start">
+            <p className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold sm:text-sm uppercase tracking-[0.2em] text-indigo-600 dark:text-purple-300 lg:justify-start">
               <HiOutlineSparkles className="text-lg" />
 
               Hello, I'm
@@ -396,7 +396,7 @@ function Hero() {
               {firstName}
 
               {lastName && (
-                <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
+                <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-400 dark:to-blue-400">
                   {lastName}
                 </span>
               )}
@@ -424,7 +424,7 @@ function Hero() {
 
               <a
                 href="#projects"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:shadow-[0_8px_24px_rgba(139,92,246,0.35)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_14px_34px_rgba(139,92,246,0.5)] sm:w-auto"
               >
                 View My Work
 
@@ -438,7 +438,7 @@ function Hero() {
               <button
                 type="button"
                 onClick={handleResumeDownload}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white/90 px-7 py-3.5 font-semibold text-gray-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-200 dark:hover:border-indigo-400 dark:hover:text-indigo-400 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white/90 px-7 py-3.5 font-semibold text-gray-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg dark:border-purple-500/25 dark:bg-white/[0.03] dark:text-gray-200 dark:hover:border-purple-400/60 dark:hover:bg-purple-500/10 dark:hover:text-purple-300 dark:hover:shadow-[0_10px_28px_-8px_rgba(139,92,246,0.4)] sm:w-auto"
               >
                 <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
 
@@ -453,7 +453,7 @@ function Hero() {
                 href={publicResumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50/90 px-7 py-3.5 font-semibold text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400 sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50/90 px-7 py-3.5 font-semibold text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300 sm:w-auto"
               >
                 <FaFilePdf className="text-sm text-red-500 transition-transform duration-300 group-hover:scale-110" />
 
@@ -484,7 +484,7 @@ function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
-                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:bg-gray-900 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-white dark:hover:text-gray-900"
+                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:bg-gray-900 hover:text-white dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-white dark:hover:text-gray-900"
                 >
                   <FaGithub className="transition-transform duration-300 group-hover:scale-110" />
                 </a>
@@ -498,13 +498,13 @@ function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
-                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-600 hover:text-white dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300 dark:hover:bg-blue-600 dark:hover:text-white"
+                  className="group flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-gray-50/90 text-xl text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-blue-600 hover:text-white dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-blue-600 dark:hover:text-white"
                 >
                   <FaLinkedin className="transition-transform duration-300 group-hover:scale-110" />
                 </a>
               )}
 
-              <span className="ml-2 h-6 w-px bg-gray-200 dark:bg-gray-800" />
+              <span className="ml-2 h-6 w-px bg-gray-200 dark:bg-white/[0.08]" />
 
               <span className="ml-1 text-sm text-gray-500 dark:text-gray-500">
                 {hero.location}
@@ -541,13 +541,17 @@ function Hero() {
 
                 {/* Outer Ring */}
 
-                <div className="absolute -inset-3 rounded-[2rem] sm:-inset-5 sm:rounded-[2.5rem] border border-indigo-200/50 dark:border-indigo-500/20" />
+                <div className="absolute -inset-3 rounded-[2rem] sm:-inset-5 sm:rounded-[2.5rem] border border-indigo-200/50 dark:border-purple-500/30" />
 
-                <div className="absolute -inset-6 rounded-[2.5rem] sm:-inset-10 sm:rounded-[3rem] border border-purple-200/30 dark:border-purple-500/10" />
+                <div className="absolute -inset-6 rounded-[2.5rem] sm:-inset-10 sm:rounded-[3rem] border border-purple-200/30 dark:border-blue-500/15" />
+
+                {/* Soft glow behind the photo */}
+
+                <div className="absolute -inset-8 -z-10 rounded-full bg-[#8B5CF6]/0 blur-3xl dark:bg-[#8B5CF6]/20" />
 
                 {/* Image */}
 
-                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-2 shadow-2xl shadow-indigo-500/10 dark:border-gray-800 dark:from-indigo-950/60 dark:via-gray-900 dark:to-purple-950/50">
+                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-2 shadow-2xl shadow-indigo-500/10 dark:border-white/[0.08] dark:from-[#0f0f17] dark:via-[#0b0b12] dark:to-[#0f0f17] dark:shadow-[0_0_60px_-10px_rgba(139,92,246,0.35)]">
 
                   <div className="h-full w-full overflow-hidden rounded-[1.5rem] bg-gray-100 dark:bg-gray-800">
 
@@ -605,7 +609,7 @@ function Hero() {
                   />
 
                   <div
-                    className="skill-bubble relative flex h-12 w-12 sm:h-16 sm:w-16 flex-col items-center justify-center rounded-full border border-white/80 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:shadow-2xl sm:h-16 sm:w-16 dark:border-white/10 dark:bg-gray-900/95"
+                    className="skill-bubble relative flex h-12 w-12 sm:h-16 sm:w-16 flex-col items-center justify-center rounded-full border border-white/80 bg-white/95 shadow-xl backdrop-blur-md transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.15] group-hover:shadow-2xl sm:h-16 sm:w-16 dark:border-white/10 dark:bg-[#0f0f17]/95"
                   >
                     {/* Icon */}
 
@@ -624,7 +628,7 @@ function Hero() {
 
                   {/* Name label — shows on hover as a floating pill */}
 
-                  <span className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-full border border-white/80 bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wide text-gray-700 opacity-0 shadow-lg backdrop-blur-md transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-gray-900/95 dark:text-gray-200">
+                  <span className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-full border border-white/80 bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wide text-gray-700 opacity-0 shadow-lg backdrop-blur-md transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-[#0f0f17]/95 dark:text-gray-200">
                     {skill.name}
                   </span>
                 </div>
@@ -638,7 +642,7 @@ function Hero() {
 
               <span className="absolute right-[10%] top-[58%] z-20 h-2 w-2 animate-[tinyBubbleTwo_9s_ease-in-out_infinite] rounded-full border border-purple-300/40 bg-purple-200/20 backdrop-blur-sm dark:bg-purple-400/10" />
 
-              <span className="absolute left-[24%] top-[15%] z-20 h-2 w-2 animate-[tinyBubbleThree_8s_ease-in-out_infinite] rounded-full border border-indigo-300/40 bg-indigo-200/20 backdrop-blur-sm dark:bg-indigo-400/10" />
+              <span className="absolute left-[24%] top-[15%] z-20 h-2 w-2 animate-[tinyBubbleThree_8s_ease-in-out_infinite] rounded-full border border-indigo-300/40 bg-indigo-200/20 backdrop-blur-sm dark:bg-purple-400/10" />
 
               <span className="absolute bottom-[10%] right-[24%] z-20 h-3 w-3 animate-[tinyBubbleFour_10s_ease-in-out_infinite] rounded-full border border-blue-300/40 bg-blue-200/20 backdrop-blur-sm dark:bg-blue-500/10" />
 
@@ -646,7 +650,7 @@ function Hero() {
                   AVAILABILITY CARD
               ================================================== */}
 
-              <div className="absolute -bottom-2 left-1/2 z-30 hidden -translate-x-1/2 rounded-2xl border border-gray-200 bg-white/90 px-5 py-3 shadow-xl backdrop-blur-md sm:block dark:border-gray-800 dark:bg-gray-900/90">
+              <div className="absolute -bottom-2 left-1/2 z-30 hidden -translate-x-1/2 rounded-2xl border border-gray-200 bg-white/90 px-5 py-3 shadow-xl backdrop-blur-md sm:block dark:border-purple-500/20 dark:bg-[#0b0b12]/90">
 
                 <div className="flex items-center gap-3">
 
@@ -680,7 +684,7 @@ function Hero() {
       <a
         href="#about"
         aria-label="Scroll to About section"
-        className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-gray-400 transition-colors duration-300 hover:text-indigo-600 md:flex dark:text-gray-600 dark:hover:text-indigo-400"
+        className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-gray-400 transition-colors duration-300 hover:text-indigo-600 md:flex dark:text-gray-600 dark:hover:text-purple-300"
       >
         <span className="text-[10px] font-semibold uppercase tracking-[0.25em]">
           Scroll

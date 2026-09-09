@@ -154,9 +154,9 @@ function Projects() {
     return (
       <article
         key={project._id}
-        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(99,102,241,0.1)] sm:rounded-3xl ${
+        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(139,92,246,0.1)] sm:rounded-3xl ${
           isFeatured
-            ? 'border-indigo-400/20 shadow-[0_0_45px_rgba(99,102,241,0.05)]'
+            ? 'border-purple-400/25 shadow-[0_0_45px_rgba(139,92,246,0.05)]'
             : 'border-white/[0.08]'
         }`}
       >
@@ -164,7 +164,7 @@ function Projects() {
             CARD COSMIC GLOW
         ====================================================== */}
 
-        <div className="pointer-events-none absolute -right-24 -top-24 z-10 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute -right-24 -top-24 z-10 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         {/* =====================================================
             FEATURED BADGE
@@ -193,8 +193,8 @@ function Projects() {
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-950/40 via-black to-purple-950/40">
-              <FaCode className="text-4xl text-indigo-400/40" />
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-950/35 via-black to-blue-950/30">
+              <FaCode className="text-4xl text-purple-300/40" />
             </div>
           )}
 
@@ -232,7 +232,7 @@ function Projects() {
                 'view'
               );
             }}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-2 text-xs font-bold text-white opacity-100 shadow-lg backdrop-blur-md transition-all duration-300 hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] sm:opacity-0 sm:group-hover:opacity-100"
+            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-2 text-xs font-bold text-white opacity-100 shadow-lg backdrop-blur-md transition-all duration-300 dark:hover:bg-[#8B5CF6] hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] sm:opacity-0 sm:group-hover:opacity-100"
           >
             <FaEye />
 
@@ -250,7 +250,7 @@ function Projects() {
               TITLE
           ================================================== */}
 
-          <h3 className="mb-3 break-words text-lg font-extrabold tracking-tight text-white transition-colors duration-300 group-hover:text-indigo-300 sm:text-xl">
+          <h3 className="mb-3 break-words text-lg font-extrabold tracking-tight text-white transition-colors duration-300 group-hover:text-purple-200 sm:text-xl">
             {project.title}
           </h3>
 
@@ -272,7 +272,7 @@ function Projects() {
               {techStack.map((tech) => (
                 <span
                   key={`${project._id}-${tech}`}
-                  className="rounded-full border border-white/[0.07] bg-white/[0.025] px-3 py-1.5 text-[10px] font-semibold text-gray-400 transition-all duration-300 group-hover:border-indigo-400/15 group-hover:bg-indigo-500/[0.05] group-hover:text-indigo-300 sm:text-xs"
+                  className="rounded-full border border-white/[0.07] bg-white/[0.025] px-3 py-1.5 text-[10px] font-semibold text-gray-400 transition-all duration-300 group-hover:border-purple-400/20 group-hover:bg-purple-500/[0.05] group-hover:text-purple-200 sm:text-xs"
                 >
                   {tech}
                 </span>
@@ -301,7 +301,7 @@ function Projects() {
                       key={`${project._id}-${feature}`}
                       className="flex items-start gap-2 text-xs leading-5 text-gray-400"
                     >
-                      <FaCheckCircle className="mt-0.5 shrink-0 text-indigo-400" />
+                      <FaCheckCircle className="mt-0.5 shrink-0 text-purple-300" />
 
                       <span className="min-w-0 break-words">
                         {feature}
@@ -317,7 +317,7 @@ function Projects() {
                   onClick={() =>
                     setSelectedProject(project)
                   }
-                  className="mt-3 text-xs font-bold text-indigo-400 transition-colors hover:text-indigo-300"
+                  className="mt-3 text-xs font-bold text-purple-300 transition-colors hover:text-purple-200"
                 >
                   + {keyFeatures.length - 3} more features
                 </button>
@@ -344,7 +344,7 @@ function Projects() {
                     'live'
                   )
                 }
-                className="group/link inline-flex items-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-3.5 py-2.5 text-xs font-semibold text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(99,102,241,0.15)] sm:px-4 sm:text-sm"
+                className="group/link inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-3.5 py-2.5 text-xs font-semibold text-purple-200 shadow-[0_0_15px_rgba(139,92,246,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(139,92,246,0.15)] sm:px-4 sm:text-sm"
               >
                 <FaExternalLinkAlt className="text-[10px] transition-transform duration-300 group-hover/link:translate-x-0.5" />
 
@@ -382,7 +382,7 @@ function Projects() {
                   'view'
                 );
               }}
-              className="ml-auto inline-flex items-center gap-2 rounded-xl px-2.5 py-2.5 text-xs font-semibold text-gray-500 transition-colors hover:text-indigo-300 sm:text-sm"
+              className="ml-auto inline-flex items-center gap-2 rounded-xl px-2.5 py-2.5 text-xs font-semibold text-gray-500 transition-colors hover:text-purple-200 sm:text-sm"
             >
               <FaEye className="text-sm" />
 
@@ -415,7 +415,7 @@ function Projects() {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[projectsOrbOne_16s_ease-in-out_infinite] rounded-full bg-indigo-600/10 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
+          className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[projectsOrbOne_16s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
         />
 
         <div
@@ -436,18 +436,18 @@ function Projects() {
 
           <div className="mb-10 text-center sm:mb-14 md:mb-16">
 
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
               {t('projects.eyebrow')}
             </p>
 
             <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
               {t('projects.heading')}{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
                 {t('projects.headingHighlight')}
               </span>
             </h2>
 
-            <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_18px_rgba(99,102,241,0.5)] sm:mt-5 sm:w-16" />
+            <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.5)] sm:mt-5 sm:w-16" />
 
             <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
               {t('projects.subtitle')}
@@ -492,9 +492,9 @@ function Projects() {
           {!loading &&
             !error &&
             projects.length === 0 && (
-              <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.08] bg-white/[0.025] px-6 py-12 text-center shadow-[0_0_40px_rgba(99,102,241,0.03)] backdrop-blur-md">
+              <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.08] bg-white/[0.025] px-6 py-12 text-center shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md">
 
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-indigo-400/10 bg-indigo-500/10 text-indigo-400">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-400/15 bg-purple-500/10 text-purple-300">
                   <FaCode className="text-2xl" />
                 </div>
 
@@ -528,7 +528,7 @@ function Projects() {
                     <div className="mb-6 flex items-end gap-4 sm:mb-7">
 
                       <div>
-                        <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-400 sm:text-xs">
+                        <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-purple-300 sm:text-xs">
                           Top Work
                         </p>
 
@@ -599,15 +599,15 @@ function Projects() {
           {!loading &&
             !error &&
             projects.length > 0 && (
-              <div className="relative mt-12 overflow-hidden rounded-2xl border border-indigo-400/10 bg-gradient-to-br from-indigo-500/[0.07] via-black/40 to-purple-500/[0.06] p-6 text-center shadow-[0_0_45px_rgba(99,102,241,0.04)] backdrop-blur-md sm:mt-16 sm:rounded-3xl sm:p-10">
+              <div className="relative mt-12 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-br from-[#8B5CF6]/[0.07] via-black/40 to-[#3B82F6]/[0.06] p-6 text-center shadow-[0_0_45px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-16 sm:rounded-3xl sm:p-10">
 
                 {/* Moving Glow */}
 
-                <div className="pointer-events-none absolute -left-16 top-1/2 h-32 w-32 -translate-y-1/2 animate-[projectsGlow_8s_ease-in-out_infinite] rounded-full bg-indigo-500/10 blur-3xl" />
+                <div className="pointer-events-none absolute -left-16 top-1/2 h-32 w-32 -translate-y-1/2 animate-[projectsGlow_8s_ease-in-out_infinite] rounded-full bg-purple-500/10 blur-3xl" />
 
                 <div className="relative z-10">
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-400 sm:text-xs">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-purple-300 sm:text-xs">
                     Explore More
                   </p>
 
@@ -624,7 +624,7 @@ function Projects() {
                     href={githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-6 inline-flex items-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-6 py-3 text-sm font-semibold text-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_30px_rgba(99,102,241,0.18)]"
+                    className="mt-6 inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-6 py-3 text-sm font-semibold text-purple-200 shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_30px_rgba(139,92,246,0.18)]"
                   >
                     <FaGithub className="text-lg" />
 
@@ -720,13 +720,13 @@ function Projects() {
           }}
         >
 
-          <div className="relative max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/[0.1] bg-black shadow-[0_0_80px_rgba(99,102,241,0.12)] sm:max-h-[90vh] sm:rounded-3xl">
+          <div className="relative max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/[0.1] bg-black shadow-[0_0_80px_rgba(139,92,246,0.12)] sm:max-h-[90vh] sm:rounded-3xl">
 
             {/* =================================================
                 MODAL COSMIC GLOW
             ================================================== */}
 
-            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
 
             {/* =================================================
                 CLOSE
@@ -758,8 +758,8 @@ function Projects() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-950/40 via-black to-purple-950/40">
-                  <FaCode className="text-5xl font-black text-indigo-400/40 drop-shadow-[0_0_20px_rgba(99,102,241,0.3)]" />
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-950/35 via-black to-blue-950/30">
+                  <FaCode className="text-5xl font-black text-purple-300/40 drop-shadow-[0_0_20px_rgba(139,92,246,0.3)]" />
                 </div>
               )}
 
@@ -836,7 +836,7 @@ function Projects() {
                         (tech) => (
                           <span
                             key={`${selectedProject._id}-modal-${tech}`}
-                            className="rounded-full border border-indigo-400/10 bg-indigo-500/[0.08] px-3.5 py-2 text-xs font-bold text-indigo-300"
+                            className="rounded-full border border-purple-400/15 bg-purple-500/[0.08] px-3.5 py-2 text-xs font-bold text-purple-200"
                           >
                             {tech}
                           </span>
@@ -869,10 +869,10 @@ function Projects() {
                         (feature) => (
                           <div
                             key={`${selectedProject._id}-feature-${feature}`}
-                            className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 transition-all duration-300 hover:border-indigo-400/15 hover:bg-indigo-500/[0.04]"
+                            className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-3 transition-all duration-300 hover:border-purple-400/20 hover:bg-purple-500/[0.04]"
                           >
 
-                            <FaCheckCircle className="mt-0.5 shrink-0 text-indigo-400" />
+                            <FaCheckCircle className="mt-0.5 shrink-0 text-purple-300" />
 
                             <span className="text-sm leading-6 text-gray-400">
                               {feature}
@@ -907,7 +907,7 @@ function Projects() {
                         'live'
                       )
                     }
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-indigo-400/15 bg-indigo-500/10 px-5 py-3 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(99,102,241,0.15)]"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-5 py-3 text-sm font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(139,92,246,0.15)]"
                   >
                     <FaExternalLinkAlt className="text-xs" />
 

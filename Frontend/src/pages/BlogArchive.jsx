@@ -80,20 +80,20 @@ function BlogArchive() {
         <div className="mb-10 text-center sm:mb-14">
           <Link
             to="/"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-indigo-300"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-purple-200"
           >
             <FaArrowLeft className="text-xs" />
             Back to Home
           </Link>
 
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm">
+          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm">
             <FaRegNewspaper className="text-sm" />
             Blog
           </p>
 
           <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             All{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               Articles
             </span>
           </h1>
@@ -109,7 +109,7 @@ function BlogArchive() {
               }}
               className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
                 activeTag === ''
-                  ? 'border-indigo-400/30 bg-indigo-500/20 text-white'
+                  ? 'border-purple-400/35 bg-purple-500/20 text-white'
                   : 'border-white/[0.08] bg-white/[0.025] text-gray-400 hover:text-white'
               }`}
             >
@@ -125,7 +125,7 @@ function BlogArchive() {
                 }}
                 className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
                   activeTag === tag
-                    ? 'border-indigo-400/30 bg-indigo-500/20 text-white'
+                    ? 'border-purple-400/35 bg-purple-500/20 text-white'
                     : 'border-white/[0.08] bg-white/[0.025] text-gray-400 hover:text-white'
                 }`}
               >
@@ -139,7 +139,7 @@ function BlogArchive() {
         {/* Loading */}
         {loading && (
           <div className="flex justify-center py-20">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent" />
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent" />
           </div>
         )}
 
@@ -153,7 +153,7 @@ function BlogArchive() {
         {/* Empty */}
         {!loading && !error && posts.length === 0 && (
           <div className="mx-auto max-w-2xl rounded-2xl border border-white/[0.08] bg-white/[0.025] p-10 text-center backdrop-blur-md">
-            <FaRegNewspaper className="mx-auto text-4xl text-indigo-400" />
+            <FaRegNewspaper className="mx-auto text-4xl text-purple-300" />
             <h3 className="mt-5 text-xl font-extrabold text-white">No Articles Yet</h3>
             <p className="mt-3 text-sm leading-7 text-gray-400">
               Check back soon for new posts.
@@ -169,7 +169,7 @@ function BlogArchive() {
                 <Link
                   key={post._id}
                   to={`/blog/${post.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-indigo-400/20 hover:bg-white/[0.04] sm:rounded-3xl"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] sm:rounded-3xl"
                 >
                   {post.coverImage && (
                     <div className="overflow-hidden border-b border-white/[0.06]">
@@ -188,7 +188,7 @@ function BlogArchive() {
                         {post.tags.slice(0, 2).map((tag) => (
                           <span
                             key={tag}
-                            className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-300"
+                            className="rounded-full bg-purple-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-200"
                           >
                             {tag}
                           </span>
@@ -196,7 +196,7 @@ function BlogArchive() {
                       </div>
                     )}
 
-                    <h3 className="text-lg font-extrabold text-white transition-colors group-hover:text-indigo-300 sm:text-xl">
+                    <h3 className="text-lg font-extrabold text-white transition-colors group-hover:text-purple-200 sm:text-xl">
                       {post.title}
                     </h3>
 
@@ -226,7 +226,7 @@ function BlogArchive() {
                     onClick={() => setPage(i + 1)}
                     className={`h-10 w-10 rounded-lg text-sm font-semibold transition-colors ${
                       page === i + 1
-                        ? 'bg-indigo-500 text-white'
+                        ? 'bg-purple-500 text-white'
                         : 'bg-white/[0.025] text-gray-400 hover:bg-white/[0.06]'
                     }`}
                   >

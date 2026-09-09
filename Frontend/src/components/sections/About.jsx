@@ -155,7 +155,7 @@ function About() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-20 h-64 w-64 animate-[aboutOrbOne_14s_ease-in-out_infinite] rounded-full bg-indigo-600/10 blur-[100px] sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -left-32 top-20 h-64 w-64 animate-[aboutOrbOne_14s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:h-80 sm:w-80"
       />
 
       <div
@@ -180,18 +180,18 @@ function About() {
 
         <div className="mb-10 text-center sm:mb-14 md:mb-16">
 
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             {t('about.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('about.heading')}{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               {t('about.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_15px_rgba(99,102,241,0.5)] sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_15px_rgba(139,92,246,0.5)] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
             {t('about.subtitle')}
@@ -208,15 +208,15 @@ function About() {
               LEFT — PROFESSIONAL INTRODUCTION
           ==================================================== */}
 
-          <div className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(99,102,241,0.04)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(99,102,241,0.08)] sm:rounded-3xl sm:p-7 md:p-8">
+          <div className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(139,92,246,0.04)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(139,92,246,0.08)] sm:rounded-3xl sm:p-7 md:p-8">
 
             {/* Profile Heading */}
 
             <div className="mb-6 flex items-center gap-3 sm:mb-7 sm:gap-4">
 
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500 text-base font-extrabold text-white shadow-lg shadow-indigo-500/20 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] text-base font-extrabold text-white shadow-lg shadow-purple-500/25 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg">
 
-                <div className="absolute -inset-1 -z-10 animate-pulse rounded-2xl bg-indigo-500/20 blur-md" />
+                <div className="absolute -inset-1 -z-10 animate-pulse rounded-2xl bg-purple-500/20 blur-md" />
 
                 VR
               </div>
@@ -227,7 +227,7 @@ function About() {
                   {heroName}
                 </h3>
 
-                <p className="mt-1 text-xs font-semibold text-indigo-400 sm:text-sm">
+                <p className="mt-1 text-xs font-semibold text-purple-300 sm:text-sm">
                   {heroRole}
                 </p>
 
@@ -274,17 +274,17 @@ function About() {
                 CURRENT ROLE
             ================================================== */}
 
-            <div className="mt-7 rounded-2xl border border-indigo-400/10 bg-indigo-500/[0.05] p-4 shadow-inner shadow-indigo-500/[0.03] sm:mt-8 sm:p-5">
+            <div className="mt-7 rounded-2xl border border-purple-400/15 bg-purple-500/[0.05] p-4 shadow-inner shadow-purple-500/[0.05] sm:mt-8 sm:p-5">
 
               <div className="flex items-start gap-3 sm:gap-4">
 
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 sm:h-11 sm:w-11">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-300 sm:h-11 sm:w-11">
                   <FaBriefcase />
                 </div>
 
                 <div className="min-w-0">
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-400 sm:text-xs">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-purple-300 sm:text-xs">
                     Current Role
                   </p>
 
@@ -292,7 +292,7 @@ function About() {
                     {currentExperience?.role || 'No experience information available'}
                   </h4>
 
-                  <p className="mt-1 text-xs font-medium leading-5 text-indigo-400 sm:text-sm">
+                  <p className="mt-1 text-xs font-medium leading-5 text-purple-300 sm:text-sm">
                     {currentExperience
                       ? [
                           currentExperience.company,
@@ -352,17 +352,17 @@ function About() {
                 EDUCATION
             ================================================== */}
 
-            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(99,102,241,0.08)] sm:rounded-3xl sm:p-7">
+            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(139,92,246,0.08)] sm:rounded-3xl sm:p-7">
 
               <div className="flex items-start gap-3 sm:gap-4">
 
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-lg text-indigo-400 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-lg text-purple-300 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
                   <FaGraduationCap />
                 </div>
 
                 <div className="min-w-0">
 
-                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-indigo-400 sm:text-xs">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-purple-300 sm:text-xs">
                     Education
                   </p>
 
@@ -380,7 +380,7 @@ function About() {
                       'Your latest education information will appear here automatically after it is saved from the admin dashboard.'}
                   </p>
 
-                  <div className="mt-4 inline-flex rounded-full border border-indigo-400/10 bg-indigo-500/[0.06] px-3 py-1.5 text-[11px] font-semibold text-indigo-300 sm:text-xs">
+                  <div className="mt-4 inline-flex rounded-full border border-purple-400/15 bg-purple-500/[0.06] px-3 py-1.5 text-[11px] font-semibold text-purple-200 sm:text-xs">
                     {currentEducation?.status || currentEducation?.duration || 'Education'}
                   </div>
 
@@ -471,7 +471,7 @@ function About() {
 
           <div className="mb-7 text-center sm:mb-8">
 
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-400 sm:text-xs">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-purple-300 sm:text-xs">
               What I Specialize In
             </p>
 
@@ -486,16 +486,16 @@ function About() {
             {expertise.map((item) => (
               <div
                 key={item.title}
-                className="group relative min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(99,102,241,0.1)] sm:rounded-3xl sm:p-6"
+                className="group relative min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(139,92,246,0.1)] sm:rounded-3xl sm:p-6"
               >
 
                 {/* Card Glow */}
 
-                <div className="pointer-events-none absolute -right-12 -top-12 h-24 w-24 rounded-full bg-indigo-500/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute -right-12 -top-12 h-24 w-24 rounded-full bg-purple-500/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
 
                 <div className="relative z-10">
 
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500/10 text-lg text-indigo-400 transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-500/15 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] sm:mb-5 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 text-lg text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] sm:mb-5 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
                     {item.icon}
                   </div>
 
@@ -519,11 +519,11 @@ function About() {
             DEVELOPMENT STRENGTHS
         ====================================================== */}
 
-        <div className="mt-10 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(99,102,241,0.03)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
+        <div className="mt-10 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
 
           <div className="mb-5 sm:mb-6">
 
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-400 sm:text-xs">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-purple-300 sm:text-xs">
               Development Strengths
             </p>
 
@@ -538,10 +538,10 @@ function About() {
             {strengths.map((strength) => (
               <div
                 key={strength}
-                className="group flex min-w-0 items-start gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] px-3.5 py-3 transition-all duration-300 hover:border-indigo-400/10 hover:bg-indigo-500/[0.05] sm:items-center sm:px-4"
+                className="group flex min-w-0 items-start gap-3 rounded-xl border border-white/[0.04] bg-white/[0.02] px-3.5 py-3 transition-all duration-300 hover:border-purple-400/15 hover:bg-purple-500/[0.05] sm:items-center sm:px-4"
               >
 
-                <FaCheckCircle className="mt-0.5 shrink-0 text-sm text-indigo-400 transition-transform duration-300 group-hover:scale-110 sm:mt-0" />
+                <FaCheckCircle className="mt-0.5 shrink-0 text-sm text-purple-300 transition-transform duration-300 group-hover:scale-110 sm:mt-0" />
 
                 <span className="min-w-0 break-words text-xs font-medium leading-5 text-gray-400 sm:text-sm">
                   {strength}
@@ -558,14 +558,14 @@ function About() {
             QUICK STATISTICS
         ====================================================== */}
 
-        <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(99,102,241,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl">
+        <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl">
 
           <div className="grid grid-cols-2 md:grid-cols-4">
 
             {quickStats.map((stat, index) => (
               <div
                 key={stat.label}
-                className={`group relative overflow-hidden px-3 py-5 text-center transition-all duration-300 hover:bg-indigo-500/[0.04] sm:px-6 sm:py-7 ${
+                className={`group relative overflow-hidden px-3 py-5 text-center transition-all duration-300 hover:bg-purple-500/[0.06] sm:px-6 sm:py-7 ${
                   index < 2
                     ? 'border-b border-white/[0.06]'
                     : ''
@@ -578,9 +578,9 @@ function About() {
 
                 {/* Animated Glow */}
 
-                <div className="pointer-events-none absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                <p className="relative break-words text-2xl font-extrabold tracking-tight text-indigo-400 sm:text-3xl">
+                <p className="relative break-words text-2xl font-extrabold tracking-tight text-purple-300 sm:text-3xl">
                   {stat.value}
                 </p>
 

@@ -271,7 +271,7 @@ function Home() {
               border-gray-200
               border-t-indigo-600
               dark:border-gray-800
-              dark:border-t-indigo-400
+              dark:border-t-purple-400
             "
           />
 

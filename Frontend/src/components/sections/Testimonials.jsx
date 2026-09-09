@@ -60,7 +60,7 @@ function Testimonials() {
       <section id="testimonials" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="relative z-10 mx-auto flex max-w-7xl justify-center">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
             aria-label="Loading testimonials"
           />
         </div>
@@ -86,25 +86,25 @@ function Testimonials() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-32 bottom-20 h-60 w-60 rounded-full bg-indigo-600/10 blur-[100px] sm:-right-40 sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -right-32 bottom-20 h-60 w-60 rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:-right-40 sm:h-80 sm:w-80"
       />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-10 text-center sm:mb-14 md:mb-16">
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             <FaComments className="text-sm" />
             {t('testimonials.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('testimonials.heading')}{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               {t('testimonials.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
             {t('testimonials.subtitle')}
@@ -116,9 +116,9 @@ function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <article
               key={testimonial?._id || `${testimonial?.name}-${index}`}
-              className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-indigo-400/20 hover:bg-white/[0.04] sm:rounded-3xl sm:p-7"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] sm:rounded-3xl sm:p-7"
             >
-              <FaQuoteLeft className="text-2xl text-indigo-400/30" />
+              <FaQuoteLeft className="text-2xl text-purple-300/30" />
 
               {/* Rating */}
               <div className="mt-4 flex gap-1">
@@ -170,7 +170,7 @@ function Testimonials() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${testimonial?.name}'s profile`}
-                    className="shrink-0 text-lg text-gray-500 transition-colors hover:text-indigo-400"
+                    className="shrink-0 text-lg text-gray-500 transition-colors hover:text-purple-300"
                   >
                     <FaLinkedin />
                   </a>

@@ -165,8 +165,8 @@ function ActionCard({ action }) {
           rounded-xl border border-indigo-200 bg-indigo-50
           px-3 py-2 text-xs font-medium text-indigo-700
           transition-colors hover:bg-indigo-100
-          dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
-          dark:hover:bg-indigo-500/20
+          dark:border-purple-500/35 dark:bg-purple-500/10 dark:text-purple-200
+          dark:hover:bg-purple-500/20
         "
       >
         <HiOutlineArrowDownTray size={15} />
@@ -188,8 +188,8 @@ function ActionCard({ action }) {
               rounded-xl border border-indigo-200 bg-indigo-50
               px-3 py-2 text-xs font-medium text-indigo-700
               transition-colors hover:bg-indigo-100
-              dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
-              dark:hover:bg-indigo-500/20
+              dark:border-purple-500/35 dark:bg-purple-500/10 dark:text-purple-200
+              dark:hover:bg-purple-500/20
             "
           >
             <HiOutlineArrowTopRightOnSquare size={14} />
@@ -509,8 +509,8 @@ function Chatbot() {
           hover:scale-110
           hover:bg-indigo-500
           active:scale-95
-          dark:bg-indigo-500
-          dark:hover:bg-indigo-400
+          dark:bg-purple-500
+          dark:hover:bg-purple-400
 
           sm:right-6
           sm:bottom-6
@@ -644,7 +644,7 @@ function Chatbot() {
                     ${
                       msg.role === 'user'
                         ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-indigo-400'
+                        : 'bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-purple-300'
                     }
                   `}
                 >
@@ -697,8 +697,8 @@ function Chatbot() {
                       px-3 py-1.5 text-xs font-medium text-indigo-700
                       transition-colors
                       hover:bg-indigo-100
-                      dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300
-                      dark:hover:bg-indigo-500/20
+                      dark:border-purple-500/35 dark:bg-purple-500/10 dark:text-purple-200
+                      dark:hover:bg-purple-500/20
                     "
                   >
                     {reply}

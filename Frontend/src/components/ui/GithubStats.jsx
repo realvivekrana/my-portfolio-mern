@@ -89,7 +89,7 @@ function GithubStats({ username }) {
       <section id="github-stats" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="relative z-10 mx-auto flex max-w-6xl justify-center">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
             aria-label="Loading GitHub stats"
           />
         </div>
@@ -114,19 +114,19 @@ function GithubStats({ username }) {
       <div className="relative z-10 mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-10 text-center sm:mb-14 md:mb-16">
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             <FaGithub className="text-sm" />
             Open Source
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             GitHub{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               Activity
             </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] sm:mt-5 sm:w-16" />
         </div>
 
         {/* Profile Summary */}
@@ -155,14 +155,14 @@ function GithubStats({ username }) {
                 href={repo.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.04] sm:rounded-3xl sm:p-6"
+                className="group flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] sm:rounded-3xl sm:p-6"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="truncate text-base font-bold text-white group-hover:text-indigo-300 sm:text-lg">
+                  <h3 className="truncate text-base font-bold text-white group-hover:text-purple-200 sm:text-lg">
                     {repo.name}
                   </h3>
 
-                  <FaExternalLinkAlt className="mt-1 shrink-0 text-xs text-gray-500 group-hover:text-indigo-300" />
+                  <FaExternalLinkAlt className="mt-1 shrink-0 text-xs text-gray-500 group-hover:text-purple-200" />
                 </div>
 
                 <p className="mt-2 line-clamp-2 flex-1 text-xs leading-6 text-gray-400 sm:text-sm">
@@ -172,7 +172,7 @@ function GithubStats({ username }) {
                 <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">
                   {repo.language && (
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-indigo-400" />
+                      <span className="h-2 w-2 rounded-full bg-purple-400" />
                       {repo.language}
                     </span>
                   )}

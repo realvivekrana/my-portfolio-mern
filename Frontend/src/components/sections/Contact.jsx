@@ -171,9 +171,9 @@ function Contact() {
             h-72
             w-72
             rounded-full
-            bg-indigo-300/20
+            bg-purple-300/20
             blur-3xl
-            dark:bg-indigo-600/10
+            dark:bg-blue-600/10
             animate-[contactOrbOne_14s_ease-in-out_infinite]
           "
         />
@@ -230,9 +230,9 @@ function Contact() {
             -translate-x-1/2
             -translate-y-1/2
             rounded-full
-            bg-indigo-400/5
+            bg-purple-400/5
             blur-[120px]
-            dark:bg-indigo-500/5
+            dark:bg-purple-500/5
             animate-[contactCorePulse_8s_ease-in-out_infinite]
           "
         />
@@ -248,9 +248,9 @@ function Contact() {
               w-32
               bg-gradient-to-r
               from-transparent
-              via-indigo-500
+              via-purple-500
               to-transparent
-              shadow-[0_0_15px_rgba(99,102,241,0.7)]
+              shadow-[0_0_15px_rgba(139,92,246,0.7)]
               animate-[contactLightMove_10s_linear_infinite]
             "
           />
@@ -279,13 +279,13 @@ function Contact() {
             FLOATING STARS
         ================================================== */}
 
-        <span className="absolute left-[8%] top-[18%] h-1 w-1 rounded-full bg-indigo-400/50 animate-[contactStarOne_8s_ease-in-out_infinite]" />
+        <span className="absolute left-[8%] top-[18%] h-1 w-1 rounded-full bg-purple-400/50 animate-[contactStarOne_8s_ease-in-out_infinite]" />
 
         <span className="absolute left-[20%] top-[70%] h-1.5 w-1.5 rounded-full bg-purple-400/50 animate-[contactStarTwo_11s_ease-in-out_infinite]" />
 
         <span className="absolute right-[15%] top-[22%] h-1 w-1 rounded-full bg-blue-400/50 animate-[contactStarThree_9s_ease-in-out_infinite]" />
 
-        <span className="absolute right-[28%] top-[65%] h-1.5 w-1.5 rounded-full bg-indigo-400/40 animate-[contactStarFour_12s_ease-in-out_infinite]" />
+        <span className="absolute right-[28%] top-[65%] h-1.5 w-1.5 rounded-full bg-purple-400/40 animate-[contactStarFour_12s_ease-in-out_infinite]" />
 
         <span className="absolute left-[45%] top-[12%] h-1 w-1 rounded-full bg-purple-400/50 animate-[contactStarFive_10s_ease-in-out_infinite]" />
 
@@ -296,7 +296,7 @@ function Contact() {
         ================================================== */}
 
         <div className="absolute left-[10%] top-[35%] animate-[contactParticleOne_15s_ease-in-out_infinite]">
-          <FaStar className="text-xs text-indigo-400/30" />
+          <FaStar className="text-xs text-purple-300/30" />
         </div>
 
         <div className="absolute right-[10%] top-[45%] animate-[contactParticleTwo_18s_ease-in-out_infinite]">
@@ -320,7 +320,7 @@ function Contact() {
           "
           style={{
             backgroundImage:
-              'linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)',
+              'linear-gradient(rgba(139,92,246,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.5) 1px, transparent 1px)',
             backgroundSize: '60px 60px',
           }}
         />
@@ -339,7 +339,7 @@ function Contact() {
 
         <div className="mb-16 text-center">
 
-          <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+          <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-purple-300">
             <FaEnvelope className="text-sm animate-[contactIconPulse_3s_ease-in-out_infinite]" />
 
             {t('contact.eyebrow')}
@@ -348,12 +348,12 @@ function Contact() {
           <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
             {t('contact.heading')}{' '}
 
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400">
+            <span className="bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-400 dark:to-blue-400">
               {t('contact.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-[0_0_18px_rgba(99,102,241,0.4)]" />
+          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.4)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg dark:text-gray-400">
             {t('contact.subtitle')}
@@ -365,13 +365,13 @@ function Contact() {
             CONTACT CONTENT
         ================================================== */}
 
-        <div className="grid overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-indigo-500/5 dark:border-gray-800 dark:bg-gray-950 dark:shadow-indigo-500/10 lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-purple-500/5 dark:border-white/[0.08] dark:bg-[#0b0b12] dark:shadow-[#8B5CF6]/15 lg:grid-cols-2">
 
           {/* =================================================
               LEFT SIDE
           ================================================== */}
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 p-8 text-white sm:p-10 lg:p-12">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#8B5CF6] via-[#7c4fee] to-[#3B82F6] p-8 text-white sm:p-10 lg:p-12">
 
             {/* =================================================
                 LEFT SIDE COSMIC ORBS
@@ -617,7 +617,7 @@ function Contact() {
               className="pointer-events-none absolute inset-0 overflow-hidden"
             >
 
-              <span className="absolute right-[10%] top-[15%] h-1 w-1 rounded-full bg-indigo-400/30 animate-[contactFormParticleOne_8s_ease-in-out_infinite]" />
+              <span className="absolute right-[10%] top-[15%] h-1 w-1 rounded-full bg-purple-400/30 animate-[contactFormParticleOne_8s_ease-in-out_infinite]" />
 
               <span className="absolute left-[12%] top-[45%] h-1.5 w-1.5 rounded-full bg-purple-400/20 animate-[contactFormParticleTwo_10s_ease-in-out_infinite]" />
 
@@ -629,7 +629,7 @@ function Contact() {
 
               <div className="mb-8">
 
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600 dark:text-indigo-400">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-600 dark:text-purple-300">
                   Send a Message
                 </p>
 
@@ -734,7 +734,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="Your name"
                     autoComplete="name"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 dark:focus:border-indigo-500 dark:focus:bg-gray-900"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
                   />
 
                 </div>
@@ -760,7 +760,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="you@example.com"
                     autoComplete="email"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 dark:focus:border-indigo-500 dark:focus:bg-gray-900"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
                   />
 
                 </div>
@@ -785,7 +785,7 @@ function Contact() {
                     onChange={handleChange}
                     rows="6"
                     placeholder="Tell me a little about your project or opportunity..."
-                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-600 dark:focus:border-indigo-500 dark:focus:bg-gray-900"
+                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
                   />
 
                 </div>
@@ -797,7 +797,7 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/20 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#8B5CF6]/25 transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-xl hover:shadow-[#8B5CF6]/40 disabled:cursor-not-allowed disabled:opacity-70"
                 >
 
                   {/* Button Shine */}
@@ -841,7 +841,7 @@ function Contact() {
 
             <a
               href={`mailto:${contactInfo.email}`}
-              className="font-semibold text-indigo-600 transition-colors hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+              className="font-semibold text-indigo-600 transition-colors hover:text-indigo-700 dark:text-purple-300 dark:hover:text-purple-200"
             >
               Send me a direct message
             </a>

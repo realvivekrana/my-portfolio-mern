@@ -67,7 +67,7 @@ function ProjectCaseStudy() {
       <main className="relative z-10 mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <Link
           to="/#projects"
-          className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-indigo-300"
+          className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-purple-200"
         >
           <FaArrowLeft className="text-xs" />
           Back to Projects
@@ -75,7 +75,7 @@ function ProjectCaseStudy() {
 
         {loading && (
           <div className="flex justify-center py-20">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent" />
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent" />
           </div>
         )}
 
@@ -92,7 +92,7 @@ function ProjectCaseStudy() {
         {!loading && project && (
           <article>
             {/* Category */}
-            <span className="inline-flex rounded-full bg-indigo-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-300">
+            <span className="inline-flex rounded-full bg-purple-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-purple-200">
               {project.category}
             </span>
 
@@ -124,7 +124,7 @@ function ProjectCaseStudy() {
                   href={project.liveLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-5 py-2.5 text-sm font-semibold text-indigo-300 transition-colors hover:bg-indigo-500/20 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-xl border border-purple-400/25 bg-purple-500/10 px-5 py-2.5 text-sm font-semibold text-purple-200 transition-colors hover:bg-purple-500/20 hover:text-white"
                 >
                   <FaExternalLinkAlt className="text-xs" />
                   Live Demo
@@ -236,7 +236,7 @@ function CaseStudySection({ icon, title, content }) {
   return (
     <div className="mt-12">
       <h2 className="mb-4 flex items-center gap-2.5 text-2xl font-extrabold text-white">
-        <span className="text-indigo-400">{icon}</span>
+        <span className="text-purple-300">{icon}</span>
         {title}
       </h2>
 
@@ -249,14 +249,14 @@ function CaseStudyList({ icon, title, items }) {
   return (
     <div className="mt-12">
       <h2 className="mb-4 flex items-center gap-2.5 text-2xl font-extrabold text-white">
-        <span className="text-indigo-400">{icon}</span>
+        <span className="text-purple-300">{icon}</span>
         {title}
       </h2>
 
       <ul className="space-y-3">
         {items.map((item, index) => (
           <li key={index} className="flex gap-3 text-base leading-7 text-gray-300">
-            <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
+            <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-400" />
             <span>{item}</span>
           </li>
         ))}

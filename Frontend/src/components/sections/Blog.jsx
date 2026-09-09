@@ -55,7 +55,7 @@ function Blog() {
       <section id="blog" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="relative z-10 mx-auto flex max-w-7xl justify-center">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
             aria-label="Loading blog posts"
           />
         </div>
@@ -80,19 +80,19 @@ function Blog() {
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-10 flex flex-col items-center gap-4 text-center sm:mb-14 md:mb-16">
-          <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+          <p className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             <FaRegNewspaper className="text-sm" />
             {t('blog.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('blog.heading')}{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               {t('blog.headingHighlight')}
             </span>
           </h2>
 
-          <div className="h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 sm:w-16" />
+          <div className="h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] sm:w-16" />
         </div>
 
         {/* Grid */}
@@ -101,7 +101,7 @@ function Blog() {
             <Link
               key={post._id}
               to={`/blog/${post.slug}`}
-              className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-indigo-400/20 hover:bg-white/[0.04] sm:rounded-3xl"
+              className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] sm:rounded-3xl"
             >
               {post.coverImage && (
                 <div className="overflow-hidden border-b border-white/[0.06]">
@@ -120,7 +120,7 @@ function Blog() {
                     {post.tags.slice(0, 2).map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-300"
+                        className="rounded-full bg-purple-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-200"
                       >
                         {tag}
                       </span>
@@ -128,7 +128,7 @@ function Blog() {
                   </div>
                 )}
 
-                <h3 className="text-lg font-extrabold text-white transition-colors group-hover:text-indigo-300 sm:text-xl">
+                <h3 className="text-lg font-extrabold text-white transition-colors group-hover:text-purple-200 sm:text-xl">
                   {post.title}
                 </h3>
 
@@ -142,7 +142,7 @@ function Blog() {
                     {post.readTime} min read
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-indigo-300 group-hover:gap-2.5 transition-all">
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-purple-200 group-hover:gap-2.5 transition-all">
                     Read
                     <FaArrowRight className="text-[10px]" />
                   </span>
@@ -156,7 +156,7 @@ function Blog() {
         <div className="mt-10 text-center sm:mt-12">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-6 py-3 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:border-indigo-400/30 hover:bg-indigo-500/20 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-xl border border-purple-400/25 bg-purple-500/10 px-6 py-3 text-sm font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white"
           >
             View All Articles
             <FaArrowRight className="text-xs" />

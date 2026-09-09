@@ -114,7 +114,7 @@ function Timeline() {
       <section id="timeline" className="relative overflow-hidden bg-transparent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="relative z-10 mx-auto flex max-w-5xl justify-center">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-400 border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-4 border-purple-400 border-t-transparent"
             aria-label="Loading timeline"
           />
         </div>
@@ -147,7 +147,7 @@ function Timeline() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-24 h-60 w-60 rounded-full bg-indigo-600/10 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -left-32 top-24 h-60 w-60 rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
       />
 
       <div
@@ -158,20 +158,20 @@ function Timeline() {
       <div className="relative z-10 mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-10 text-center sm:mb-14 md:mb-16">
-          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-indigo-400 sm:text-sm sm:tracking-[0.2em]">
+          <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
             <FaRoute className="text-sm" />
             {t('timeline.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('timeline.heading')}{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               {t('timeline.headingHighlight')}
             </span>{' '}
             {t('timeline.headingSuffix')}
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
             {t('timeline.subtitle')}
@@ -194,7 +194,7 @@ function Timeline() {
                     <div
                       className={`flex h-9 w-9 items-center justify-center rounded-full border-4 border-black shadow-lg sm:h-10 sm:w-10 ${
                         isExperience
-                          ? 'bg-indigo-500'
+                          ? 'bg-purple-500'
                           : 'bg-cyan-500'
                       }`}
                     >
@@ -239,11 +239,11 @@ function TimelineCard({ item }) {
   const isExperience = item.type === 'experience';
 
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.04]">
+    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04]">
       <span
         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
           isExperience
-            ? 'bg-indigo-500/10 text-indigo-300'
+            ? 'bg-purple-500/10 text-purple-200'
             : 'bg-cyan-500/10 text-cyan-300'
         }`}
       >
@@ -260,7 +260,7 @@ function TimelineCard({ item }) {
       </p>
 
       {item.duration && (
-        <p className="mt-2 text-xs font-medium text-indigo-300/80">
+        <p className="mt-2 text-xs font-medium text-purple-200/80">
           {item.duration}
         </p>
       )}

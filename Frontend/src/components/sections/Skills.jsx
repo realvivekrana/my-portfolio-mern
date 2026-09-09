@@ -430,18 +430,18 @@ function Skills() {
 
           <div className="mb-12 text-center sm:mb-16">
 
-            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 sm:text-sm">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-purple-300 sm:text-sm">
               {t('skills.eyebrow')}
             </p>
 
             <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
               {t('skills.heading')}{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
                 {t('skills.headingHighlight')}
               </span>
             </h2>
 
-            <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400" />
+            <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6]" />
 
           </div>
 
@@ -520,7 +520,7 @@ function Skills() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-40 top-20 h-72 w-72 animate-[skillsOrbOne_15s_ease-in-out_infinite] rounded-full bg-indigo-600/10 blur-[110px] sm:h-96 sm:w-96"
+        className="pointer-events-none absolute -left-40 top-20 h-72 w-72 animate-[skillsOrbOne_15s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[110px] sm:h-96 sm:w-96"
       />
 
       <div
@@ -530,7 +530,7 @@ function Skills() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/5 blur-[120px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3B82F6]/6 blur-[120px]"
       />
 
       <div className="relative z-10 mx-auto max-w-7xl">
@@ -541,18 +541,18 @@ function Skills() {
 
         <div className="mb-12 text-center sm:mb-16">
 
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 sm:text-sm">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-purple-300 sm:text-sm">
             {t('skills.eyebrow')}
           </p>
 
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('skills.heading')}{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
               {t('skills.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_18px_rgba(99,102,241,0.5)]" />
+          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.5)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-gray-400 sm:text-base sm:leading-8 md:text-lg">
             A collection of technologies and tools I use to build modern,
@@ -595,10 +595,10 @@ function Skills() {
                   category._id ||
                   category.title
                 }
-                className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(99,102,241,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(99,102,241,0.08)] sm:rounded-3xl sm:p-6"
+                className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/30 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(139,92,246,0.08)] sm:rounded-3xl sm:p-6"
               >
 
-                <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                 {/* =================================================
                     CATEGORY HEADER
@@ -606,7 +606,7 @@ function Skills() {
 
                 <div className="relative z-10 mb-6 flex items-start gap-3 sm:mb-7 sm:gap-4">
 
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-xl text-indigo-400 transition-all duration-300 group-hover:scale-105 group-hover:bg-indigo-500/15 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] sm:h-12 sm:w-12 sm:rounded-2xl sm:text-2xl">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-xl text-purple-300 transition-all duration-300 group-hover:scale-105 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] sm:h-12 sm:w-12 sm:rounded-2xl sm:text-2xl">
                     {getCategoryIcon(
                       category.icon
                     )}
@@ -642,16 +642,16 @@ function Skills() {
                           skill._id ||
                           skill.name
                         }
-                        className="group/skill relative overflow-hidden rounded-2xl border border-white/[0.07] bg-black/40 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/20 hover:bg-white/[0.035] hover:shadow-[0_0_25px_rgba(99,102,241,0.07)]"
+                        className="group/skill relative overflow-hidden rounded-2xl border border-white/[0.07] bg-black/40 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:bg-white/[0.035] hover:shadow-[0_0_25px_rgba(139,92,246,0.07)]"
                       >
 
-                        <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-indigo-500/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover/skill:opacity-100" />
+                        <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-purple-500/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover/skill:opacity-100" />
 
                         <div className="relative flex items-center justify-between gap-3">
 
                           <div className="flex min-w-0 items-center gap-3">
 
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.035] text-xl text-gray-300 transition-all duration-300 group-hover/skill:scale-110 group-hover/skill:border-indigo-400/20 group-hover/skill:text-indigo-400">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.035] text-xl text-gray-300 transition-all duration-300 group-hover/skill:scale-110 group-hover/skill:border-purple-400/25 group-hover/skill:text-purple-300">
                               {getSkillIcon(
                                 skill.icon
                               )}
@@ -671,7 +671,7 @@ function Skills() {
 
                           </div>
 
-                          <span className="shrink-0 text-xs font-bold text-indigo-400">
+                          <span className="shrink-0 text-xs font-bold text-purple-300">
                             {Math.min(
                               100,
                               Math.max(
@@ -694,7 +694,7 @@ function Skills() {
                         <div className="relative mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
 
                           <div
-                            className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 shadow-[0_0_10px_rgba(99,102,241,0.4)] transition-all duration-1000 ease-out group-hover/skill:shadow-[0_0_16px_rgba(99,102,241,0.7)]"
+                            className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_10px_rgba(139,92,246,0.4)] transition-all duration-1000 ease-out group-hover/skill:shadow-[0_0_16px_rgba(139,92,246,0.7)]"
                             style={{
                               width: `${Math.min(
                                 100,
@@ -727,9 +727,9 @@ function Skills() {
             MERN STACK SUMMARY
         ====================================================== */}
 
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-indigo-400/10 bg-gradient-to-r from-indigo-500/[0.06] via-purple-500/[0.04] to-cyan-500/[0.05] p-5 shadow-[0_0_45px_rgba(99,102,241,0.04)] backdrop-blur-md sm:mt-10 sm:rounded-3xl sm:p-7 md:p-8">
+        <div className="relative mt-8 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-r from-[#8B5CF6]/[0.07] via-[#A78BFA]/[0.04] to-[#3B82F6]/[0.06] p-5 shadow-[0_0_45px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-10 sm:rounded-3xl sm:p-7 md:p-8">
 
-          <div className="pointer-events-none absolute -left-20 top-1/2 h-40 w-40 -translate-y-1/2 animate-[mernGlow_8s_ease-in-out_infinite] rounded-full bg-indigo-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 top-1/2 h-40 w-40 -translate-y-1/2 animate-[mernGlow_8s_ease-in-out_infinite] rounded-full bg-purple-500/10 blur-3xl" />
 
           <div className="relative flex flex-col items-center justify-between gap-6 lg:flex-row">
 
@@ -759,7 +759,7 @@ function Skills() {
                     key={
                       technology
                     }
-                    className="rounded-full border border-indigo-400/10 bg-indigo-500/[0.08] px-3.5 py-2 text-[11px] font-bold text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400/25 hover:bg-indigo-500/[0.14] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] sm:px-4 sm:text-xs"
+                    className="rounded-full border border-purple-400/15 bg-purple-500/[0.08] px-3.5 py-2 text-[11px] font-bold text-purple-200 shadow-[0_0_15px_rgba(139,92,246,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:bg-purple-500/[0.14] hover:shadow-[0_0_20px_rgba(139,92,246,0.15)] sm:px-4 sm:text-xs"
                   >
                     {technology}
                   </span>
