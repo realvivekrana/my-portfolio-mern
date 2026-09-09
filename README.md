@@ -2,15 +2,16 @@
 
 # 💼 Vivek Rana — MERN Stack Developer Portfolio
 
-**A modern, full-stack developer portfolio with a dynamic CMS-style Admin Dashboard and an AI chatbot.**
+**A modern, full-stack developer portfolio with a dynamic CMS-style Admin Dashboard, an AI chatbot, a blog, and an installable, bilingual, animated front-end.**
 
-React&nbsp;•&nbsp;Node.js&nbsp;•&nbsp;Express.js&nbsp;•&nbsp;MongoDB&nbsp;•&nbsp;Tailwind&nbsp;CSS&nbsp;•&nbsp;Cloudinary&nbsp;•&nbsp;JWT&nbsp;•&nbsp;AI Chatbot
+React&nbsp;•&nbsp;Node.js&nbsp;•&nbsp;Express.js&nbsp;•&nbsp;MongoDB&nbsp;•&nbsp;Tailwind&nbsp;CSS&nbsp;•&nbsp;Framer&nbsp;Motion&nbsp;•&nbsp;Cloudinary&nbsp;•&nbsp;JWT&nbsp;•&nbsp;AI&nbsp;Chatbot&nbsp;•&nbsp;PWA
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-Build-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?logo=pwa&logoColor=white)](#-pwa-support)
 [![License](https://img.shields.io/badge/License-Personal_Project-lightgrey)](#-license)
 
 [Live Demo](https://my-portfolio-mern-mauve.vercel.app) · [Report a Bug](https://github.com/realvivekrana/my-portfolio-mern/issues) · [Request a Feature](https://github.com/realvivekrana/my-portfolio-mern/issues)
@@ -21,12 +22,16 @@ React&nbsp;•&nbsp;Node.js&nbsp;•&nbsp;Express.js&nbsp;•&nbsp;MongoDB&nbsp;
 
 ## 📌 Overview
 
-This is a full-stack personal portfolio website built to showcase a professional profile, technical skills, experience, education, certifications, projects, and contact information.
+This is a full-stack personal portfolio website built to showcase a professional profile, technical skills, experience, education, certifications, projects, testimonials, a blog, and contact information.
 
 The project goes beyond a static portfolio by providing:
 
 - 🧑‍💻 A **CMS-style Admin Dashboard** backed by MongoDB, so content can be updated dynamically without touching React code.
-- 🤖 An **AI Chatbot** that answers visitor questions using live portfolio data, built **mobile-first and fully responsive** across phones, tablets, and desktops.
+- 🤖 An **AI Chatbot** that answers visitor questions using live portfolio data.
+- 📱 An **installable PWA** with offline support.
+- 🌐 Full **English / Hindi** localization.
+- 🎬 **Framer Motion** page transitions and a **Cmd/Ctrl+K command palette**.
+- Built **mobile-first and fully responsive** across phones, tablets, and desktops.
 
 ### Project Structure
 
@@ -43,6 +48,9 @@ my-portfolio-mern/
 
 - [Features](#-features)
 - [AI Chatbot](#-ai-chatbot)
+- [Page Transitions & Command Palette](#-page-transitions--command-palette)
+- [PWA Support](#-pwa-support)
+- [Internationalization (English / Hindi)](#-internationalization-english--hindi)
 - [Tech Stack](#️-tech-stack)
 - [Architecture](#️-architecture)
 - [Project Structure](#-project-structure)
@@ -51,6 +59,8 @@ my-portfolio-mern/
 - [Environment Variables](#-environment-variables)
 - [Resume Upload Flow](#-resume-upload-flow)
 - [Dynamic Content Flow](#-dynamic-content-flow)
+- [Automated Database Backups](#-automated-database-backups)
+- [Rate Limiting](#-rate-limiting)
 - [Deployment](#-deployment)
 - [Security Considerations](#-security-considerations)
 - [Future Improvements](#-future-improvements)
@@ -64,12 +74,18 @@ my-portfolio-mern/
 
 ### 🌐 Public Portfolio
 
-- Hero, About, Skills, Experience, Education, Certifications, Projects, and Contact sections
+- Hero, About, Skills, Experience, Education, Certifications, Projects, Testimonials, Blog, and Contact sections
 - Social links & availability badge
 - **Mobile-first responsive layout** — works cleanly on small phones, tablets, and large desktops
 - Light/dark themed UI with persisted theme preference
+- **English / Hindi language toggle**, persisted across visits
+- **Framer Motion page transitions** between routes
+- **Cmd/Ctrl + K command palette** for instant navigation
+- **Installable PWA** with an offline fallback page
 - Modern animations, floating tech badges, and interactive elements
 - Embedded **AI chatbot** for instant visitor Q&A
+- Full **Markdown-rendered blog** with tags and a dedicated archive
+- Dedicated, shareable **project case-study** pages
 
 ### 🧑‍💻 Admin Dashboard
 
@@ -79,13 +95,17 @@ Authenticated admins can manage:
 - Contact info & social links
 - Experience & Education
 - Skills
-- Projects
-- Certificates
+- Projects (with drag-and-drop reordering)
+- Certificates (with drag-and-drop reordering)
+- Blog posts
+- Testimonials
 - Resume (upload / replace / delete)
-- Profile image
+- Profile image (with in-browser crop)
 - SEO metadata
 - Portfolio visibility & site settings
 - Admin PIN & password management
+- Visitor analytics dashboard
+- Audit log of every admin action
 
 ### 📄 Resume Management
 
@@ -102,15 +122,18 @@ Used for all uploaded media: resume PDFs, profile images, certificate images, an
 
 ### 🔐 Authentication
 
-Protected admin APIs use JWT authentication. The frontend Axios instance automatically attaches the stored token:
+Protected admin APIs use **JWT access + refresh token** authentication:
 
-```http
-Authorization: Bearer <token>
-```
+- A short-lived **access token** is attached automatically by the frontend Axios instance:
+  ```http
+  Authorization: Bearer <accessToken>
+  ```
+- A long-lived **refresh token** is stored in an httpOnly cookie and silently exchanged for a new access token via `POST /api/auth/refresh-token`, so admins aren't forced to re-login every 15 minutes.
+- Dashboard access additionally requires a separate numeric **PIN** (`POST /api/auth/verify-pin`) after password login — a lightweight second factor.
 
 ### 🗄️ MongoDB
 
-MongoDB + Mongoose stores all dynamic portfolio content: Hero, About, Contact, Social Links, Resume, Experience, Education, Skills, SEO, and Settings.
+MongoDB + Mongoose stores all dynamic portfolio content: Hero, About, Contact, Social Links, Resume, Experience, Education, Skills, Projects, Certificates, Blog Posts, Testimonials, SEO, Settings, Analytics Events, and Audit Logs.
 
 ---
 
@@ -168,23 +191,72 @@ Other responsive/UX details:
 
 ---
 
+## 🎬 Page Transitions & Command Palette
+
+### Framer Motion page transitions
+
+Every route transition fades and slightly slides the incoming page into view via `components/ui/PageTransition.jsx`, driven by `<AnimatePresence>` in `App.jsx`. Routes that nest a `position: fixed` element (Home's Navbar, the Admin Dashboard's sidebar) use an **opacity-only** variant instead — a `transform`-based slide would otherwise briefly break fixed positioning on those pages during the animation.
+
+### Command Palette (Cmd/Ctrl + K)
+
+A Linear/Vercel-style quick-navigation overlay (`components/ui/CommandPalette.jsx`):
+
+- **Cmd+K** (Mac) / **Ctrl+K** (Windows/Linux) opens it from anywhere in the app
+- Type to fuzzy-filter, **↑ / ↓** to move, **Enter** to select, **Esc** to close
+- Jump straight to any section ("Go to Projects", "Contact me", etc.) — works even from a different route, by navigating home with a URL hash and letting `Home.jsx`'s hash-scroll effect finish the job once the (lazy-loaded) section has mounted
+- Also toggles theme and language, opens the blog, opens the resume, and jumps to admin login
+
+---
+
+## 📲 PWA Support
+
+The site is a fully installable Progressive Web App:
+
+- `public/manifest.webmanifest` — app name, icons, theme color, and shortcuts to Projects/Contact/Blog
+- `public/sw.js` — service worker with **network-first** navigation caching, **stale-while-revalidate** for static assets, and an explicit bypass for `/api`, `/uploads`, and Cloudinary requests (so portfolio content is never served stale)
+- `public/offline.html` — a friendly fallback page shown when fully offline, with a live online/offline status indicator
+- `src/components/ui/PWAInstallPrompt.jsx` — a non-intrusive install banner that listens for the browser's `beforeinstallprompt` event (Chrome/Edge/Android) and respects a 7-day dismiss cooldown
+- `src/utils/registerServiceWorker.js` — registers the service worker in production only (skipped in dev to avoid HMR conflicts)
+
+> iOS Safari doesn't fire `beforeinstallprompt`, so the install banner won't appear there — iOS users install via the native **Share → Add to Home Screen** flow instead, which still works fine thanks to the manifest + apple-touch-icon.
+
+---
+
+## 🌐 Internationalization (English / Hindi)
+
+- `src/context/LanguageContext.jsx` — a React context exposing `t()`, `language`, and `toggleLanguage()`, persisted to `localStorage`
+- `src/i18n/translations.js` — the full English/Hindi dictionary (navigation, footer, every section's eyebrow/heading/subtitle, command palette, PWA prompts)
+- Toggle available in both the desktop and mobile navbar, and via the Cmd+K command palette
+
+> Static UI chrome (labels, headings, navigation) is translated. Dynamic content authored through the admin dashboard (project descriptions, blog posts, testimonials) is stored and displayed exactly as written by the admin.
+
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
 - React 19 + Vite
 - Tailwind CSS v4
 - React Router DOM
+- Framer Motion — page transitions & micro-animations
 - Axios
-- React Icons
+- React Icons + Lucide React
 - React Toastify
+- React Markdown + remark-gfm — blog rendering
+- Recharts — analytics charts
+- @dnd-kit (core, sortable, utilities) — drag-and-drop reordering
 
 ### Backend
 - Node.js + Express.js
 - MongoDB + Mongoose
-- JWT (jsonwebtoken)
+- JWT (jsonwebtoken) — access + refresh tokens
 - Multer + Multer Storage Cloudinary
 - Cloudinary SDK
 - bcryptjs
+- express-rate-limit — contact form, chatbot, and login throttling
+- node-cron + archiver — scheduled MongoDB backups
+- Nodemailer — contact-form email notifications
+- cookie-parser
 - CORS
 - dotenv
 
@@ -211,7 +283,7 @@ Other responsive/UX details:
                                ▼
                     ┌─────────────────────┐
                     │ React + Vite        │
-                    │ Frontend            │
+                    │ Frontend (PWA)      │
                     └──────────┬──────────┘
                                │ Axios
                                ▼
@@ -251,23 +323,30 @@ my-portfolio-mern/
 │   │   ├── components/
 │   │   │   ├── admin/        # Admin dashboard panels
 │   │   │   ├── layout/       # Navbar, Footer
-│   │   │   ├── sections/     # Hero, About, Skills, Projects, etc.
-│   │   │   └── ui/           # Chatbot, Loader, backgrounds, shared UI
-│   │   ├── context/          # Auth & Theme context
-│   │   ├── pages/            # Home, Admin routes, NotFound
-│   │   ├── utils/            # Axios instance, media URL helpers
+│   │   │   ├── sections/     # Hero, About, Skills, Projects, Blog, etc.
+│   │   │   ├── seo/          # Structured data component
+│   │   │   └── ui/           # Chatbot, CommandPalette, PageTransition,
+│   │   │                     # PWAInstallPrompt, Loader, backgrounds
+│   │   ├── context/          # Auth, Theme & Language context
+│   │   ├── i18n/              # translations.js (English/Hindi dictionary)
+│   │   ├── pages/             # Home, Blog, Admin routes, NotFound
+│   │   ├── utils/              # Axios instance, media URL helpers,
+│   │   │                       # analytics, service worker registration
 │   │   └── main.jsx
 │   │
-│   ├── public/
+│   ├── public/                 # manifest, service worker, offline.html, icons
 │   ├── .env.example
 │   └── package.json
 │
 ├── Backend/
 │   ├── config/                # DB connection
 │   ├── controllers/           # Route handlers (incl. chatbotController.js)
-│   ├── middleware/             # Auth, error handling, upload
+│   ├── middleware/             # Auth, error handling, rate limiter, upload
 │   ├── models/                 # Mongoose schemas
 │   ├── routes/                 # Express routers
+│   ├── scripts/                 # backupDatabase.js
+│   ├── utils/                    # generateToken, sendEmail, auditLogger,
+│   │                              # cronJobs, mediaUrl
 │   ├── uploads/                 # Local upload scratch space
 │   ├── .env.example
 │   ├── server.js
@@ -282,11 +361,22 @@ my-portfolio-mern/
 
 Base URL (local): `http://localhost:5000/api`
 
+### Auth
+```text
+POST   /api/auth/register
+POST   /api/auth/login              → issues access token + httpOnly refresh cookie
+POST   /api/auth/refresh-token      → silently exchanges refresh cookie for a new access token
+POST   /api/auth/logout             → invalidates the refresh token
+POST   /api/auth/verify-pin         (protected) — second-factor dashboard PIN check
+GET    /api/auth/me                 (protected)
+PUT    /api/auth/change-password    (protected)
+```
+
 ### Portfolio
 ```text
 GET    /api/portfolio
+GET    /api/portfolio/og-image
 PUT    /api/portfolio
-
 PUT    /api/portfolio/hero
 PUT    /api/portfolio/about
 PUT    /api/portfolio/contact
@@ -295,61 +385,98 @@ PUT    /api/portfolio/experience
 PUT    /api/portfolio/education
 PUT    /api/portfolio/seo
 PUT    /api/portfolio/settings
+POST   /api/portfolio/profile-image
+DELETE /api/portfolio/profile-image
+POST   /api/portfolio/reset
+DELETE /api/portfolio
 ```
 
-### Resume & Profile Image
+### Resume & Profile Image Upload
 ```text
 POST   /api/portfolio/upload/resume
+POST   /api/portfolio/upload/profile-image
 GET    /api/portfolio/upload/resume
 GET    /api/portfolio/upload/resume/info
 GET    /api/portfolio/upload/public-resume
-GET    /api/portfolio/resume/public         (legacy → redirects to the route above)
-
-POST   /api/portfolio/upload/profile-image
-POST   /api/portfolio/profile-image
-DELETE /api/portfolio/profile-image
+GET    /api/portfolio/resume/public         (legacy → 308 redirect to the route above)
 ```
 
 ### Projects
 ```text
 GET    /api/projects
 GET    /api/projects/featured
+GET    /api/projects/admin              (protected)
+GET    /api/projects/case-study/:slug
 GET    /api/projects/:id
-POST   /api/projects        (protected)
-PUT    /api/projects/:id    (protected)
-DELETE /api/projects/:id    (protected)
+POST   /api/projects                    (protected)
+PUT    /api/projects/:id                (protected)
+PATCH  /api/projects/reorder            (protected) — drag-and-drop ordering
+DELETE /api/projects/:id                (protected)
 ```
 
 ### Certificates
 ```text
 GET    /api/certificates
-POST   /api/certificates    (protected)
-PUT    /api/certificates/:id    (protected)
-DELETE /api/certificates/:id    (protected)
+GET    /api/certificates/featured
+GET    /api/certificates/admin          (protected)
+GET    /api/certificates/:id
+POST   /api/certificates                (protected)
+POST   /api/certificates/upload-image   (protected)
+PATCH  /api/certificates/reorder        (protected) — drag-and-drop ordering
+PUT    /api/certificates/:id            (protected)
+DELETE /api/certificates/:id            (protected)
+```
+
+### Blog
+```text
+GET    /api/blog
+GET    /api/blog/featured
+GET    /api/blog/tags
+GET    /api/blog/:slug
+GET    /api/blog/admin                  (protected)
+GET    /api/blog/admin/:id              (protected)
+POST   /api/blog                        (protected, handles cover-image upload)
+PUT    /api/blog/:id                    (protected)
+DELETE /api/blog/:id                    (protected)
+```
+
+### Testimonials
+```text
+GET    /api/testimonials
+GET    /api/testimonials/featured
+GET    /api/testimonials/admin          (protected)
+GET    /api/testimonials/:id
+POST   /api/testimonials                (protected, handles avatar upload)
+PUT    /api/testimonials/:id            (protected)
+DELETE /api/testimonials/:id            (protected)
 ```
 
 ### Contact
 ```text
 POST   /api/contact
-GET    /api/contact         (protected)
-PUT    /api/contact/:id     (protected)
-DELETE /api/contact/:id     (protected)
-```
-
-### Auth
-```text
-POST   /api/auth/register
-POST   /api/auth/login
-POST   /api/auth/verify-pin     (protected)
-GET    /api/auth/me             (protected)
-PUT    /api/auth/change-password (protected)
+GET    /api/contact                     (protected)
+GET    /api/contact/:id                 (protected)
+PUT    /api/contact/:id/read            (protected) — mark as read
+DELETE /api/contact/:id                 (protected)
 ```
 
 ### Settings
 ```text
-GET    /api/settings            (protected)
-PUT    /api/settings            (protected)
-PUT    /api/settings/reset      (protected)
+GET    /api/settings                    (protected)
+PUT    /api/settings                    (protected)
+PUT    /api/settings/reset              (protected)
+```
+
+### Analytics
+```text
+POST   /api/analytics/track             — fire-and-forget visitor event tracking
+GET    /api/analytics/summary           (protected)
+```
+
+### Audit Logs
+```text
+GET    /api/audit-logs                  (protected)
+DELETE /api/audit-logs/cleanup          (protected) — prune old entries
 ```
 
 ### AI Chatbot
@@ -375,6 +502,7 @@ Rate limit: 15 requests / 10 minutes / IP (429 on excess)
 - MongoDB Atlas or another accessible MongoDB database
 - A Cloudinary account
 - A free [Groq API key](https://console.groq.com/keys) for the chatbot
+- *(Optional)* An SMTP account (e.g. Gmail with an App Password) for contact-form email notifications
 - Git
 
 ### 1. Clone the repository
@@ -423,24 +551,46 @@ http://localhost:5173
 ### Backend — `Backend/.env`
 
 ```env
+# ── Server ─────────────────────────────────────────────
 NODE_ENV=development
 PORT=5000
 
+# ── Database ───────────────────────────────────────────
 MONGO_URI=your_mongodb_connection_string
 
-JWT_SECRET=your_super_secret_jwt_key
-JWT_EXPIRE=30d
+# ── Auth ───────────────────────────────────────────────
+# Generate strong, DIFFERENT random values for each, e.g.:
+#   node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+JWT_SECRET=your_access_token_secret
+JWT_EXPIRE=15m
+JWT_REFRESH_SECRET=your_refresh_token_secret
+JWT_REFRESH_EXPIRE=30d
 
 ADMIN_PIN=your_admin_pin
 
+# ── CORS ───────────────────────────────────────────────
+FRONTEND_URL=http://localhost:5173
+
+# ── Cloudinary ─────────────────────────────────────────
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
-# AI Chatbot — free key from https://console.groq.com/keys
+# ── AI Chatbot — free key from https://console.groq.com/keys
 GROQ_API_KEY=your_groq_api_key
 
-FRONTEND_URL=http://localhost:5173
+# ── Email notifications (contact form) ─────────────────
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=465
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_gmail_app_password
+EMAIL_FROM=your_email@gmail.com
+ADMIN_NOTIFY_EMAIL=your_email@gmail.com
+
+# ── Automated MongoDB backups (optional) ───────────────
+ENABLE_AUTO_BACKUP=false
+BACKUP_CRON_SCHEDULE=0 2 * * *
+BACKUP_RETENTION_COUNT=7
 ```
 
 ### Frontend — `Frontend/.env`
@@ -449,15 +599,21 @@ FRONTEND_URL=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api
 ```
 
+> ℹ️ `Backend/.env.example` in this repo currently lists `GEMINI_API_KEY` —
+> that's a leftover from an earlier provider. The chatbot code actually
+> reads **`GROQ_API_KEY`** (see `chatbotController.js`), so use the variable
+> name shown above and update `.env.example` to match.
+
 ### ⚠️ Security
 
 Never commit real credentials to GitHub. Keep these private:
 
 - MongoDB credentials
-- JWT secret
+- JWT access **and** refresh secrets
 - Admin PIN / credentials
 - Cloudinary API secret
 - Groq API key
+- SMTP credentials
 - Production environment variables
 
 Use the provided `.env.example` files to document required variables without exposing real values.
@@ -513,8 +669,59 @@ This allows portfolio content to be updated through the Admin Dashboard without 
 | Skills | ✅ |
 | Projects | ✅ |
 | Certifications | ✅ |
+| Blog Posts | ✅ |
+| Testimonials | ✅ |
 | SEO | ✅ |
 | Settings | ✅ |
+| Site Visibility | ✅ |
+
+---
+
+## 💾 Automated Database Backups
+
+`Backend/scripts/backupDatabase.js` exports every MongoDB collection straight
+to JSON via Mongoose (no dependency on the `mongodump` binary, which isn't
+available on most free hosting tiers) and bundles the result into a single
+`.zip` under `Backend/backups/`.
+
+**Manual run:**
+
+```bash
+npm run backup
+```
+
+**Automated (while the server is running):** controlled by
+`Backend/utils/cronJobs.js` via `.env`:
+
+```env
+ENABLE_AUTO_BACKUP=true
+BACKUP_CRON_SCHEDULE=0 2 * * *    # daily at 2:00 AM, standard cron syntax
+BACKUP_RETENTION_COUNT=7          # older backups beyond this count are pruned
+```
+
+> ⚠️ On free-tier hosts (Render/Railway) that "spin down" idle instances,
+> a scheduled backup can be missed if the server happens to be asleep at
+> the scheduled time. For guaranteed daily backups, either keep an
+> always-on instance or trigger an external cron (e.g. cron-job.org or a
+> scheduled GitHub Action) against a protected endpoint that calls
+> `runBackup()`.
+
+---
+
+## 🚦 Rate Limiting
+
+All public (unauthenticated) endpoints are protected by centralized limiters
+in `Backend/middleware/rateLimiter.js`:
+
+| Limiter | Endpoint | Limit |
+|---|---|---|
+| `contactLimiter` | `POST /api/contact` | 5 submissions / 15 minutes / IP |
+| `chatbotLimiter` | `POST /api/chatbot` | 15 messages / 10 minutes / IP |
+| `authLimiter` | `POST /api/auth/login` | 10 attempts / 15 minutes / IP |
+
+`app.set('trust proxy', 1)` in `server.js` ensures the real visitor IP is
+read correctly behind Render/Railway/Vercel's reverse proxy, so the limits
+apply per actual visitor rather than per proxy hop.
 
 ---
 
@@ -543,7 +750,9 @@ NODE_ENV=production
 MONGO_URI=your_mongodb_connection_string
 
 JWT_SECRET=your_production_jwt_secret
-JWT_EXPIRE=30d
+JWT_EXPIRE=15m
+JWT_REFRESH_SECRET=your_production_refresh_secret
+JWT_REFRESH_EXPIRE=30d
 
 ADMIN_PIN=your_admin_pin
 
@@ -553,20 +762,38 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 GROQ_API_KEY=your_groq_api_key
 
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=465
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_gmail_app_password
+EMAIL_FROM=your_email@gmail.com
+ADMIN_NOTIFY_EMAIL=your_email@gmail.com
+
 FRONTEND_URL=https://your-frontend-domain.vercel.app
 ```
 
-> Never use `localhost` as a production API URL. The backend also auto-allows any `*.vercel.app` origin, in addition to the explicit list above.
+> Never use `localhost` as a production API URL. The backend also
+> auto-allows any `*.vercel.app` origin, in addition to the explicit list
+> above.
 
 ---
 
 ## 🔒 Security Considerations
 
-- JWT-protected admin APIs
+- JWT **access + refresh** token authentication; refresh tokens live in an
+  httpOnly cookie and are never exposed to frontend JavaScript
+- `JWT_SECRET` and `JWT_REFRESH_SECRET` must be distinct, high-entropy values
+- Second-factor **admin PIN** required to reach the dashboard, beyond the
+  password login
 - Strict, allow-listed CORS configuration
 - Environment-based secrets (nothing hard-coded)
-- Direct PDF access blocked at the static file layer; resumes are only served through the controlled public endpoint
-- PDF upload validation via Multer
+- Rate limiting on login, contact form, and chatbot endpoints (see
+  [Rate Limiting](#-rate-limiting))
+- Every admin mutation (create/update/delete/login) is written to an
+  **audit log**, viewable from the dashboard
+- Direct PDF access blocked at the static file layer; resumes are only
+  served through the controlled public endpoint
+- PDF/image upload validation via Multer
 - Request body size limits
 - Separate frontend/backend deployment
 - No production credentials ever committed to the repo
@@ -577,14 +804,11 @@ FRONTEND_URL=https://your-frontend-domain.vercel.app
 
 - Automated CI/CD pipeline
 - Automated unit/integration tests
-- Visitor & portfolio analytics
-- Blog/CMS module
+- Multi-language support for admin-authored content (blog/projects)
 - Project filtering & search
-- Email notifications on new contact messages
-- Rate limiting on public endpoints (chatbot, contact form)
-- Refresh-token authentication
-- Automated database backups
+- Two-factor authentication via authenticator app (TOTP)
 - Advanced image optimization
+- Automated Lighthouse/CI checks on every deploy
 
 ---
 
@@ -594,13 +818,28 @@ FRONTEND_URL=https://your-frontend-domain.vercel.app
 Make sure `GROQ_API_KEY` is set in `Backend/.env` and that the model name in `chatbotController.js` matches a model your Groq account currently has access to — Groq periodically retires older model names.
 
 **Chatbot says "sending messages too quickly"**
-That's the built-in rate limiter (15 messages / 10 minutes / IP). Wait a few minutes, or adjust the `windowMs` / `limit` values in `Backend/routes/chatbotRoutes.js` if you need a different threshold.
+That's the built-in rate limiter (15 messages / 10 minutes / IP). Wait a few minutes, or adjust the values in `Backend/middleware/rateLimiter.js` if you need a different threshold.
 
 **Chatbot streaming works locally but not in production**
 Check that your hosting provider doesn't buffer `text/event-stream` responses. `chatbotController.js` already sends `X-Accel-Buffering: no`, but some platforms need streaming explicitly enabled in their dashboard/config.
 
-**`npm run dev` fails after pulling these chatbot changes**
-Run `npm install` inside `Backend/` — the new rate limiter added `express-rate-limit` as a dependency.
+**Admin login fails with `Error: secretOrPrivateKey must have a value`**
+`JWT_REFRESH_SECRET` (or `JWT_SECRET`) is missing from `Backend/.env`. Add both — see [Environment Variables](#-environment-variables) — and **fully restart** the dev server (`Ctrl+C` then `npm run dev`); `.env` is only read on process start, so nodemon won't auto-pick up edits to it.
+
+**`Failed to resolve import "framer-motion"` in the browser**
+The package is listed in `package.json` but hasn't actually been installed yet. Run, inside `Frontend/`:
+```bash
+npm install framer-motion
+```
+If the error persists after that, do a clean reinstall:
+```bash
+rmdir /s /q node_modules   # macOS/Linux: rm -rf node_modules
+del package-lock.json      # macOS/Linux: rm package-lock.json
+npm install
+```
+
+**`npm run dev` fails after pulling new backend changes**
+Run `npm install` inside `Backend/` — new features (rate limiting, backups, etc.) add new dependencies over time.
 
 **`git commit` fails with `error: unknown switch`**
 Use the `-m` flag with quotes around the message, e.g. `git commit -m "your message"` (not `git commit -"your message"`).
