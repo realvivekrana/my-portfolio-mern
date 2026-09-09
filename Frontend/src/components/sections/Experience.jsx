@@ -177,7 +177,7 @@ const Experience = () => {
         className="py-20"
       >
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-white/[0.08] dark:bg-white/[0.025]">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Experience
             </h2>
@@ -210,7 +210,7 @@ const Experience = () => {
         {/* --------------------------------------------------------------- */}
 
         <div className="mx-auto mb-14 max-w-3xl text-center">
-          <span className="mb-3 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+          <span className="mb-3 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-purple-300">
             {t('experience.eyebrow')}
           </span>
 
@@ -231,7 +231,7 @@ const Experience = () => {
 
           {/* Timeline Line */}
 
-          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-gray-800 sm:left-1/2 sm:block sm:-translate-x-1/2" />
+          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-white/[0.08] sm:left-1/2 sm:block sm:-translate-x-1/2" />
 
           <div className="space-y-12">
 
@@ -254,7 +254,7 @@ const Experience = () => {
                     {/* --------------------------------------------------- */}
 
                     <div className="absolute left-0 top-1 hidden sm:left-1/2 sm:block sm:-translate-x-1/2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-lg dark:border-gray-950 dark:bg-blue-500">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] shadow-lg dark:border-[#050505] dark:shadow-[0_0_18px_rgba(139,92,246,0.5)]">
                         <span className="h-2.5 w-2.5 rounded-full bg-white" />
                       </div>
                     </div>
@@ -264,7 +264,7 @@ const Experience = () => {
                     {/* --------------------------------------------------- */}
 
                     <div className="sm:hidden">
-                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm backdrop-blur-md transition-all duration-300 dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_45px_rgba(139,92,246,0.08)]">
 
                         {/* Role */}
 
@@ -274,7 +274,7 @@ const Experience = () => {
                               'Role'}
                           </h3>
 
-                          <p className="mt-1 text-base font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="mt-1 text-base font-semibold text-blue-600 dark:text-purple-300">
                             {experience.company ||
                               'Company'}
                           </p>
@@ -284,19 +284,19 @@ const Experience = () => {
 
                         <div className="mt-4 flex flex-wrap gap-2">
                           {experience.duration && (
-                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                               {experience.duration}
                             </span>
                           )}
 
                           {experience.type && (
-                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-purple-500/10 dark:text-purple-300">
                               {experience.type}
                             </span>
                           )}
 
                           {experience.location && (
-                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                               {experience.location}
                             </span>
                           )}
@@ -338,7 +338,7 @@ const Experience = () => {
                                       }
                                       className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
                                     >
-                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-purple-400" />
 
                                       <span>
                                         {typeof responsibility ===
@@ -378,7 +378,7 @@ const Experience = () => {
                                       key={
                                         technologyIndex
                                       }
-                                      className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                      className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors duration-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-gray-300 dark:hover:border-purple-400/25 dark:hover:text-purple-200"
                                     >
                                       {
                                         technology
@@ -407,7 +407,7 @@ const Experience = () => {
                             : 'sm:col-start-2'
                         }
                       >
-                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900">
+                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_50px_rgba(139,92,246,0.1)]">
 
                           {/* Header */}
 
@@ -417,7 +417,7 @@ const Experience = () => {
                                 'Role'}
                             </h3>
 
-                            <p className="mt-1 text-base font-semibold text-blue-600 dark:text-blue-400">
+                            <p className="mt-1 text-base font-semibold text-blue-600 dark:text-purple-300">
                               {experience.company ||
                                 'Company'}
                             </p>
@@ -427,19 +427,19 @@ const Experience = () => {
 
                           <div className="mt-4 flex flex-wrap gap-2">
                             {experience.duration && (
-                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                                 {experience.duration}
                               </span>
                             )}
 
                             {experience.type && (
-                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-purple-500/10 dark:text-purple-300">
                                 {experience.type}
                               </span>
                             )}
 
                             {experience.location && (
-                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                                 {experience.location}
                               </span>
                             )}
@@ -481,7 +481,7 @@ const Experience = () => {
                                         }
                                         className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
                                       >
-                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-purple-400" />
 
                                         <span>
                                           {typeof responsibility ===
@@ -521,7 +521,7 @@ const Experience = () => {
                                         key={
                                           technologyIndex
                                         }
-                                        className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                        className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors duration-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-gray-300 dark:hover:border-purple-400/25 dark:hover:text-purple-200"
                                       >
                                         {
                                           technology

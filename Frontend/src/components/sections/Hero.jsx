@@ -392,7 +392,7 @@ function Hero() {
 
             {/* Name */}
 
-            <h1 className="mb-4 break-words text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="hero-title mb-4 break-words text-4xl sm:text-6xl lg:text-7xl">
               {firstName}
 
               {lastName && (
@@ -404,7 +404,7 @@ function Hero() {
 
             {/* Role */}
 
-            <h2 className="mb-6 text-xl font-bold sm:text-3xl text-gray-700 sm:text-3xl dark:text-gray-200">
+            <h2 className="mb-6 text-xl font-bold text-gray-700 sm:text-3xl dark:text-gray-200">
               {hero.role}
             </h2>
 
@@ -418,13 +418,13 @@ function Hero() {
                 CTA BUTTONS
             ================================================== */}
 
-            <div className="mb-9 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="mb-9 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
 
-              {/* VIEW MY WORK */}
+              {/* VIEW MY WORK — primary action, strongest visual weight */}
 
               <a
                 href="#projects"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3.5 font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:shadow-[0_8px_24px_rgba(139,92,246,0.35)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_14px_34px_rgba(139,92,246,0.5)] sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:shadow-[0_10px_30px_rgba(139,92,246,0.4)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_16px_38px_rgba(139,92,246,0.55)] sm:w-auto"
               >
                 View My Work
 
@@ -432,33 +432,35 @@ function Hero() {
               </a>
 
               {/* =================================================
-                  DOWNLOAD RESUME
+                  RESUME ACTIONS — secondary group, lighter weight,
+                  visually paired so the primary CTA stays dominant
               ================================================== */}
 
-              <button
-                type="button"
-                onClick={handleResumeDownload}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white/90 px-7 py-3.5 font-semibold text-gray-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 hover:shadow-lg dark:border-purple-500/25 dark:bg-white/[0.03] dark:text-gray-200 dark:hover:border-purple-400/60 dark:hover:bg-purple-500/10 dark:hover:text-purple-300 dark:hover:shadow-[0_10px_28px_-8px_rgba(139,92,246,0.4)] sm:w-auto"
-              >
-                <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
+              <div className="flex w-full items-center gap-2 sm:w-auto">
 
-                Download Resume
-              </button>
+                <button
+                  type="button"
+                  onClick={handleResumeDownload}
+                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white/90 px-5 py-3.5 text-sm font-semibold text-gray-800 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/50 dark:hover:bg-purple-500/10 dark:hover:text-purple-300 sm:flex-none"
+                >
+                  <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
 
-              {/* =================================================
-                  VIEW RESUME
-              ================================================== */}
+                  Download Resume
+                </button>
 
-              <a
-                href={publicResumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50/90 px-7 py-3.5 font-semibold text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300 sm:w-auto"
-              >
-                <FaFilePdf className="text-sm text-red-500 transition-transform duration-300 group-hover:scale-110" />
+                <a
+                  href={publicResumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="View resume in a new tab"
+                  className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50/90 px-4 py-3.5 text-sm font-semibold text-gray-700 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.06] dark:bg-white/[0.02] dark:text-gray-400 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+                >
+                  <FaFilePdf className="text-sm text-red-500 transition-transform duration-300 group-hover:scale-110" />
 
-                View Resume
-              </a>
+                  <span className="hidden sm:inline">View</span>
+                </a>
+
+              </div>
 
             </div>
 

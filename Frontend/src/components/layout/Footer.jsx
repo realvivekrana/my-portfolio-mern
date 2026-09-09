@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+
 import API from '../../utils/axios';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -678,8 +680,7 @@ const handleSectionClick = (
                     border
                     border-gray-200
                     bg-white
-                    text-xs
-                    font-bold
+                    text-base
                     text-gray-700
                     shadow-sm
                     transition-all
@@ -688,15 +689,16 @@ const handleSectionClick = (
                     hover:border-gray-900
                     hover:bg-gray-900
                     hover:text-white
-                    dark:border-white/10
-                    dark:bg-white/[0.04]
+                    dark:border-white/[0.08]
+                    dark:bg-white/[0.03]
                     dark:text-gray-300
-                    dark:hover:border-white
+                    dark:hover:border-purple-400/40
                     dark:hover:bg-white
                     dark:hover:text-gray-900
+                    dark:hover:shadow-[0_0_20px_rgba(139,92,246,0.25)]
                   "
                 >
-                  GH
+                  <FaGithub className="transition-transform duration-300 group-hover:scale-110" />
                 </a>
               )}
 
@@ -707,6 +709,7 @@ const handleSectionClick = (
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
                   className="
+                    group
                     flex
                     h-10
                     w-10
@@ -716,8 +719,7 @@ const handleSectionClick = (
                     border
                     border-gray-200
                     bg-white
-                    text-xs
-                    font-bold
+                    text-base
                     text-gray-700
                     shadow-sm
                     transition-all
@@ -726,14 +728,15 @@ const handleSectionClick = (
                     hover:border-blue-600
                     hover:bg-blue-600
                     hover:text-white
-                    dark:border-white/10
-                    dark:bg-white/[0.04]
+                    dark:border-white/[0.08]
+                    dark:bg-white/[0.03]
                     dark:text-gray-300
-                    dark:hover:border-blue-500
+                    dark:hover:border-blue-400/50
                     dark:hover:bg-blue-500
+                    dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]
                   "
                 >
-                  IN
+                  <FaLinkedin className="transition-transform duration-300 group-hover:scale-110" />
                 </a>
               )}
 
@@ -742,6 +745,7 @@ const handleSectionClick = (
                   href={`mailto:${email}`}
                   aria-label="Email"
                   className="
+                    group
                     flex
                     h-10
                     w-10
@@ -752,7 +756,6 @@ const handleSectionClick = (
                     border-gray-200
                     bg-white
                     text-sm
-                    font-bold
                     text-gray-700
                     shadow-sm
                     transition-all
@@ -761,14 +764,15 @@ const handleSectionClick = (
                     hover:border-indigo-600
                     hover:bg-indigo-600
                     hover:text-white
-                    dark:border-white/10
-                    dark:bg-white/[0.04]
+                    dark:border-white/[0.08]
+                    dark:bg-white/[0.03]
                     dark:text-gray-300
-                    dark:hover:border-purple-500
+                    dark:hover:border-purple-400/50
                     dark:hover:bg-purple-500
+                    dark:hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]
                   "
                 >
-                  @
+                  <FaEnvelope className="transition-transform duration-300 group-hover:scale-110" />
                 </a>
               )}
             </div>

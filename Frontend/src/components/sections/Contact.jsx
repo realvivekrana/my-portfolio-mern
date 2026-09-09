@@ -734,7 +734,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="Your name"
                     autoComplete="name"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
                   />
 
                 </div>
@@ -760,7 +760,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="you@example.com"
                     autoComplete="email"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
                   />
 
                 </div>
@@ -785,7 +785,7 @@ function Contact() {
                     onChange={handleChange}
                     rows="6"
                     placeholder="Tell me a little about your project or opportunity..."
-                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:ring-4 focus:ring-purple-500/15 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-500 dark:focus:bg-white/[0.05]"
+                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
                   />
 
                 </div>

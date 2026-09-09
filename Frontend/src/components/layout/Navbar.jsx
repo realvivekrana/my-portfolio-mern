@@ -272,7 +272,7 @@ function Navbar() {
               title={
                 isDark ? t('theme.light') : t('theme.dark')
               }
-              className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               {isDark ? (
                 <FaSun className="text-sm text-yellow-400 transition-transform duration-300 group-hover:rotate-45" />
@@ -288,7 +288,7 @@ function Navbar() {
               onClick={toggleLanguage}
               aria-label={t('language.switchTo')}
               title={t('language.switchTo')}
-              className="group flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-2.5 text-xs font-bold text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="group flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-2.5 text-xs font-bold text-gray-600 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLanguage className="text-sm" />
               <span className="uppercase">
@@ -302,7 +302,7 @@ function Navbar() {
               href="/admin/login"
               aria-label="Admin Login"
               title="Admin Login"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLock className="text-xs" />
               <span>{t('nav.admin')}</span>
@@ -326,7 +326,11 @@ function Navbar() {
                 : 'Open navigation menu'
             }
             aria-expanded={isMobileMenuOpen}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-all duration-300 hover:bg-gray-200 active:scale-95 lg:hidden dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 active:scale-95 lg:hidden ${
+              isMobileMenuOpen
+                ? 'border-purple-400/40 bg-purple-500/10 text-purple-600 shadow-[0_0_16px_rgba(139,92,246,0.2)] dark:border-purple-400/40 dark:bg-purple-500/15 dark:text-purple-300'
+                : 'border-gray-200 bg-gray-100 text-gray-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/30 dark:hover:bg-purple-500/10 dark:hover:text-purple-300'
+            }`}
           >
             {isMobileMenuOpen ? (
               <FaTimes className="text-base" />
@@ -368,13 +372,22 @@ function Navbar() {
                     onClick={() =>
                       handleNavigation(link.href)
                     }
-                    className={`flex min-h-11 w-full items-center rounded-xl px-4 py-3 text-left text-sm font-semibold transition-all duration-300 active:scale-[0.99] ${
+                    className={`relative flex min-h-11 w-full items-center rounded-xl py-3 pl-4 pr-4 text-left text-sm font-semibold transition-all duration-300 active:scale-[0.99] ${
                       isActive
                         ? 'bg-indigo-50 text-indigo-600 dark:bg-purple-500/10 dark:text-purple-300'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                     }`}
                   >
-                    {link.name}
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-1.5 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-gradient-to-b from-[#8B5CF6] to-[#3B82F6] shadow-[0_0_8px_rgba(139,92,246,0.6)]"
+                      />
+                    )}
+
+                    <span className={isActive ? 'ml-3' : ''}>
+                      {link.name}
+                    </span>
                   </button>
                 );
               })}
@@ -396,7 +409,7 @@ function Navbar() {
               aria-label={
                 isDark ? t('theme.light') : t('theme.dark')
               }
-              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               {isDark ? (
                 <>
@@ -418,7 +431,7 @@ function Navbar() {
             <button
               type="button"
               onClick={toggleLanguage}
-              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.98] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLanguage />
               <span>
@@ -435,7 +448,7 @@ function Navbar() {
             <a
               href="/admin/login"
               onClick={handleAdminClick}
-              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.99] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-purple-500/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
+              className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.99] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLock className="text-xs" />
               {t('nav.admin')} Access

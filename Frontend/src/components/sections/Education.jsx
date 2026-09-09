@@ -224,8 +224,8 @@ const Education = () => {
         className="relative overflow-hidden py-20 sm:py-24"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <FaGraduationCap className="mx-auto text-4xl text-blue-600 dark:text-blue-400" />
+          <div className="mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-white/[0.08] dark:bg-white/[0.025]">
+            <FaGraduationCap className="mx-auto text-4xl text-blue-600 dark:text-purple-300" />
 
             <h2 className="mt-5 text-2xl font-bold text-gray-900 dark:text-white">
               Education
@@ -274,7 +274,7 @@ const Education = () => {
 
         <div className="mx-auto mb-14 max-w-3xl text-center sm:mb-16">
 
-          <span className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+          <span className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-purple-300">
             <FaGraduationCap />
 
             {t('education.eyebrow')}
@@ -300,7 +300,7 @@ const Education = () => {
 
           {/* Timeline */}
 
-          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-gray-800 sm:left-1/2 sm:block sm:-translate-x-1/2" />
+          <div className="absolute left-5 top-0 hidden h-full w-px bg-gray-200 dark:bg-white/[0.08] sm:left-1/2 sm:block sm:-translate-x-1/2" />
 
           <div className="space-y-10 sm:space-y-14">
 
@@ -323,7 +323,7 @@ const Education = () => {
                     ==================================================== */}
 
                     <div className="absolute left-0 top-1 hidden sm:left-1/2 sm:block sm:-translate-x-1/2">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-blue-600 text-white shadow-lg dark:border-gray-950 dark:bg-blue-500">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] text-white shadow-lg dark:border-[#050505] dark:shadow-[0_0_18px_rgba(139,92,246,0.5)]">
 
                         {getEducationIcon(
                           item?.icon,
@@ -339,11 +339,11 @@ const Education = () => {
 
                     <div className="sm:hidden">
 
-                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm backdrop-blur-md transition-all duration-300 dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_45px_rgba(139,92,246,0.08)]">
 
                         {/* Icon */}
 
-                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600 dark:bg-blue-950/30 dark:text-blue-400">
+                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-xl text-blue-600 dark:bg-purple-500/10 dark:text-purple-300">
 
                           {getEducationIcon(
                             item?.icon,
@@ -361,7 +361,7 @@ const Education = () => {
 
                         {/* Institution */}
 
-                        <p className="mt-2 text-base font-semibold text-blue-600 dark:text-blue-400">
+                        <p className="mt-2 text-base font-semibold text-blue-600 dark:text-purple-300">
                           {item?.institution ||
                             'Institution'}
                         </p>
@@ -371,13 +371,13 @@ const Education = () => {
                         <div className="mt-4 flex flex-wrap gap-2">
 
                           {item?.duration && (
-                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                               {item.duration}
                             </span>
                           )}
 
                           {item?.status && (
-                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-purple-500/10 dark:text-purple-300">
                               {item.status}
                             </span>
                           )}
@@ -418,7 +418,7 @@ const Education = () => {
                                       }
                                       className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
                                     >
-                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-purple-400" />
 
                                       <span>
                                         {
@@ -454,11 +454,11 @@ const Education = () => {
                         }
                       >
 
-                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900">
+                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_50px_rgba(139,92,246,0.1)]">
 
                           {/* Icon */}
 
-                          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-blue-600 dark:bg-blue-950/30 dark:text-blue-400">
+                          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-blue-600 dark:bg-purple-500/10 dark:text-purple-300">
 
                             {getEducationIcon(
                               item?.icon,
@@ -476,7 +476,7 @@ const Education = () => {
 
                           {/* Institution */}
 
-                          <p className="mt-2 text-base font-semibold text-blue-600 dark:text-blue-400">
+                          <p className="mt-2 text-base font-semibold text-blue-600 dark:text-purple-300">
                             {item?.institution ||
                               'Institution'}
                           </p>
@@ -486,13 +486,13 @@ const Education = () => {
                           <div className="mt-4 flex flex-wrap gap-2">
 
                             {item?.duration && (
-                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-white/[0.04] dark:text-gray-300">
                                 {item.duration}
                               </span>
                             )}
 
                             {item?.status && (
-                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-purple-500/10 dark:text-purple-300">
                                 {item.status}
                               </span>
                             )}
@@ -533,7 +533,7 @@ const Education = () => {
                                         }
                                         className="flex gap-3 text-sm leading-6 text-gray-600 dark:text-gray-400"
                                       >
-                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
+                                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-600 dark:bg-purple-400" />
 
                                         <span>
                                           {

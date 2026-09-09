@@ -480,11 +480,14 @@ function Skills() {
                           key={
                             skill.name
                           }
-                          className="rounded-2xl border border-white/[0.07] bg-black/40 p-4"
+                          className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-black/40 p-4"
                         >
-                          <div className="h-10 rounded bg-white/5" />
+                          <div className="h-11 w-11 shrink-0 rounded-xl bg-white/5" />
 
-                          <div className="mt-4 h-1.5 rounded-full bg-white/5" />
+                          <div className="flex-1">
+                            <div className="h-3.5 w-20 rounded bg-white/10" />
+                            <div className="mt-2 h-2.5 w-14 rounded bg-white/5" />
+                          </div>
                         </div>
                       )
                     )}
@@ -642,72 +645,28 @@ function Skills() {
                           skill._id ||
                           skill.name
                         }
-                        className="group/skill relative overflow-hidden rounded-2xl border border-white/[0.07] bg-black/40 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:bg-white/[0.035] hover:shadow-[0_0_25px_rgba(139,92,246,0.07)]"
+                        className="group/skill relative flex items-center gap-3 overflow-hidden rounded-2xl border border-white/[0.07] bg-black/40 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:bg-white/[0.035] hover:shadow-[0_0_25px_rgba(139,92,246,0.07)]"
                       >
 
                         <div className="pointer-events-none absolute -right-8 -top-8 h-16 w-16 rounded-full bg-purple-500/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover/skill:opacity-100" />
 
-                        <div className="relative flex items-center justify-between gap-3">
-
-                          <div className="flex min-w-0 items-center gap-3">
-
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.035] text-xl text-gray-300 transition-all duration-300 group-hover/skill:scale-110 group-hover/skill:border-purple-400/25 group-hover/skill:text-purple-300">
-                              {getSkillIcon(
-                                skill.icon
-                              )}
-                            </div>
-
-                            <div className="min-w-0">
-
-                              <p className="truncate text-sm font-bold text-gray-200">
-                                {skill.name}
-                              </p>
-
-                              <p className="mt-0.5 text-[11px] font-medium text-gray-500">
-                                {skill.level}
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                          <span className="shrink-0 text-xs font-bold text-purple-300">
-                            {Math.min(
-                              100,
-                              Math.max(
-                                0,
-                                Number(
-                                  skill.progress
-                                ) ||
-                                  0
-                              )
-                            )}
-                            %
-                          </span>
-
+                        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.035] text-xl text-gray-300 transition-all duration-300 group-hover/skill:scale-110 group-hover/skill:border-purple-400/25 group-hover/skill:text-purple-300 group-hover/skill:shadow-[0_0_16px_rgba(139,92,246,0.2)]">
+                          {getSkillIcon(
+                            skill.icon
+                          )}
                         </div>
 
-                        {/* =================================================
-                            PROGRESS BAR
-                        ================================================== */}
+                        <div className="relative min-w-0">
 
-                        <div className="relative mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                          <p className="truncate text-sm font-bold text-gray-200">
+                            {skill.name}
+                          </p>
 
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_10px_rgba(139,92,246,0.4)] transition-all duration-1000 ease-out group-hover/skill:shadow-[0_0_16px_rgba(139,92,246,0.7)]"
-                            style={{
-                              width: `${Math.min(
-                                100,
-                                Math.max(
-                                  0,
-                                  Number(
-                                    skill.progress
-                                  ) ||
-                                    0
-                                )
-                              )}%`,
-                            }}
-                          />
+                          {skill.level && (
+                            <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-gray-500 transition-colors duration-300 group-hover/skill:text-purple-300/80">
+                              {skill.level}
+                            </p>
+                          )}
 
                         </div>
 

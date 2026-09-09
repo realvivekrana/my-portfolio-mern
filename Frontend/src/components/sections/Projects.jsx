@@ -154,7 +154,7 @@ function Projects() {
     return (
       <article
         key={project._id}
-        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(139,92,246,0.1)] sm:rounded-3xl ${
+        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-purple-400/30 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(139,92,246,0.12)] sm:rounded-3xl ${
           isFeatured
             ? 'border-purple-400/25 shadow-[0_0_45px_rgba(139,92,246,0.05)]'
             : 'border-white/[0.08]'
@@ -190,7 +190,7 @@ function Projects() {
               alt={`${project.title} project screenshot`}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-950/35 via-black to-blue-950/30">

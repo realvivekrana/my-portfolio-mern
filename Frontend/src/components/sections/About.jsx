@@ -580,11 +580,11 @@ function About() {
 
                 <div className="pointer-events-none absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                <p className="relative break-words text-2xl font-extrabold tracking-tight text-purple-300 sm:text-3xl">
+                <p className="relative break-words bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-2xl font-extrabold tracking-tight text-transparent transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
                   {stat.value}
                 </p>
 
-                <p className="relative mt-1.5 text-[11px] font-medium leading-5 text-gray-500 sm:mt-2 sm:text-sm">
+                <p className="relative mt-1.5 text-[11px] font-medium leading-5 text-gray-500 transition-colors duration-300 group-hover:text-gray-400 sm:mt-2 sm:text-sm">
                   {stat.label}
                 </p>
 
