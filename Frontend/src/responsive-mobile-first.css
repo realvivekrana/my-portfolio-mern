@@ -6,7 +6,7 @@
 
 :root {
   --responsive-gutter: 1rem;
-  --responsive-section-y: 4rem;
+  --responsive-section-y: 3rem;
   --responsive-content: 80rem;
   --responsive-radius: 1rem;
 }
@@ -49,16 +49,16 @@ select {
   min-width: 0;
 }
 
-.premium-portfolio main > section > section[id] {
+.premium-portfolio main > section > section[id]:not(#home) {
   padding-left: var(--responsive-gutter) !important;
   padding-right: var(--responsive-gutter) !important;
   padding-top: var(--responsive-section-y) !important;
   padding-bottom: var(--responsive-section-y) !important;
 }
 
-.premium-portfolio main > section > section[id] > .relative,
-.premium-portfolio main > section > section[id] > .container,
-.premium-portfolio main > section > section[id] > div.relative {
+.premium-portfolio main > section > section[id]:not(#home) > .relative,
+.premium-portfolio main > section > section[id]:not(#home) > .container,
+.premium-portfolio main > section > section[id]:not(#home) > div.relative {
   width: 100%;
   max-width: var(--responsive-content);
   min-width: 0;
@@ -75,7 +75,7 @@ select {
 .premium-portfolio a,
 .premium-portfolio button,
 .premium-portfolio span {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .premium-portfolio h1 {
@@ -208,7 +208,7 @@ select {
 }
 
 /* ---------- Forms ---------- */
-.premium-portfolio input,
+.premium-portfolio input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="hidden"]),
 .premium-portfolio textarea,
 .premium-portfolio select {
   width: 100%;
@@ -258,7 +258,7 @@ select {
 @media (min-width: 30rem) {
   :root {
     --responsive-gutter: 1.25rem;
-    --responsive-section-y: 4.5rem;
+    --responsive-section-y: 3.5rem;
   }
 
   .premium-hero {
@@ -284,7 +284,7 @@ select {
 @media (min-width: 40rem) {
   :root {
     --responsive-gutter: 1.5rem;
-    --responsive-section-y: 5rem;
+    --responsive-section-y: 4rem;
   }
 
   .premium-hero-copy {
@@ -299,7 +299,7 @@ select {
     gap: 3rem !important;
   }
 
-  .premium-portfolio main > section > section[id] {
+  .premium-portfolio main > section > section[id]:not(#home) {
     scroll-margin-top: 5.5rem;
   }
 }
@@ -308,7 +308,7 @@ select {
 @media (min-width: 48rem) {
   :root {
     --responsive-gutter: 2rem;
-    --responsive-section-y: 5.5rem;
+    --responsive-section-y: 4.5rem;
   }
 
   .premium-hero {
@@ -330,8 +330,8 @@ select {
   }
 }
 
-/* ---------- 900px ---------- */
-@media (min-width: 56.25rem) {
+/* ---------- 1024px: hero two-column (matches Tailwind lg) ---------- */
+@media (min-width: 64rem) {
   :root {
     --responsive-gutter: 2.5rem;
   }
@@ -366,7 +366,7 @@ select {
 @media (min-width: 64rem) {
   :root {
     --responsive-gutter: 2rem;
-    --responsive-section-y: 6rem;
+    --responsive-section-y: 5rem;
   }
 
   .premium-navbar {
@@ -386,7 +386,7 @@ select {
     gap: 5rem !important;
   }
 
-  .premium-portfolio main > section > section[id] {
+  .premium-portfolio main > section > section[id]:not(#home) {
     scroll-margin-top: 6rem;
   }
 }
@@ -394,7 +394,7 @@ select {
 /* ---------- 1280px ---------- */
 @media (min-width: 80rem) {
   :root {
-    --responsive-section-y: 7rem;
+    --responsive-section-y: 5.5rem;
   }
 
   .premium-hero-grid {
@@ -406,10 +406,10 @@ select {
 @media (min-width: 96rem) {
   :root {
     --responsive-gutter: 2.5rem;
-    --responsive-section-y: 7.5rem;
+    --responsive-section-y: 6rem;
   }
 
-  .premium-portfolio main > section > section[id] {
+  .premium-portfolio main > section > section[id]:not(#home) {
     padding-left: max(var(--responsive-gutter), calc((100vw - var(--responsive-content)) / 2)) !important;
     padding-right: max(var(--responsive-gutter), calc((100vw - var(--responsive-content)) / 2)) !important;
   }

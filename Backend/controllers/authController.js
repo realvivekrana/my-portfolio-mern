@@ -79,6 +79,21 @@ const registerAdmin = async (req, res) => {
     }
 
     // ==================================================
+    // SECURITY: sirf PEHLA admin register ho sakta hai
+    // --------------------------------------------------
+    // Pehle ye route public tha — koi bhi /api/auth/register hit karke
+    // admin ban sakta tha aur poora portfolio edit/delete kar sakta tha.
+    // Ab admin pehle se ho to registration band hai.
+    // ==================================================
+
+    if ((await Admin.countDocuments()) > 0) {
+      return res.status(403).json({
+        success: false,
+        message: 'Registration is disabled. An admin account already exists.',
+      });
+    }
+
+    // ==================================================
     // CHECK EXISTING ADMIN
     // ==================================================
 

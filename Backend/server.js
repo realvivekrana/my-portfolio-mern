@@ -137,7 +137,11 @@ app.use(
       // ALLOW ALL VERCEL PREVIEW + PRODUCTION DEPLOYMENTS
       // ------------------------------------------------
 
+      // SECURITY: pehle koi bhi *.vercel.app (kisi ki bhi site) credentials ke
+      // saath API access kar sakti thi. Ab sirf tab jab Render env me
+      // ALLOW_VERCEL_PREVIEWS=true set ho (preview deployments test karne ke liye).
       if (
+        process.env.ALLOW_VERCEL_PREVIEWS === 'true' &&
         /^https:\/\/[a-z0-9-]+(\.vercel\.app)$/.test(normalizedOrigin)
       ) {
         return callback(null, true);
