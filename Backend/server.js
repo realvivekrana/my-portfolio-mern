@@ -186,6 +186,18 @@ app.use(
 );
 
 // ======================================================
+// RESPONSE COMPRESSION (JSON 70-80% chhota => site tez)
+// `npm install compression` karna hai. Na ho to bhi server chalega.
+// ======================================================
+
+try {
+  const compression = require('compression');
+  app.use(compression());
+} catch (err) {
+  console.warn('compression package not installed - run: npm install compression');
+}
+
+// ======================================================
 // JSON BODY PARSER
 // ======================================================
 

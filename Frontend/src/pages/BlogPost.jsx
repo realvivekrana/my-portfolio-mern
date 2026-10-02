@@ -17,6 +17,7 @@ import AnimatedBackground from '../components/ui/AnimatedBackground';
 
 import API from '../utils/axios';
 import { optimizeImageUrl } from '../utils/optimizeImage';
+import useSeo from '../utils/useSeo';
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,13 @@ function BlogPost() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useSeo({
+    title: post?.title,
+    description: post?.excerpt,
+    path: `/blog/${slug}`,
+    image: post?.coverImage,
+  });
 
   useEffect(() => {
     const fetchPost = async () => {

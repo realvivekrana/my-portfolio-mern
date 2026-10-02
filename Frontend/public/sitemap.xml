@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  my-portfolio-mern — sitemap.xml
-
-  This is a single-page application: About/Skills/Projects/Contact
-  are all in-page anchor sections (#about, #projects, etc.) on the
-  same document, not separate crawlable routes. Search engines treat
-  anchor URLs as the same page, so listing only the homepage here
-  avoids duplicate-content confusion.
-
-  /admin/* is intentionally excluded — see robots.txt.
-
-  Update <lastmod> whenever you make a significant content change
-  (new project, updated About copy, etc.) so crawlers know to re-scan.
+  Single-page portfolio: sections (#about, #projects...) same page hain.
+  Blog posts aur case-study pages naye add karo to yahan <url> jodna
+  mat bhoolna (ya Search Console me URL inspect karke index karwao).
+  /admin/* jaanbujh kar exclude hai.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://my-portfolio-mern-mauve.vercel.app/</loc>
-    <lastmod>2026-09-06</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://my-portfolio-mern-mauve.vercel.app/blog</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

@@ -14,6 +14,7 @@ import AnimatedBackground from '../components/ui/AnimatedBackground';
 
 import API from '../utils/axios';
 import { optimizeImageUrl } from '../utils/optimizeImage';
+import useSeo from '../utils/useSeo';
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,13 @@ import { optimizeImageUrl } from '../utils/optimizeImage';
 */
 
 function BlogArchive() {
+  useSeo({
+    title: 'Blog - MERN Stack, React & Node.js Articles',
+    description:
+      'Articles by Vivek Rana on MERN stack development, React, Node.js, Express and MongoDB.',
+    path: '/blog',
+  });
+
   const [posts, setPosts] = useState([]);
   const [tags, setTags] = useState([]);
   const [activeTag, setActiveTag] = useState('');

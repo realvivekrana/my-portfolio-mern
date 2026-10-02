@@ -71,40 +71,36 @@
       href="https://res.cloudinary.com"
     />
 
+    <!-- Backend (Render) connection pehle se garam -->
+    <link
+      rel="preconnect"
+      href="https://my-portfolio-backend.onrender.com"
+      crossorigin
+    />
+
+    <!-- Fonts: render-blocking nahi (pehle CSS @import me the) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      />
+    </noscript>
+
     <!-- =====================================================
          FAVICON
     ====================================================== -->
 
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/apple-touch-icon.png"
-    />
-
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/apple-touch-icon.png"
-    />
-
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/apple-touch-icon.png"
-    />
-
-    <link
-      rel="icon"
-      href="/apple-touch-icon.png"
-    />
-
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/apple-touch-icon.png"
-    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <!-- =====================================================
          PWA — MANIFEST
@@ -266,7 +262,7 @@
 
     <meta
       property="og:image"
-      content="https://my-portfolio-backend.onrender.com/api/portfolio/og-image"
+      content="https://my-portfolio-mern-mauve.vercel.app/og-default.png"
     />
 
     <meta
@@ -305,7 +301,7 @@
 
     <meta
       name="twitter:image"
-      content="https://my-portfolio-backend.onrender.com/api/portfolio/og-image"
+      content="https://my-portfolio-mern-mauve.vercel.app/og-default.png"
     />
 
     <!-- =====================================================
@@ -316,10 +312,56 @@
       http-equiv="X-UA-Compatible"
       content="IE=edge"
     />
+
+    <!-- Structured data: JS ke bina bhi Google ko dikhta hai -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://my-portfolio-mern-mauve.vercel.app/#person",
+            "name": "Vivek Kumar Rana",
+            "alternateName": ["Vivek Rana", "Vivek Kumar Rana"],
+            "jobTitle": "MERN Stack Developer",
+            "description": "MERN Stack Developer building scalable, responsive and user-focused web applications using React, Node.js, Express.js and MongoDB.",
+            "url": "https://my-portfolio-mern-mauve.vercel.app/",
+            "image": "https://my-portfolio-mern-mauve.vercel.app/og-default.png",
+            "knowsAbout": ["React", "Node.js", "Express.js", "MongoDB", "JavaScript", "MERN Stack"],
+            "sameAs": [
+              "https://github.com/realvivekrana",
+              "https://www.linkedin.com/in/mrvivekrana/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://my-portfolio-mern-mauve.vercel.app/#website",
+            "url": "https://my-portfolio-mern-mauve.vercel.app/",
+            "name": "Vivek Rana | Portfolio",
+            "inLanguage": "en-IN",
+            "author": { "@id": "https://my-portfolio-mern-mauve.vercel.app/#person" }
+          }
+        ]
+      }
+    </script>
   </head>
 
-  <body>
-    <div id="root"></div>
+  <body style="margin:0;background:#050505;color:#fff">
+    <div id="root">
+      <main style="font-family:system-ui,sans-serif;max-width:720px;margin:0 auto;padding:96px 20px;line-height:1.6">
+        <h1 style="font-size:32px;margin:0 0 8px">Vivek Rana</h1>
+        <p style="font-size:18px;margin:0 0 16px;opacity:.85">MERN Stack Developer</p>
+        <p style="margin:0 0 20px;opacity:.75">
+          I build scalable, responsive and user-friendly web applications with
+          React, Node.js, Express.js and MongoDB. Based in Pune, India.
+        </p>
+        <nav style="display:flex;gap:16px;flex-wrap:wrap">
+          <a style="color:#c4b5fd" href="/blog">Blog</a>
+          <a style="color:#c4b5fd" href="https://github.com/realvivekrana">GitHub</a>
+          <a style="color:#c4b5fd" href="https://www.linkedin.com/in/mrvivekrana/">LinkedIn</a>
+        </nav>
+      </main>
+    </div>
 
     <script
       type="module"

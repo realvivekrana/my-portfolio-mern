@@ -17,6 +17,7 @@ import AnimatedBackground from '../components/ui/AnimatedBackground';
 
 import API from '../utils/axios';
 import { optimizeImageUrl } from '../utils/optimizeImage';
+import useSeo from '../utils/useSeo';
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,13 @@ function ProjectCaseStudy() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  useSeo({
+    title: project?.title,
+    description: project?.description,
+    path: `/projects/${slug}`,
+    image: Array.isArray(project?.images) ? project.images[0]?.url || project.images[0] : project?.image,
+  });
 
   useEffect(() => {
     const fetchProject = async () => {

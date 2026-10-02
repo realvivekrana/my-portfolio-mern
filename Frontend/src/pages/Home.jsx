@@ -77,10 +77,20 @@ function Home() {
   |--------------------------------------------------------------------------
   */
 
-  const [isPrivate, setIsPrivate] = useState(false);
+  // Pehle last-known visibility (localStorage) se shuru karte hain aur
+  // page TURANT dikhate hain. API ka jawab baad me aata hai.
+  // (Pehle yahan "Loading portfolio..." spinner tha jo Render backend ke
+  // jaagne tak 30-60 sec rukta tha — aur Google ko bhi sirf spinner dikhta tha.)
+  const [isPrivate, setIsPrivate] = useState(() => {
+    try {
+      return localStorage.getItem('portfolioPrivate') === '1';
+    } catch {
+      return false;
+    }
+  });
 
   const [checkingVisibility, setCheckingVisibility] =
-    useState(true);
+    useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -154,8 +164,6 @@ function Home() {
   useEffect(() => {
     const checkPortfolioVisibility = async () => {
       try {
-        setCheckingVisibility(true);
-
         const response = await API.get('/portfolio');
 
         const portfolio = response.data?.data;
@@ -180,8 +188,10 @@ function Home() {
             ?.portfolioVisibility === 'private'
         ) {
           setIsPrivate(true);
+          try { localStorage.setItem('portfolioPrivate', '1'); } catch { /* ignore */ }
         } else {
           setIsPrivate(false);
+          try { localStorage.removeItem('portfolioPrivate'); } catch { /* ignore */ }
 
           /*
           |--------------------------------------------------------------------------

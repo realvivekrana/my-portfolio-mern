@@ -244,4 +244,43 @@ API.interceptors.response.use(
   }
 );
 
+/*
+|--------------------------------------------------------------------------
+| PUBLIC GET DEDUPE + SHORT CACHE
+|--------------------------------------------------------------------------
+| Home page par ~10 components alag-alag `GET /portfolio` bhejte the (har
+| baar poora payload). Ab same request ek hi baar jaati hai aur 60 sec tak
+| reuse hoti hai. Admin login ho (adminToken) to cache bypass hota hai, taaki
+| dashboard me edit ke baad hamesha fresh data mile.
+|--------------------------------------------------------------------------
+*/
+
+const CACHE_TTL_MS = 60 * 1000;
+const CACHEABLE = /^\/(portfolio|projects|testimonials|certificates|blog)(\/|\?|$)/;
+const getCache = new Map();
+const originalGet = API.get.bind(API);
+
+API.get = (url, config = {}) => {
+  const isPublicCacheable =
+    typeof url === 'string' &&
+    CACHEABLE.test(url) &&
+    !config.signal &&
+    !localStorage.getItem('adminToken');
+
+  if (!isPublicCacheable) return originalGet(url, config);
+
+  const key = `${url}|${JSON.stringify(config.params || {})}`;
+  const hit = getCache.get(key);
+
+  if (hit && Date.now() - hit.time < CACHE_TTL_MS) return hit.promise;
+
+  const promise = originalGet(url, config).catch((error) => {
+    getCache.delete(key);
+    throw error;
+  });
+
+  getCache.set(key, { time: Date.now(), promise });
+  return promise;
+};
+
 export default API;
