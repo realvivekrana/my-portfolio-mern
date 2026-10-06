@@ -254,6 +254,26 @@ select {
   min-width: 0;
 }
 
+/* Footer: mobile-first extras */
+.premium-portfolio footer a,
+.premium-portfolio footer button {
+  touch-action: manipulation;
+}
+
+.premium-portfolio footer h2,
+.premium-portfolio footer h3,
+.premium-portfolio footer p {
+  overflow-wrap: anywhere;
+}
+
+/* Touch devices: hover-slide effect disable (sticky hover avoid karne ke liye) */
+@media (hover: none) {
+  .premium-portfolio footer a:hover,
+  .premium-portfolio footer button:hover {
+    transform: none !important;
+  }
+}
+
 /* ---------- 480px ---------- */
 @media (min-width: 30rem) {
   :root {
