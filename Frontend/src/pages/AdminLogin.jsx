@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
@@ -9,14 +9,45 @@ import {
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
+import Loader from '../components/ui/Loader';
 
 function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const {
+    admin,
+    loading: authLoading,
+    pinVerified,
+    login,
+  } = useAuth();
+
   const navigate = useNavigate();
+
+  /*
+  |--------------------------------------------------------------------------
+  | ALREADY LOGGED IN? -> LOGIN FORM MAT DIKHAO
+  |--------------------------------------------------------------------------
+  |
+  | Dashboard se back karke dobara "Admin" dabane par pehle login form
+  | aa jaata tha, kyunki is page ne kabhi session check hi nahi kiya.
+  | Ab agar admin pehle se logged-in hai to seedha dashboard (PIN verify
+  | ho chuka ho) ya PIN page par bhej dete hain.
+  |
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    if (authLoading || !admin) return;
+
+    navigate(
+      pinVerified
+        ? '/admin/dashboard'
+        : '/admin/pin',
+      { replace: true }
+    );
+  }, [authLoading, admin, pinVerified, navigate]);
 
   /*
   |--------------------------------------------------------------------------
@@ -60,6 +91,16 @@ function AdminLogin() {
   const handleBackToPortfolio = () => {
     navigate('/');
   };
+
+  /*
+  |--------------------------------------------------------------------------
+  | SESSION CHECK CHAL RAHA HAI / REDIRECT HONE WALA HAI
+  |--------------------------------------------------------------------------
+  */
+
+  if (authLoading || admin) {
+    return <Loader fullScreen />;
+  }
 
   /*
   |--------------------------------------------------------------------------

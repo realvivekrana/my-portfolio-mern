@@ -19,6 +19,8 @@ function AdminPin() {
 
   const {
     admin,
+    loading: authLoading,
+    pinVerified,
     verifyPin,
     logout,
   } = useAuth();
@@ -42,12 +44,24 @@ function AdminPin() {
   */
 
   useEffect(() => {
+    // Refresh par session check (/auth/me) khatam hone tak wait karo,
+    // warna admin abhi null hota hai aur galti se login par bhej deta tha.
+    if (authLoading) return;
+
     if (!admin) {
       navigate('/admin/login', {
         replace: true,
       });
+      return;
     }
-  }, [admin, navigate]);
+
+    // PIN pehle hi verify ho chuka hai -> dobara PIN mat maango
+    if (pinVerified) {
+      navigate('/admin/dashboard', {
+        replace: true,
+      });
+    }
+  }, [authLoading, admin, pinVerified, navigate]);
 
   /*
   |--------------------------------------------------------------------------

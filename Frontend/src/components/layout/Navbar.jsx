@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import {
@@ -298,15 +299,15 @@ function Navbar() {
 
             {/* Admin */}
 
-            <a
-              href="/admin/login"
+            <Link
+              to="/admin/login"
               aria-label="Admin Login"
               title="Admin Login"
               className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLock className="text-xs" />
               <span>{t('nav.admin')}</span>
-            </a>
+            </Link>
           </div>
 
           {/* =================================================
@@ -445,14 +446,14 @@ function Navbar() {
                 ADMIN ACCESS
             ================================================== */}
 
-            <a
-              href="/admin/login"
+            <Link
+              to="/admin/login"
               onClick={handleAdminClick}
               className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 active:scale-[0.99] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/40 dark:hover:bg-purple-500/10 dark:hover:text-purple-300"
             >
               <FaLock className="text-xs" />
               {t('nav.admin')} Access
-            </a>
+            </Link>
           </div>
         </div>
       </header>
