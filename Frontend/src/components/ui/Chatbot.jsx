@@ -502,9 +502,9 @@ function Chatbot() {
           flex h-12 w-12
           items-center justify-center
           rounded-full
-          bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6]
+          bg-gradient-to-br from-[#C9A24B] to-[#9C7A3C]
           text-white
-          shadow-lg shadow-[#8B5CF6]/30
+          shadow-lg shadow-[#C9A24B]/30
           transition-transform duration-300
           hover:scale-110
           hover:brightness-110
@@ -548,7 +548,7 @@ function Chatbot() {
             border border-b-0 border-gray-200
             bg-white
             shadow-2xl
-            dark:border-purple-500/15 dark:bg-[#0b0b12]/98 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)]
+            dark:border-purple-500/15 dark:bg-[#0b0b12]/98 dark:shadow-[0_8px_40px_rgba(201,162,75,0.15)]
 
             sm:inset-x-auto sm:bottom-24 sm:right-6
             sm:h-[70vh] sm:max-h-[600px] sm:w-[380px]
@@ -568,7 +568,7 @@ function Chatbot() {
               px-4 py-3
               text-white
               dark:border-white/[0.08]
-              dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6]
+              dark:bg-gradient-to-r dark:from-[#C9A24B] dark:to-[#9C7A3C]
             "
           >
             <div className="flex min-w-0 items-center gap-3">
@@ -644,7 +644,7 @@ function Chatbot() {
                     flex h-7 w-7 shrink-0 items-center justify-center rounded-full
                     ${
                       msg.role === 'user'
-                        ? 'bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6]'
+                        ? 'bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#C9A24B] dark:to-[#9C7A3C]'
                         : 'bg-gray-100 text-indigo-600 dark:bg-white/[0.06] dark:text-purple-300'
                     }
                   `}
@@ -662,7 +662,7 @@ function Chatbot() {
                       break-words rounded-2xl px-3 py-2 text-sm leading-relaxed
                       ${
                         msg.role === 'user'
-                          ? 'rounded-tr-sm bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6]'
+                          ? 'rounded-tr-sm bg-indigo-600 text-white dark:bg-gradient-to-br dark:from-[#C9A24B] dark:to-[#9C7A3C]'
                           : 'rounded-tl-sm bg-gray-100 text-gray-800 dark:bg-white/[0.06] dark:text-gray-100'
                       }
                     `}
@@ -763,7 +763,7 @@ function Chatbot() {
                 text-white
                 transition-colors
                 hover:bg-indigo-500
-                dark:bg-gradient-to-br dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:hover:brightness-110
+                dark:bg-gradient-to-br dark:from-[#C9A24B] dark:to-[#9C7A3C] dark:hover:brightness-110
                 disabled:cursor-not-allowed
                 disabled:opacity-50
 

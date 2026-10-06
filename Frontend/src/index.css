@@ -2,6 +2,56 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* LUXURY: purple/violet/indigo/blue utilities ab champagne-gold ramp hain */
+@theme {
+  --font-display: "Cormorant Garamond", "Plus Jakarta Sans", Georgia, serif;
+  --color-purple-50: #fbf7ec;
+  --color-purple-100: #f5ecd2;
+  --color-purple-200: #ecdba8;
+  --color-purple-300: #e6cc8e;
+  --color-purple-400: #d9b868;
+  --color-purple-500: #c9a24b;
+  --color-purple-600: #a8832f;
+  --color-purple-700: #86671f;
+  --color-purple-800: #664d19;
+  --color-purple-900: #473514;
+  --color-purple-950: #2a1f0a;
+  --color-violet-50: #fbf7ec;
+  --color-violet-100: #f5ecd2;
+  --color-violet-200: #ecdba8;
+  --color-violet-300: #e6cc8e;
+  --color-violet-400: #d9b868;
+  --color-violet-500: #c9a24b;
+  --color-violet-600: #a8832f;
+  --color-violet-700: #86671f;
+  --color-violet-800: #664d19;
+  --color-violet-900: #473514;
+  --color-violet-950: #2a1f0a;
+  --color-indigo-50: #fbf7ec;
+  --color-indigo-100: #f5ecd2;
+  --color-indigo-200: #ecdba8;
+  --color-indigo-300: #e6cc8e;
+  --color-indigo-400: #d9b868;
+  --color-indigo-500: #c9a24b;
+  --color-indigo-600: #a8832f;
+  --color-indigo-700: #86671f;
+  --color-indigo-800: #664d19;
+  --color-indigo-900: #473514;
+  --color-indigo-950: #2a1f0a;
+  --color-blue-50: #fbf7ec;
+  --color-blue-100: #f5ecd2;
+  --color-blue-200: #ecdba8;
+  --color-blue-300: #e6cc8e;
+  --color-blue-400: #d9b868;
+  --color-blue-500: #c9a24b;
+  --color-blue-600: #a8832f;
+  --color-blue-700: #86671f;
+  --color-blue-800: #664d19;
+  --color-blue-900: #473514;
+  --color-blue-950: #2a1f0a;
+}
+
+
 /* =========================================================
    GLOBAL DESIGN SYSTEM
    ========================================================= */
@@ -85,9 +135,9 @@
   /*
    * Purple / blue glow accents.
    */
-  --accent-indigo: #a78bfa;
-  --accent-purple: #8b5cf6;
-  --accent-blue: #3b82f6;
+  --accent-indigo: #E6CC8E;
+  --accent-purple: #C9A24B;
+  --accent-blue: #9C7A3C;
   --accent-cyan: #7dd3fc;
   --accent-emerald: #d4d4d4;
   --accent-green: #e5e5e5;
@@ -96,12 +146,12 @@
   --accent-red: #f0f0f0;
   --accent-pink: #d1d5db;
 
-  --accent: #8b5cf6;
-  --accent-2: #3b82f6;
-  --accent-hover: #a78bfa;
+  --accent: #C9A24B;
+  --accent-2: #9C7A3C;
+  --accent-hover: #E6CC8E;
 
-  --glow-purple: rgba(139, 92, 246, 0.45);
-  --glow-blue: rgba(59, 130, 246, 0.35);
+  --glow-purple: rgba(201,162,75, 0.45);
+  --glow-blue: rgba(156,122,60, 0.35);
 
   --shadow-sm:
     0 1px 2px rgba(0, 0, 0, 0.35);
@@ -113,7 +163,7 @@
     0 25px 60px rgba(0, 0, 0, 0.55);
 
   --shadow-accent:
-    0 20px 50px rgba(139, 92, 246, 0.18);
+    0 20px 50px rgba(201,162,75, 0.18);
 }
 
 /* =========================================================
@@ -308,7 +358,7 @@ html:not(.dark) .text-indigo-600 {
 .dark .text-indigo-400,
 .dark .text-indigo-500,
 .dark .text-indigo-600 {
-  color: #a78bfa !important;
+  color: #E6CC8E !important;
 }
 
 /* =========================================================
@@ -628,7 +678,7 @@ a {
 
 .dark .glass {
   background: rgba(11, 11, 18, 0.78);
-  border-color: rgba(139, 92, 246, 0.18);
+  border-color: rgba(201,162,75, 0.18);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
@@ -661,11 +711,11 @@ a {
 }
 
 .dark .premium-card:hover {
-  border-color: rgba(139, 92, 246, 0.35);
+  border-color: rgba(201,162,75, 0.35);
   box-shadow:
     0 20px 45px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(139, 92, 246, 0.12),
-    0 0 40px -12px rgba(139, 92, 246, 0.35);
+    0 0 0 1px rgba(201,162,75, 0.12),
+    0 0 40px -12px rgba(201,162,75, 0.35);
 }
 
 /* =========================================================
@@ -706,8 +756,8 @@ a {
     135deg,
     #ffffff 0%,
     #c4b5fd 45%,
-    #8b5cf6 75%,
-    #3b82f6 100%
+    #C9A24B 75%,
+    #9C7A3C 100%
   );
 
   background-clip: text;
@@ -717,7 +767,7 @@ a {
 
 /* Accent gradient text — for selected words/highlights only */
 .accent-gradient-text {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #C9A24B 0%, #9C7A3C 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -745,12 +795,12 @@ a {
 .dark .background-grid {
   background-image:
     linear-gradient(
-      rgba(139, 92, 246, 0.06) 1px,
+      rgba(201,162,75, 0.06) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(139, 92, 246, 0.06) 1px,
+      rgba(201,162,75, 0.06) 1px,
       transparent 1px
     );
 }
@@ -843,8 +893,8 @@ a {
   background: linear-gradient(
     135deg,
     rgba(99, 102, 241, 0.45),
-    rgba(168, 85, 247, 0.25),
-    rgba(59, 130, 246, 0.35)
+    rgba(201,162,75, 0.25),
+    rgba(156,122,60, 0.35)
   );
 
   -webkit-mask:
@@ -858,9 +908,9 @@ a {
 .dark .gradient-border::before {
   background: linear-gradient(
     135deg,
-    rgba(139, 92, 246, 0.6),
-    rgba(59, 130, 246, 0.35),
-    rgba(167, 139, 250, 0.5)
+    rgba(201,162,75, 0.6),
+    rgba(156,122,60, 0.35),
+    rgba(230,204,142, 0.5)
   );
 }
 
@@ -883,14 +933,14 @@ a {
 }
 
 .dark .btn-glow {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #C9A24B 0%, #9C7A3C 100%);
   color: #ffffff;
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+  box-shadow: 0 8px 24px rgba(201,162,75, 0.35);
 }
 
 .dark .btn-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 14px 34px rgba(201,162,75, 0.5);
   filter: brightness(1.06);
 }
 
@@ -899,8 +949,8 @@ a {
 }
 
 .dark .btn-outline-glow {
-  background: rgba(139, 92, 246, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(201,162,75, 0.06);
+  border: 1px solid rgba(201,162,75, 0.35);
   color: #f4f4f5;
   transition:
     transform 0.3s ease,
@@ -910,8 +960,8 @@ a {
 
 .dark .btn-outline-glow:hover {
   transform: translateY(-2px);
-  border-color: rgba(139, 92, 246, 0.7);
-  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(201,162,75, 0.7);
+  background: rgba(201,162,75, 0.12);
 }
 
 /* =========================================================

@@ -21,7 +21,7 @@ function NotFound() {
 
         <Link
           to="/"
-          className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] hover:brightness-110 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="bg-gradient-to-r from-[#C9A24B] to-[#9C7A3C] hover:brightness-110 text-white px-6 py-3 rounded-lg font-medium transition-colors"
         >
           Back to Home
         </Link>

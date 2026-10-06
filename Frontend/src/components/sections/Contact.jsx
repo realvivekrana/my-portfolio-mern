@@ -250,7 +250,7 @@ function Contact() {
               from-transparent
               via-purple-500
               to-transparent
-              shadow-[0_0_15px_rgba(139,92,246,0.7)]
+              shadow-[0_0_15px_rgba(201,162,75,0.7)]
               animate-[contactLightMove_10s_linear_infinite]
             "
           />
@@ -269,7 +269,7 @@ function Contact() {
               from-transparent
               via-purple-500
               to-transparent
-              shadow-[0_0_15px_rgba(168,85,247,0.7)]
+              shadow-[0_0_15px_rgba(201,162,75,0.7)]
               animate-[contactLightMoveReverse_14s_linear_infinite]
             "
           />
@@ -320,7 +320,7 @@ function Contact() {
           "
           style={{
             backgroundImage:
-              'linear-gradient(rgba(139,92,246,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.5) 1px, transparent 1px)',
+              'linear-gradient(rgba(201,162,75,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,162,75,0.5) 1px, transparent 1px)',
             backgroundSize: '60px 60px',
           }}
         />
@@ -348,12 +348,12 @@ function Contact() {
           <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
             {t('contact.heading')}{' '}
 
-            <span className="bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-400 dark:to-blue-400">
+            <span className="bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-400 dark:to-blue-400">
               {t('contact.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.4)]" />
+          <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#C9A24B] to-[#9C7A3C] shadow-[0_0_18px_rgba(201,162,75,0.4)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg dark:text-gray-400">
             {t('contact.subtitle')}
@@ -365,13 +365,13 @@ function Contact() {
             CONTACT CONTENT
         ================================================== */}
 
-        <div className="grid overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-purple-500/5 dark:border-white/[0.08] dark:bg-[#0b0b12] dark:shadow-[#8B5CF6]/15 lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-purple-500/5 dark:border-white/[0.08] dark:bg-[#0b0b12] dark:shadow-[#C9A24B]/15 lg:grid-cols-2">
 
           {/* =================================================
               LEFT SIDE
           ================================================== */}
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-[#8B5CF6] via-[#7c4fee] to-[#3B82F6] p-8 text-white sm:p-10 lg:p-12">
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#C9A24B] via-[#7c4fee] to-[#9C7A3C] p-8 text-white sm:p-10 lg:p-12">
 
             {/* =================================================
                 LEFT SIDE COSMIC ORBS
@@ -734,7 +734,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="Your name"
                     autoComplete="name"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(201,162,75,0.12),0_8px_20px_-6px_rgba(156,122,60,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(201,162,75,0.15),0_8px_24px_-6px_rgba(156,122,60,0.3)]"
                   />
 
                 </div>
@@ -760,7 +760,7 @@ function Contact() {
                     onChange={handleChange}
                     placeholder="you@example.com"
                     autoComplete="email"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(201,162,75,0.12),0_8px_20px_-6px_rgba(156,122,60,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(201,162,75,0.15),0_8px_24px_-6px_rgba(156,122,60,0.3)]"
                   />
 
                 </div>
@@ -785,7 +785,7 @@ function Contact() {
                     onChange={handleChange}
                     rows="6"
                     placeholder="Tell me a little about your project or opportunity..."
-                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(139,92,246,0.12),0_8px_20px_-6px_rgba(59,130,246,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(139,92,246,0.15),0_8px_24px_-6px_rgba(59,130,246,0.3)]"
+                    className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm leading-6 text-gray-900 outline-none transition-all duration-300 placeholder:text-gray-400 focus:-translate-y-0.5 focus:border-purple-500 focus:bg-white focus:shadow-[0_0_0_4px_rgba(201,162,75,0.12),0_8px_20px_-6px_rgba(156,122,60,0.25)] dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-white dark:placeholder:text-gray-600 dark:focus:border-purple-400/70 dark:focus:bg-white/[0.05] dark:focus:shadow-[0_0_0_4px_rgba(201,162,75,0.15),0_8px_24px_-6px_rgba(156,122,60,0.3)]"
                   />
 
                 </div>
@@ -797,7 +797,7 @@ function Contact() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#8B5CF6]/25 transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-xl hover:shadow-[#8B5CF6]/40 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A24B] to-[#9C7A3C] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#C9A24B]/25 transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-xl hover:shadow-[#C9A24B]/40 disabled:cursor-not-allowed disabled:opacity-70"
                 >
 
                   {/* Button Shine */}

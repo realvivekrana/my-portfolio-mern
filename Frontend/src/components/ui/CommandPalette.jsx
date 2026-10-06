@@ -375,7 +375,7 @@ function CommandPalette() {
       role="presentation"
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)]"
+        className="w-full max-w-xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(201,162,75,0.15)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"

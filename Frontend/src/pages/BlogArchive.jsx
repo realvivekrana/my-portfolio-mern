@@ -99,7 +99,7 @@ function BlogArchive() {
 
           <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             All{' '}
-            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
               Articles
             </span>
           </h1>

@@ -696,7 +696,7 @@ const handleSectionClick = (
                     dark:hover:border-purple-400/40
                     dark:hover:bg-white
                     dark:hover:text-gray-900
-                    dark:hover:shadow-[0_0_20px_rgba(139,92,246,0.25)]
+                    dark:hover:shadow-[0_0_20px_rgba(201,162,75,0.25)]
                   "
                 >
                   <FaGithub className="transition-transform duration-300 group-hover:scale-110" />
@@ -734,7 +734,7 @@ const handleSectionClick = (
                     dark:text-gray-300
                     dark:hover:border-blue-400/50
                     dark:hover:bg-blue-500
-                    dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]
+                    dark:hover:shadow-[0_0_20px_rgba(156,122,60,0.3)]
                   "
                 >
                   <FaLinkedin className="transition-transform duration-300 group-hover:scale-110" />
@@ -770,7 +770,7 @@ const handleSectionClick = (
                     dark:text-gray-300
                     dark:hover:border-purple-400/50
                     dark:hover:bg-purple-500
-                    dark:hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]
+                    dark:hover:shadow-[0_0_20px_rgba(201,162,75,0.3)]
                   "
                 >
                   <FaEnvelope className="transition-transform duration-300 group-hover:scale-110" />

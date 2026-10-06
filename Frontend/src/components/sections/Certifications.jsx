@@ -218,7 +218,7 @@ function Certifications() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[certOrbOne_16s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[certOrbOne_16s_ease-in-out_infinite] rounded-full bg-[#C9A24B]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
       />
 
       <div
@@ -248,12 +248,12 @@ function Certifications() {
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('certifications.heading')}{' '}
 
-            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
               {t('certifications.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.5)] sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] shadow-[0_0_18px_rgba(201,162,75,0.5)] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
             {t('certifications.subtitle')}
@@ -308,14 +308,14 @@ function Certifications() {
                       certificate?._id ||
                       `${certificate?.title}-${index}`
                     }
-                    className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_55px_rgba(139,92,246,0.1)] sm:rounded-3xl"
+                    className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(201,162,75,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_55px_rgba(201,162,75,0.1)] sm:rounded-3xl"
                   >
 
                     {/* =================================================
                         TOP GRADIENT
                     ================================================== */}
 
-                    <div className="relative h-1 w-full overflow-hidden bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6]">
+                    <div className="relative h-1 w-full overflow-hidden bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C]">
 
                       <div className="absolute inset-0 animate-[certificateLine_5s_linear_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
 
@@ -360,7 +360,7 @@ function Certifications() {
 
                       <div className="relative z-10 mb-5 flex items-start justify-between gap-4 sm:mb-6">
 
-                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-purple-400/15 bg-purple-500/10 text-xl text-purple-300 shadow-[0_0_20px_rgba(139,92,246,0.08)] transition-all duration-300 group-hover:scale-110 group-hover:border-purple-400/25 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_25px_rgba(139,92,246,0.18)] sm:h-14 sm:w-14 sm:rounded-2xl sm:text-2xl">
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-purple-400/15 bg-purple-500/10 text-xl text-purple-300 shadow-[0_0_20px_rgba(201,162,75,0.08)] transition-all duration-300 group-hover:scale-110 group-hover:border-purple-400/25 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_25px_rgba(201,162,75,0.18)] sm:h-14 sm:w-14 sm:rounded-2xl sm:text-2xl">
 
                           <div className="absolute -inset-1 rounded-2xl bg-purple-500/10 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
 
@@ -453,7 +453,7 @@ function Certifications() {
                             }
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-purple-400/25 bg-purple-500/10 px-5 py-3 text-xs font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(139,92,246,0.15)] sm:text-sm"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-purple-400/25 bg-purple-500/10 px-5 py-3 text-xs font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(201,162,75,0.15)] sm:text-sm"
                           >
                             <FaExternalLinkAlt className="text-[10px]" />
 
@@ -483,7 +483,7 @@ function Certifications() {
             BOTTOM MESSAGE
         ====================================================== */}
 
-        <div className="relative mt-8 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-br from-[#8B5CF6]/[0.07] via-black/40 to-[#3B82F6]/[0.06] p-5 text-center shadow-[0_0_45px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
+        <div className="relative mt-8 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-br from-[#C9A24B]/[0.07] via-black/40 to-[#9C7A3C]/[0.06] p-5 text-center shadow-[0_0_45px_rgba(201,162,75,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
 
           {/* Moving Glow */}
 
@@ -491,7 +491,7 @@ function Certifications() {
 
           <div className="relative z-10">
 
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-purple-400/15 bg-purple-500/10 text-purple-300 shadow-[0_0_20px_rgba(139,92,246,0.1)] sm:h-12 sm:w-12 sm:rounded-2xl">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-purple-400/15 bg-purple-500/10 text-purple-300 shadow-[0_0_20px_rgba(201,162,75,0.1)] sm:h-12 sm:w-12 sm:rounded-2xl">
               <FaCertificate />
             </div>
 

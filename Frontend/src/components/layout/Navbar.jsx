@@ -198,7 +198,7 @@ function Navbar() {
         <nav
           className={`premium-navbar-inner mx-auto flex w-full max-w-7xl items-center justify-between rounded-2xl border transition-all duration-500 ${
             isScrolled
-              ? 'border-gray-200/80 bg-white/90 px-3 py-2.5 shadow-lg shadow-gray-900/5 backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/90 dark:shadow-[0_8px_32px_rgba(139,92,246,0.12)] sm:px-5 sm:py-3'
+              ? 'border-gray-200/80 bg-white/90 px-3 py-2.5 shadow-lg shadow-gray-900/5 backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/90 dark:shadow-[0_8px_32px_rgba(201,162,75,0.12)] sm:px-5 sm:py-3'
               : 'border-gray-200/60 bg-white/70 px-3 py-2.5 backdrop-blur-lg dark:border-white/[0.08] dark:bg-[#0b0b12]/70 sm:px-5 sm:py-3'
           }`}
         >
@@ -214,7 +214,7 @@ function Navbar() {
           >
             {/* Logo Box */}
 
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] text-sm font-extrabold text-white shadow-md shadow-[#8B5CF6]/30 transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#C9A24B] to-[#9C7A3C] text-sm font-extrabold text-white shadow-md shadow-[#C9A24B]/30 transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
               V
             </span>
 
@@ -328,7 +328,7 @@ function Navbar() {
             aria-expanded={isMobileMenuOpen}
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 active:scale-95 lg:hidden ${
               isMobileMenuOpen
-                ? 'border-purple-400/40 bg-purple-500/10 text-purple-600 shadow-[0_0_16px_rgba(139,92,246,0.2)] dark:border-purple-400/40 dark:bg-purple-500/15 dark:text-purple-300'
+                ? 'border-purple-400/40 bg-purple-500/10 text-purple-600 shadow-[0_0_16px_rgba(201,162,75,0.2)] dark:border-purple-400/40 dark:bg-purple-500/15 dark:text-purple-300'
                 : 'border-gray-200 bg-gray-100 text-gray-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-purple-400/30 dark:hover:bg-purple-500/10 dark:hover:text-purple-300'
             }`}
           >
@@ -345,7 +345,7 @@ function Navbar() {
         ====================================================== */}
 
         <div
-          className={`mx-auto mt-2 w-full max-w-7xl overflow-hidden rounded-2xl border border-gray-200/80 bg-white/95 shadow-xl shadow-gray-900/10 backdrop-blur-xl transition-all duration-300 dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)] lg:hidden ${
+          className={`mx-auto mt-2 w-full max-w-7xl overflow-hidden rounded-2xl border border-gray-200/80 bg-white/95 shadow-xl shadow-gray-900/10 backdrop-blur-xl transition-all duration-300 dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(201,162,75,0.15)] lg:hidden ${
             isMobileMenuOpen
               ? 'max-h-[calc(100vh-90px)] translate-y-0 opacity-100'
               : 'pointer-events-none max-h-0 -translate-y-2 opacity-0'
@@ -381,7 +381,7 @@ function Navbar() {
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-1.5 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-gradient-to-b from-[#8B5CF6] to-[#3B82F6] shadow-[0_0_8px_rgba(139,92,246,0.6)]"
+                        className="absolute left-1.5 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full bg-gradient-to-b from-[#C9A24B] to-[#9C7A3C] shadow-[0_0_8px_rgba(201,162,75,0.6)]"
                       />
                     )}
 

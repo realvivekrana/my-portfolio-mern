@@ -154,9 +154,9 @@ function Projects() {
     return (
       <article
         key={project._id}
-        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-purple-400/30 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(139,92,246,0.12)] sm:rounded-3xl ${
+        className={`group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white/[0.025] shadow-[0_0_40px_rgba(201,162,75,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-purple-400/30 hover:bg-white/[0.045] hover:shadow-[0_0_60px_rgba(201,162,75,0.12)] sm:rounded-3xl ${
           isFeatured
-            ? 'border-purple-400/25 shadow-[0_0_45px_rgba(139,92,246,0.05)]'
+            ? 'border-purple-400/25 shadow-[0_0_45px_rgba(201,162,75,0.05)]'
             : 'border-white/[0.08]'
         }`}
       >
@@ -232,7 +232,7 @@ function Projects() {
                 'view'
               );
             }}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-2 text-xs font-bold text-white opacity-100 shadow-lg backdrop-blur-md transition-all duration-300 dark:hover:bg-[#8B5CF6] hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] sm:opacity-0 sm:group-hover:opacity-100"
+            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/75 px-3.5 py-2 text-xs font-bold text-white opacity-100 shadow-lg backdrop-blur-md transition-all duration-300 dark:hover:bg-[#C9A24B] hover:shadow-[0_0_20px_rgba(201,162,75,0.3)] sm:opacity-0 sm:group-hover:opacity-100"
           >
             <FaEye />
 
@@ -344,7 +344,7 @@ function Projects() {
                     'live'
                   )
                 }
-                className="group/link inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-3.5 py-2.5 text-xs font-semibold text-purple-200 shadow-[0_0_15px_rgba(139,92,246,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(139,92,246,0.15)] sm:px-4 sm:text-sm"
+                className="group/link inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-3.5 py-2.5 text-xs font-semibold text-purple-200 shadow-[0_0_15px_rgba(201,162,75,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(201,162,75,0.15)] sm:px-4 sm:text-sm"
               >
                 <FaExternalLinkAlt className="text-[10px] transition-transform duration-300 group-hover/link:translate-x-0.5" />
 
@@ -415,7 +415,7 @@ function Projects() {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[projectsOrbOne_16s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
+          className="pointer-events-none absolute -left-32 top-20 h-60 w-60 animate-[projectsOrbOne_16s_ease-in-out_infinite] rounded-full bg-[#C9A24B]/12 blur-[100px] sm:-left-40 sm:h-80 sm:w-80"
         />
 
         <div
@@ -442,12 +442,12 @@ function Projects() {
 
             <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
               {t('projects.heading')}{' '}
-              <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
                 {t('projects.headingHighlight')}
               </span>
             </h2>
 
-            <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_18px_rgba(139,92,246,0.5)] sm:mt-5 sm:w-16" />
+            <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] shadow-[0_0_18px_rgba(201,162,75,0.5)] sm:mt-5 sm:w-16" />
 
             <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
               {t('projects.subtitle')}
@@ -492,7 +492,7 @@ function Projects() {
           {!loading &&
             !error &&
             projects.length === 0 && (
-              <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.08] bg-white/[0.025] px-6 py-12 text-center shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md">
+              <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.08] bg-white/[0.025] px-6 py-12 text-center shadow-[0_0_40px_rgba(201,162,75,0.03)] backdrop-blur-md">
 
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-400/15 bg-purple-500/10 text-purple-300">
                   <FaCode className="text-2xl" />
@@ -599,7 +599,7 @@ function Projects() {
           {!loading &&
             !error &&
             projects.length > 0 && (
-              <div className="relative mt-12 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-br from-[#8B5CF6]/[0.07] via-black/40 to-[#3B82F6]/[0.06] p-6 text-center shadow-[0_0_45px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-16 sm:rounded-3xl sm:p-10">
+              <div className="relative mt-12 overflow-hidden rounded-2xl border border-purple-400/15 bg-gradient-to-br from-[#C9A24B]/[0.07] via-black/40 to-[#9C7A3C]/[0.06] p-6 text-center shadow-[0_0_45px_rgba(201,162,75,0.04)] backdrop-blur-md sm:mt-16 sm:rounded-3xl sm:p-10">
 
                 {/* Moving Glow */}
 
@@ -624,7 +624,7 @@ function Projects() {
                     href={githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-6 inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-6 py-3 text-sm font-semibold text-purple-200 shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_30px_rgba(139,92,246,0.18)]"
+                    className="mt-6 inline-flex items-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-6 py-3 text-sm font-semibold text-purple-200 shadow-[0_0_20px_rgba(201,162,75,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_30px_rgba(201,162,75,0.18)]"
                   >
                     <FaGithub className="text-lg" />
 
@@ -720,7 +720,7 @@ function Projects() {
           }}
         >
 
-          <div className="relative max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/[0.1] bg-black shadow-[0_0_80px_rgba(139,92,246,0.12)] sm:max-h-[90vh] sm:rounded-3xl">
+          <div className="relative max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-white/[0.1] bg-black shadow-[0_0_80px_rgba(201,162,75,0.12)] sm:max-h-[90vh] sm:rounded-3xl">
 
             {/* =================================================
                 MODAL COSMIC GLOW
@@ -759,7 +759,7 @@ function Projects() {
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-950/35 via-black to-blue-950/30">
-                  <FaCode className="text-5xl font-black text-purple-300/40 drop-shadow-[0_0_20px_rgba(139,92,246,0.3)]" />
+                  <FaCode className="text-5xl font-black text-purple-300/40 drop-shadow-[0_0_20px_rgba(201,162,75,0.3)]" />
                 </div>
               )}
 
@@ -907,7 +907,7 @@ function Projects() {
                         'live'
                       )
                     }
-                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-5 py-3 text-sm font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(139,92,246,0.15)]"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-purple-400/20 bg-purple-500/10 px-5 py-3 text-sm font-semibold text-purple-200 transition-all duration-300 hover:border-purple-400/35 hover:bg-purple-500/20 hover:text-white hover:shadow-[0_0_25px_rgba(201,162,75,0.15)]"
                   >
                     <FaExternalLinkAlt className="text-xs" />
 

@@ -424,7 +424,7 @@ function Hero() {
 
               <a
                 href="#projects"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#8B5CF6] dark:to-[#3B82F6] dark:shadow-[0_10px_30px_rgba(139,92,246,0.4)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_16px_38px_rgba(139,92,246,0.55)] sm:w-auto"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#C9A24B] dark:to-[#9C7A3C] dark:shadow-[0_10px_30px_rgba(201,162,75,0.4)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_16px_38px_rgba(201,162,75,0.55)] sm:w-auto"
               >
                 View My Work
 
@@ -549,11 +549,11 @@ function Hero() {
 
                 {/* Soft glow behind the photo */}
 
-                <div className="absolute -inset-8 -z-10 rounded-full bg-[#8B5CF6]/0 blur-3xl dark:bg-[#8B5CF6]/20" />
+                <div className="absolute -inset-8 -z-10 rounded-full bg-[#C9A24B]/0 blur-3xl dark:bg-[#C9A24B]/20" />
 
                 {/* Image */}
 
-                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-2 shadow-2xl shadow-indigo-500/10 dark:border-white/[0.08] dark:from-[#0f0f17] dark:via-[#0b0b12] dark:to-[#0f0f17] dark:shadow-[0_0_60px_-10px_rgba(139,92,246,0.35)]">
+                <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-gray-200 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-2 shadow-2xl shadow-indigo-500/10 dark:border-white/[0.08] dark:from-[#0f0f17] dark:via-[#0b0b12] dark:to-[#0f0f17] dark:shadow-[0_0_60px_-10px_rgba(201,162,75,0.35)]">
 
                   <div className="h-full w-full overflow-hidden rounded-[1.5rem] bg-gray-100 dark:bg-gray-800">
 

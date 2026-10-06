@@ -323,7 +323,7 @@ const Education = () => {
                     ==================================================== */}
 
                     <div className="absolute left-0 top-1 hidden sm:left-1/2 sm:block sm:-translate-x-1/2">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] text-white shadow-lg dark:border-[#050505] dark:shadow-[0_0_18px_rgba(139,92,246,0.5)]">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-[#C9A24B] to-[#9C7A3C] text-white shadow-lg dark:border-[#050505] dark:shadow-[0_0_18px_rgba(201,162,75,0.5)]">
 
                         {getEducationIcon(
                           item?.icon,
@@ -339,7 +339,7 @@ const Education = () => {
 
                     <div className="sm:hidden">
 
-                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm backdrop-blur-md transition-all duration-300 dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_45px_rgba(139,92,246,0.08)]">
+                      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm backdrop-blur-md transition-all duration-300 dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(201,162,75,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_45px_rgba(201,162,75,0.08)]">
 
                         {/* Icon */}
 
@@ -454,7 +454,7 @@ const Education = () => {
                         }
                       >
 
-                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(139,92,246,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_50px_rgba(139,92,246,0.1)]">
+                        <div className="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-[0_0_35px_rgba(201,162,75,0.03)] dark:hover:border-purple-400/25 dark:hover:shadow-[0_0_50px_rgba(201,162,75,0.1)]">
 
                           {/* Icon */}
 

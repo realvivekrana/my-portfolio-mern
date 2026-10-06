@@ -155,7 +155,7 @@ function About() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-20 h-64 w-64 animate-[aboutOrbOne_14s_ease-in-out_infinite] rounded-full bg-[#8B5CF6]/12 blur-[100px] sm:h-80 sm:w-80"
+        className="pointer-events-none absolute -left-32 top-20 h-64 w-64 animate-[aboutOrbOne_14s_ease-in-out_infinite] rounded-full bg-[#C9A24B]/12 blur-[100px] sm:h-80 sm:w-80"
       />
 
       <div
@@ -186,12 +186,12 @@ function About() {
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             {t('about.heading')}{' '}
-            <span className="bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
               {t('about.headingHighlight')}
             </span>
           </h2>
 
-          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] shadow-[0_0_15px_rgba(139,92,246,0.5)] sm:mt-5 sm:w-16" />
+          <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] shadow-[0_0_15px_rgba(201,162,75,0.5)] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
             {t('about.subtitle')}
@@ -208,13 +208,13 @@ function About() {
               LEFT — PROFESSIONAL INTRODUCTION
           ==================================================== */}
 
-          <div className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(139,92,246,0.04)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(139,92,246,0.08)] sm:rounded-3xl sm:p-7 md:p-8">
+          <div className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(201,162,75,0.04)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_50px_rgba(201,162,75,0.08)] sm:rounded-3xl sm:p-7 md:p-8">
 
             {/* Profile Heading */}
 
             <div className="mb-6 flex items-center gap-3 sm:mb-7 sm:gap-4">
 
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] via-[#A78BFA] to-[#3B82F6] text-base font-extrabold text-white shadow-lg shadow-purple-500/25 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] text-base font-extrabold text-white shadow-lg shadow-purple-500/25 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-lg">
 
                 <div className="absolute -inset-1 -z-10 animate-pulse rounded-2xl bg-purple-500/20 blur-md" />
 
@@ -352,7 +352,7 @@ function About() {
                 EDUCATION
             ================================================== */}
 
-            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(139,92,246,0.08)] sm:rounded-3xl sm:p-7">
+            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(201,162,75,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(201,162,75,0.08)] sm:rounded-3xl sm:p-7">
 
               <div className="flex items-start gap-3 sm:gap-4">
 
@@ -393,7 +393,7 @@ function About() {
                 PREVIOUS EDUCATION
             ================================================== */}
 
-            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(168,85,247,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(168,85,247,0.08)] sm:rounded-3xl sm:p-7">
+            <div className="group rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(201,162,75,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-purple-400/20 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(201,162,75,0.08)] sm:rounded-3xl sm:p-7">
 
               <div className="flex items-start gap-3 sm:gap-4">
 
@@ -486,7 +486,7 @@ function About() {
             {expertise.map((item) => (
               <div
                 key={item.title}
-                className="group relative min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(139,92,246,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(139,92,246,0.1)] sm:rounded-3xl sm:p-6"
+                className="group relative min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_35px_rgba(201,162,75,0.03)] backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-purple-400/25 hover:bg-white/[0.04] hover:shadow-[0_0_45px_rgba(201,162,75,0.1)] sm:rounded-3xl sm:p-6"
               >
 
                 {/* Card Glow */}
@@ -495,7 +495,7 @@ function About() {
 
                 <div className="relative z-10">
 
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 text-lg text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.2)] sm:mb-5 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-purple-500/10 text-lg text-purple-300 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-500/15 group-hover:shadow-[0_0_20px_rgba(201,162,75,0.2)] sm:mb-5 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
                     {item.icon}
                   </div>
 
@@ -519,7 +519,7 @@ function About() {
             DEVELOPMENT STRENGTHS
         ====================================================== */}
 
-        <div className="mt-10 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(139,92,246,0.03)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
+        <div className="mt-10 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_0_40px_rgba(201,162,75,0.03)] backdrop-blur-md sm:mt-12 sm:rounded-3xl sm:p-7 md:p-8">
 
           <div className="mb-5 sm:mb-6">
 
@@ -558,7 +558,7 @@ function About() {
             QUICK STATISTICS
         ====================================================== */}
 
-        <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(139,92,246,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl">
+        <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025] shadow-[0_0_40px_rgba(201,162,75,0.04)] backdrop-blur-md sm:mt-12 sm:rounded-3xl">
 
           <div className="grid grid-cols-2 md:grid-cols-4">
 
@@ -580,7 +580,7 @@ function About() {
 
                 <div className="pointer-events-none absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                <p className="relative break-words bg-gradient-to-r from-[#A78BFA] via-[#8B5CF6] to-[#3B82F6] bg-clip-text text-2xl font-extrabold tracking-tight text-transparent transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
+                <p className="relative break-words bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-2xl font-extrabold tracking-tight text-transparent transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
                   {stat.value}
                 </p>
 

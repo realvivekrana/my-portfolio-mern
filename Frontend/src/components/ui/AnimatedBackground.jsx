@@ -62,7 +62,7 @@ function AnimatedBackground() {
     >
       {/* Large purple ambient glow, top-left */}
       <div
-        className="glow-blob animate-blob-drift -left-40 top-[-10%] h-[32rem] w-[32rem] bg-indigo-400/[0.05] dark:bg-[#8B5CF6]/[0.16]"
+        className="glow-blob animate-blob-drift -left-40 top-[-10%] h-[32rem] w-[32rem] bg-indigo-400/[0.05] dark:bg-[#C9A24B]/[0.16]"
         style={{
           transform:
             'translate3d(var(--mouse-x, 0px), var(--mouse-y, 0px), 0)',
@@ -72,7 +72,7 @@ function AnimatedBackground() {
 
       {/* Blue ambient glow, right side */}
       <div
-        className="glow-blob animate-blob-drift -right-40 top-[22%] h-[26rem] w-[26rem] bg-blue-400/[0.045] dark:bg-[#3B82F6]/[0.12]"
+        className="glow-blob animate-blob-drift -right-40 top-[22%] h-[26rem] w-[26rem] bg-blue-400/[0.045] dark:bg-[#9C7A3C]/[0.12]"
         style={{
           transform:
             'translate3d(calc(var(--mouse-x, 0px) * -0.6), calc(var(--mouse-y, 0px) * -0.6), 0)',
@@ -82,7 +82,7 @@ function AnimatedBackground() {
 
       {/* Soft secondary purple glow, lower section */}
       <div
-        className="glow-blob animate-blob-drift bottom-[-15%] left-[28%] h-[24rem] w-[24rem] bg-purple-400/[0.04] dark:bg-[#A78BFA]/[0.08]"
+        className="glow-blob animate-blob-drift bottom-[-15%] left-[28%] h-[24rem] w-[24rem] bg-purple-400/[0.04] dark:bg-[#E6CC8E]/[0.08]"
         style={{ animationDelay: '-11s' }}
       />
 
@@ -91,7 +91,7 @@ function AnimatedBackground() {
         className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(139,92,246,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.9) 1px, transparent 1px)',
+            'linear-gradient(rgba(201,162,75,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(201,162,75,0.9) 1px, transparent 1px)',
           backgroundSize: '64px 64px',
           maskImage:
             'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',

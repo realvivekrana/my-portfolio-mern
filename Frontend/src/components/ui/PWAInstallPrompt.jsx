@@ -93,9 +93,9 @@ function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-[90] mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(139,92,246,0.15)] sm:inset-x-auto sm:right-6">
+    <div className="fixed inset-x-4 bottom-4 z-[90] mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-purple-500/15 dark:bg-[#0b0b12]/95 dark:shadow-[0_8px_40px_rgba(201,162,75,0.15)] sm:inset-x-auto sm:right-6">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#3B82F6] text-white shadow-lg shadow-purple-500/25">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#C9A24B] to-[#9C7A3C] text-white shadow-lg shadow-purple-500/25">
           <FaDownload className="text-sm" />
         </div>
 
@@ -112,7 +112,7 @@ function PWAInstallPrompt() {
             <button
               type="button"
               onClick={handleInstallClick}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-2 text-xs font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8B5CF6] dark:bg-white dark:text-gray-900 dark:hover:bg-purple-400 dark:hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-2 text-xs font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#C9A24B] dark:bg-white dark:text-gray-900 dark:hover:bg-purple-400 dark:hover:text-white"
             >
               <FaDownload className="text-[10px]" />
               {t('pwa.installButton')}
