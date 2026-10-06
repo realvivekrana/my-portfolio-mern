@@ -6,6 +6,7 @@ import {
   FaShieldAlt,
   FaArrowRight,
   FaStar,
+  FaArrowLeft,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
@@ -282,6 +283,20 @@ function AdminPin() {
       ====================================================== */}
 
       <div className="relative z-10 w-full max-w-md">
+
+        {/* =================================================
+            BACK TO PORTFOLIO
+        ================================================== */}
+
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="group mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-all duration-300 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400"
+        >
+          <FaArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
+
+          Back to Portfolio
+        </button>
 
         {/* =================================================
             SECURITY HEADER

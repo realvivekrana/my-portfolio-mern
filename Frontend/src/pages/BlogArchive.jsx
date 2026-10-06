@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import {
   FaRegNewspaper,
   FaRegClock,
-  FaArrowLeft,
   FaTag,
 } from 'react-icons/fa';
 
 import Navbar from '../components/layout/Navbar';
+import BackButton from '../components/ui/BackButton';
 import Footer from '../components/layout/Footer';
 import AnimatedBackground from '../components/ui/AnimatedBackground';
 
@@ -86,13 +86,11 @@ function BlogArchive() {
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         {/* Header */}
         <div className="mb-10 text-center sm:mb-14">
-          <Link
-            to="/"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-purple-200"
-          >
-            <FaArrowLeft className="text-xs" />
-            Back to Home
-          </Link>
+          <BackButton
+            fallback="/"
+            label="Back"
+            className="mb-6"
+          />
 
           <p className="mb-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm">
             <FaRegNewspaper className="text-sm" />

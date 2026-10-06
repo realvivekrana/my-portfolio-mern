@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import {
-  FaArrowLeft,
   FaRegClock,
   FaRegEye,
   FaTag,
@@ -12,6 +11,7 @@ import {
 } from 'react-icons/fa';
 
 import Navbar from '../components/layout/Navbar';
+import BackButton from '../components/ui/BackButton';
 import Footer from '../components/layout/Footer';
 import AnimatedBackground from '../components/ui/AnimatedBackground';
 
@@ -69,13 +69,11 @@ function BlogPost() {
       </div>
 
       <main className="relative z-10 mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <Link
-          to="/blog"
-          className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition-colors hover:text-purple-200"
-        >
-          <FaArrowLeft className="text-xs" />
-          Back to Blog
-        </Link>
+        <BackButton
+          fallback="/blog"
+          label="Back"
+          className="mb-8"
+        />
 
         {loading && (
           <div className="flex justify-center py-20">

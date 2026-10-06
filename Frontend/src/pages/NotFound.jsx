@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import BackButton from '../components/ui/BackButton';
+
 function NotFound() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] flex flex-col items-center justify-center px-6 text-center transition-colors">
@@ -10,12 +12,20 @@ function NotFound() {
       <p className="text-gray-600 dark:text-gray-400 max-w-md mb-8">
         The page you're looking for doesn't exist or may have been moved.
       </p>
-      <Link
-        to="/"
-        className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] hover:brightness-110 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-      >
-        Back to Home
-      </Link>
+      <div className="flex flex-col items-center gap-3 sm:flex-row">
+        <BackButton
+          fallback="/"
+          label="Go Back"
+          variant="outline"
+        />
+
+        <Link
+          to="/"
+          className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] hover:brightness-110 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        >
+          Back to Home
+        </Link>
+      </div>
     </div>
   );
 }
