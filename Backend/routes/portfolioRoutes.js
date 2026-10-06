@@ -14,6 +14,7 @@ const {
   updateSocialLinks,
   updateSEO,
   updateSettings,
+  updateSiteContent,
 
   updateProfileImage,
   removeProfileImage,
@@ -214,6 +215,22 @@ router.put(
   '/settings',
   protect,
   updateSettings
+);
+
+/*
+|--------------------------------------------------------------------------
+| SITE CONTENT
+|--------------------------------------------------------------------------
+|
+| PUT /api/portfolio/site-content
+|
+|--------------------------------------------------------------------------
+*/
+
+router.put(
+  '/site-content',
+  protect,
+  updateSiteContent
 );
 
 /*

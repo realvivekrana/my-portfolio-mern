@@ -1194,6 +1194,124 @@ const updateSEO = async (
 
 /*
 |--------------------------------------------------------------------------
+| UPDATE SITE CONTENT
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/site-content
+|
+| About stats / expertise / strengths, footer, chatbot greeting aur
+| section visibility update karta hai. Sirf whitelisted fields hi
+| accept hote hain.
+|--------------------------------------------------------------------------
+*/
+
+const cleanText = (value, max = 500) =>
+  String(value ?? '').trim().slice(0, max);
+
+const updateSiteContent = async (req, res) => {
+  try {
+    const portfolio = await getMainPortfolio();
+    const body = req.body || {};
+
+    const current =
+      portfolio.siteContent?.toObject?.() || portfolio.siteContent || {};
+
+    const next = { ...current };
+    const updated = [];
+
+    if (Array.isArray(body.stats)) {
+      next.stats = body.stats
+        .filter((item) => item && (item.value || item.label))
+        .slice(0, 8)
+        .map((item, index) => ({
+          value: cleanText(item.value, 30),
+          label: cleanText(item.label, 60),
+          displayOrder: index,
+        }));
+      updated.push('stats');
+    }
+
+    if (Array.isArray(body.expertise)) {
+      next.expertise = body.expertise
+        .filter((item) => item && item.title)
+        .slice(0, 8)
+        .map((item, index) => ({
+          icon: cleanText(item.icon || 'code', 30),
+          title: cleanText(item.title, 100),
+          description: cleanText(item.description, 400),
+          displayOrder: index,
+        }));
+      updated.push('expertise');
+    }
+
+    if (Array.isArray(body.strengths)) {
+      next.strengths = body.strengths
+        .map((item) => cleanText(item, 100))
+        .filter(Boolean)
+        .slice(0, 20);
+      updated.push('strengths');
+    }
+
+    if (body.footer && typeof body.footer === 'object') {
+      next.footer = {
+        ...(current.footer || {}),
+        ...(body.footer.tagline !== undefined && {
+          tagline: cleanText(body.footer.tagline, 200),
+        }),
+        ...(body.footer.copyrightName !== undefined && {
+          copyrightName: cleanText(body.footer.copyrightName, 80),
+        }),
+      };
+      updated.push('footer');
+    }
+
+    if (body.chatbotGreeting !== undefined) {
+      next.chatbotGreeting = cleanText(body.chatbotGreeting, 300);
+      updated.push('chatbotGreeting');
+    }
+
+    if (body.sections && typeof body.sections === 'object') {
+      const sections = { ...(current.sections || {}) };
+
+      Object.keys(sections).forEach((key) => {
+        if (typeof body.sections[key] === 'boolean') {
+          sections[key] = body.sections[key];
+        }
+      });
+
+      next.sections = sections;
+      updated.push('sections');
+    }
+
+    portfolio.siteContent = next;
+    await portfolio.save();
+
+    if (updated.length > 0) {
+      await logAudit({
+        req,
+        action: 'update',
+        resourceType: 'Portfolio',
+        resourceLabel: `Site content updated: ${updated.join(', ')}`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Site content updated successfully',
+      data: portfolio.siteContent,
+    });
+  } catch (error) {
+    console.error('Update Site Content Error:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update site content',
+      error: error.message,
+    });
+  }
+};
+
+/*
+|--------------------------------------------------------------------------
 | UPDATE SETTINGS
 |--------------------------------------------------------------------------
 | PUT /api/portfolio/settings
@@ -1492,6 +1610,7 @@ module.exports = {
   updateSocialLinks,
   updateSEO,
   updateSettings,
+  updateSiteContent,
 
   updateProfileImage,
   removeProfileImage,

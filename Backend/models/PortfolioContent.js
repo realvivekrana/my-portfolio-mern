@@ -846,6 +846,123 @@ const portfolioContentSchema = new mongoose.Schema(
 
     /*
     |--------------------------------------------------------------------------
+    | SITE CONTENT (About stats, expertise, strengths, footer, chatbot,
+    | section on/off)
+    |--------------------------------------------------------------------------
+    |
+    | Pehle yeh sab frontend ke code me hardcoded tha. Ab Admin Dashboard
+    | se edit hoga:
+    |
+    | Admin → PUT /api/portfolio/site-content → MongoDB
+    |       → GET /api/portfolio → Public site
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    siteContent: {
+      stats: {
+        type: [
+          {
+            value: { type: String, trim: true, default: '' },
+            label: { type: String, trim: true, default: '' },
+            displayOrder: { type: Number, default: 0 },
+          },
+        ],
+        default: [
+          { value: '2+', label: 'Years Learning', displayOrder: 0 },
+          { value: '10+', label: 'Projects Built', displayOrder: 1 },
+          { value: 'MERN', label: 'Primary Stack', displayOrder: 2 },
+          { value: 'Open', label: 'To Opportunities', displayOrder: 3 },
+        ],
+      },
+
+      expertise: {
+        type: [
+          {
+            // icon KEY hai (code | lightbulb | rocket | briefcase | graduation)
+            icon: { type: String, trim: true, default: 'code' },
+            title: { type: String, trim: true, default: '' },
+            description: { type: String, trim: true, default: '' },
+            displayOrder: { type: Number, default: 0 },
+          },
+        ],
+        default: [
+          {
+            icon: 'code',
+            title: 'MERN Stack Development',
+            description:
+              'Building modern full-stack applications using MongoDB, Express.js, React.js and Node.js.',
+            displayOrder: 0,
+          },
+          {
+            icon: 'lightbulb',
+            title: 'Modern Web Development',
+            description:
+              'Creating responsive, scalable and user-focused interfaces with clean and reusable components.',
+            displayOrder: 1,
+          },
+          {
+            icon: 'rocket',
+            title: 'Problem Solving',
+            description:
+              'Breaking complex requirements into practical, maintainable and effective technical solutions.',
+            displayOrder: 2,
+          },
+        ],
+      },
+
+      strengths: {
+        type: [String],
+        default: [
+          'Responsive Web Development',
+          'React.js & Component Architecture',
+          'REST API Integration',
+          'Node.js & Express.js',
+          'MongoDB & Database Integration',
+          'Git & GitHub Workflow',
+        ],
+      },
+
+      footer: {
+        tagline: {
+          type: String,
+          trim: true,
+          default:
+            'Building modern, scalable and user-focused web applications.',
+        },
+        copyrightName: {
+          type: String,
+          trim: true,
+          default: 'Vivek Kumar Rana',
+        },
+      },
+
+      chatbotGreeting: {
+        type: String,
+        trim: true,
+        default:
+          "Hi! 👋 I'm Vivek's portfolio assistant. Ask me anything about his skills, projects, experience or education!",
+      },
+
+      // Kaun sa section public site par dikhna chahiye
+      sections: {
+        about: { type: Boolean, default: true },
+        skills: { type: Boolean, default: true },
+        experience: { type: Boolean, default: true },
+        education: { type: Boolean, default: true },
+        certifications: { type: Boolean, default: true },
+        timeline: { type: Boolean, default: true },
+        projects: { type: Boolean, default: true },
+        testimonials: { type: Boolean, default: true },
+        blog: { type: Boolean, default: true },
+        githubStats: { type: Boolean, default: true },
+        contact: { type: Boolean, default: true },
+        chatbot: { type: Boolean, default: true },
+      },
+    },
+
+    /*
+    |--------------------------------------------------------------------------
     | VISIBILITY / SITE SETTINGS
     |--------------------------------------------------------------------------
     */
