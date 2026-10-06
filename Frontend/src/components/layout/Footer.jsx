@@ -242,29 +242,84 @@ const handleSectionClick = (
       return;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | FIX: popup blocker + galat "popup blocked" alert
+    |--------------------------------------------------------------------------
+    |
+    | 1. Tab click ke SAATH hi (fetch se pehle) khol rahe hain. Fetch ke
+    |    `await` ke baad window.open karne par browser use user-click se
+    |    juda nahi maanta aur sach me popup block kar deta tha.
+    |
+    | 2. Pehle 'noopener,noreferrer' ke saath window.open hota tha — us
+    |    case me browser hamesha `null` return karta hai, tab bhi jab tab
+    |    khul chuka ho. Isliye resume khulne ke baad bhi error dikhta tha.
+    |    Ab opener manually null kiya jaata hai.
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    const resumeTab =
+      window.open('', '_blank');
+
+    if (resumeTab) {
+      resumeTab.opener = null;
+
+      try {
+        resumeTab.document.title =
+          'Resume';
+
+        resumeTab.document.body.style.cssText =
+          'margin:0;background:#070605;color:#e6cc8e;font-family:system-ui,sans-serif;display:grid;place-items:center;height:100vh';
+
+        resumeTab.document.body.textContent =
+          'Loading resume...';
+      } catch {
+        // cross-origin / blocked — ignore, tab phir bhi navigate ho jayega
+      }
+    }
+
     const blob =
       await getResumeBlob();
 
     if (!blob) {
+      // Fetch fail hua (error message getResumeBlob already set kar chuka hai)
+      resumeTab?.close();
+
       return;
     }
 
+    // Content-Type galat aaye (e.g. octet-stream) tab bhi PDF browser me khule
+    const pdfBlob = new Blob([blob], {
+      type: 'application/pdf',
+    });
+
     const blobUrl =
       window.URL.createObjectURL(
-        blob
+        pdfBlob
       );
 
-    const newWindow =
-      window.open(
-        blobUrl,
-        '_blank',
-        'noopener,noreferrer'
-      );
+    if (resumeTab && !resumeTab.closed) {
+      resumeTab.location.href =
+        blobUrl;
+    } else {
+      /*
+      |----------------------------------------------------------------------
+      | Tab pehle hi block hua tha (ya user ne band kar diya) -> link-click
+      | fallback. Ye bhi block ho to hi user ko error dikhate hain.
+      |----------------------------------------------------------------------
+      */
 
-    if (!newWindow) {
-      setResumeError(
-        'Unable to open resume. Please allow popups for this website.'
-      );
+      const link =
+        document.createElement('a');
+
+      link.href = blobUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     setTimeout(() => {
