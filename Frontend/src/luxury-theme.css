@@ -230,3 +230,212 @@ main section[id]:not(#home) .rounded-full[class*="border"]:hover {
     rotate: none !important;
   }
 }
+
+/* ================================================================
+   LIGHT MODE  —  Ivory + Champagne Gold + Ink
+   ----------------------------------------------------------------
+   Upar ka poora luxury theme dark-only tha (cards/navbar/footer ke
+   dark colors !important se light mode par bhi force ho jaate the).
+   Ye block sirf `html:not(.dark)` par lagta hai, isliye DARK MODE
+   bilkul pehle jaisa rehta hai.
+   ================================================================ */
+
+html:not(.dark) {
+  --page-bg: #faf8f3;
+  --surface: #ffffff;
+  --surface-muted: #f5f1e7;
+  --surface-soft: #efe9d9;
+
+  --text-primary: #1b1712;
+  --text-secondary: #494137;
+  --text-muted: #7a705f;
+
+  --border: #e6dcc3;
+  --border-soft: #efe8d6;
+
+  --accent: #a8832f;
+  --accent-hover: #86671f;
+
+  --lux-line: rgba(168, 131, 47, 0.28);
+  --lux-gold-ink: #8a6a1f; /* gold jo white par bhi readable hai */
+}
+
+/* ---------- Base ---------- */
+html:not(.dark) body {
+  background:
+    radial-gradient(70% 40% at 50% -5%, rgba(201, 162, 75, 0.14), transparent 70%),
+    #faf8f3;
+  color: var(--text-primary);
+}
+
+html:not(.dark) ::selection {
+  background: rgba(201, 162, 75, 0.3);
+  color: #1b1712;
+}
+
+html:not(.dark) {
+  scrollbar-color: #c9a24b #f1ecdf;
+}
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #f1ecdf;
+}
+
+/* page glow — halka warm shimmer */
+html:not(.dark) #root > div:first-child::before {
+  background:
+    radial-gradient(60% 45% at 50% -8%, rgba(201, 162, 75, 0.16), transparent 70%),
+    radial-gradient(40% 35% at 100% 40%, rgba(230, 204, 142, 0.18), transparent 70%),
+    radial-gradient(35% 30% at 0% 75%, rgba(201, 162, 75, 0.08), transparent 70%);
+}
+
+/* ---------- Navbar (frosted white glass) ---------- */
+html:not(.dark) .premium-navbar-inner {
+  border-color: rgba(168, 131, 47, 0.25) !important;
+  background: rgba(255, 253, 248, 0.82) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow:
+    0 12px 36px -14px rgba(90, 64, 12, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ---------- Footer ---------- */
+html:not(.dark) footer {
+  border-top: 1px solid var(--lux-line) !important;
+  background: linear-gradient(180deg, rgba(250, 248, 243, 0.9), #f3eddd) !important;
+}
+
+/* ---------- Cards (white porcelain + gold hairline) ---------- */
+html:not(.dark) main section[id]:not(#home) :is([class*="rounded-2xl"], [class*="rounded-3xl"]).border:not(
+  [class*="border-red"], [class*="border-green"], [class*="animate-pulse"],
+  [class*="max-h-"], [class*="bg-black/40"]
+):not([class*="h-1"][class*="w-1"]) {
+  border-color: var(--lux-line) !important;
+  background: linear-gradient(160deg, #ffffff 0%, #fcf8ee 100%) !important;
+  box-shadow:
+    0 14px 34px -18px rgba(90, 64, 12, 0.25),
+    0 2px 6px -2px rgba(90, 64, 12, 0.06),
+    inset 0 1px 0 #ffffff;
+}
+
+html:not(.dark) main section[id]:not(#home) :is([class*="rounded-2xl"], [class*="rounded-3xl"]).border:not([class*="border-red"], [class*="border-green"], [class*="animate-pulse"], [class*="max-h-"]):hover {
+  border-color: rgba(168, 131, 47, 0.6) !important;
+  box-shadow:
+    0 24px 48px -20px rgba(90, 64, 12, 0.32),
+    0 0 36px -12px rgba(201, 162, 75, 0.45),
+    inset 0 1px 0 #ffffff;
+}
+
+/* gold sheen + sparkle light background par thode dark gold me */
+html:not(.dark) main section[id]:not(#home) :is([class*="rounded-2xl"], [class*="rounded-3xl"]).border::before {
+  background: linear-gradient(110deg, transparent 38%, rgba(201, 162, 75, 0.2) 50%, transparent 62%);
+  background-size: 260% 100%;
+  background-position: 160% 0;
+}
+html:not(.dark) main section[id]:not(#home) :is([class*="rounded-2xl"], [class*="rounded-3xl"]).border::after {
+  color: var(--lux-gold-ink);
+  text-shadow: 0 0 10px rgba(201, 162, 75, 0.55);
+}
+
+/* ---------- Text colors jo dark theme ke liye white the ---------- */
+html:not(.dark) main section[id] :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--text-primary);
+}
+/* text-white sirf tab ink banta hai jab uske peeche light card ho —
+   gradient / dark panels (button, image overlay, contact panel) ke andar white hi rehta hai */
+html:not(.dark) main section[id] :is(.text-white, [class*="text-white/"]):not(
+  :is(
+    [class*="bg-gradient"], [class*="from-["], [class*="bg-black"], [class*="bg-gray-9"],
+    [class*="bg-[#"], [class*="bg-indigo-"], [class*="bg-purple-"], [class*="bg-blue-"],
+    [class*="bg-green-"], [class*="bg-red-"], button
+  ) *
+):not(
+  [class*="bg-gradient"], [class*="from-["], [class*="bg-black"], [class*="bg-gray-9"],
+  [class*="bg-[#"], [class*="bg-indigo-"], [class*="bg-purple-"], [class*="bg-blue-"],
+  [class*="bg-green-"], [class*="bg-red-"], button
+) {
+  color: var(--text-primary);
+}
+
+/* ---------- Contact left panel: off-brand violet ki jagah onyx + gold ---------- */
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"] {
+  background-image: linear-gradient(135deg, #1d1810 0%, #33280f 55%, #8a6a1f 120%) !important;
+  color: #f6efe0;
+}
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"] :is(h1, h2, h3, h4, p, span, strong, label, small) {
+  color: inherit;
+}
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"] :is(h3, h4) {
+  color: #fff7e0;
+}
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"] :is(.text-purple-100, .text-purple-200, .text-purple-300, [class*="text-white/"]) {
+  color: #e6cc8e !important;
+}
+
+/* ---------- Light mode me heading ka gold accent thoda gehra ---------- */
+html:not(.dark) main section[id] [class*="from-[#E6CC8E]"][class*="bg-clip-text"] {
+  background-image: linear-gradient(90deg, #b8912f 0%, #8a6a1f 55%, #6f5416 100%);
+}
+
+/* ---------- Skeleton / loading bars ---------- */
+html:not(.dark) main section[id] [class*="animate-pulse"] {
+  background-color: #efe8d6 !important;
+}
+
+/* ---------- Light mode: bahut halke (50–200) text shades readable banao ---------- */
+html:not(.dark) :is(main section[id], footer, .premium-navbar-inner) :is(
+  .text-purple-50, .text-purple-100, .text-purple-200,
+  .text-violet-100, .text-violet-200,
+  .text-indigo-50, .text-indigo-100, .text-indigo-200,
+  .text-blue-100, .text-blue-200
+):not([class*="bg-gradient"]) {
+  color: var(--lux-gold-ink) !important;
+}
+
+html:not(.dark) :is(main section[id], footer) :is(.text-gray-50, .text-gray-100, .text-gray-200) {
+  color: var(--text-primary) !important;
+}
+
+html:not(.dark) :is(main section[id], footer) :is(.text-slate-200, .text-slate-300, .text-zinc-200, .text-zinc-300, .text-neutral-200, .text-neutral-300) {
+  color: var(--text-secondary) !important;
+}
+
+/* ---------- Light mode: dark inner tiles (skills etc.) ko soft ivory banao ---------- */
+html:not(.dark) main section[id]:not(#projects) [class*="bg-black/20"],
+html:not(.dark) main section[id]:not(#projects) [class*="bg-black/30"],
+html:not(.dark) main section[id]:not(#projects) [class*="bg-black/40"] {
+  background: rgba(255, 252, 244, 0.85) !important;
+  border-color: rgba(168, 131, 47, 0.22) !important;
+  box-shadow: 0 4px 14px -8px rgba(90, 64, 12, 0.2);
+}
+html:not(.dark) main section[id]:not(#projects) [class*="bg-black/"]:hover {
+  background: #ffffff !important;
+  border-color: rgba(168, 131, 47, 0.5) !important;
+}
+
+/* Contact dark panel: tiles (links) ke bahar ka text ivory/gold-soft */
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"][class*="via-[#7c4fee]"] :is(
+  .text-white, [class*="text-white/"], .text-gray-100, .text-gray-200,
+  .text-indigo-100, .text-indigo-200, .text-purple-100, .text-purple-200, .text-purple-300
+):not(a, a *) {
+  color: #f1e4bd !important;
+}
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"][class*="via-[#7c4fee]"] :is(h2, h3, h4):not(a, a *) {
+  color: #fff7e0 !important;
+}
+html:not(.dark) main section[id] [class*="via-[#7c4fee]"][class*="via-[#7c4fee]"] [class*="border-white/20"][class*="bg-white/10"] {
+  color: #f1e4bd !important;
+  border-color: rgba(230, 204, 142, 0.35) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* ---------- Light mode: image overlay badges + project modal (dark surface) par text light rahe ---------- */
+html:not(.dark) main section#projects :is([class*="bg-black"], [class*="bg-black"] *):not(.text-transparent):not(svg, path) {
+  color: #f6efe0 !important;
+}
+html:not(.dark) main section#projects :is([class*="bg-black"], [class*="bg-black"] *):is(.text-yellow-300, .text-yellow-400, .text-amber-300) {
+  color: #fcd34d !important;
+}
+html:not(.dark) main section#projects [class*="bg-black"] [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.08);
+}
