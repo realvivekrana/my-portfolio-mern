@@ -176,9 +176,14 @@ const updateSettings = async (req, res) => {
           'projects',
           'certificates',
           'messages',
+          'analytics',
           'profile',
           'settings',
           'resume',
+          'home',
+          'about',
+          'skills',
+          'contact',
         ];
 
         if (

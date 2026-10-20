@@ -12,9 +12,13 @@ import {
 
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import {
+  usePortfolioContent,
+  isSectionOn,
+} from '../../utils/usePortfolioContent';
 
-function useNavLinks(t) {
-  return [
+function useNavLinks(t, portfolio) {
+  const links = [
     {
       key: 'home',
       name: t('nav.home'),
@@ -46,13 +50,19 @@ function useNavLinks(t) {
       href: '#contact',
     },
   ];
+
+  // Admin ne jo section off kiya hai uska nav link bhi chhupa do
+  return links.filter(
+    (link) => link.key === 'home' || isSectionOn(portfolio, link.key)
+  );
 }
 
 function Navbar() {
   const { isDark, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
 
-  const navLinks = useNavLinks(t);
+  const { portfolio } = usePortfolioContent();
+  const navLinks = useNavLinks(t, portfolio);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

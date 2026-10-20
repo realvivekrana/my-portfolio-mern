@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import API from '../../utils/axios';
 import { useLanguage } from '../../context/LanguageContext';
+import { usePortfolioContent } from '../../utils/usePortfolioContent';
 
 import {
   FaEnvelope,
@@ -15,6 +16,7 @@ import {
 
 function Contact() {
   const { t } = useLanguage();
+  const { tx } = usePortfolioContent('contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -342,21 +344,21 @@ function Contact() {
           <p className="mb-3 flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-purple-300">
             <FaEnvelope className="text-sm animate-[contactIconPulse_3s_ease-in-out_infinite]" />
 
-            {t('contact.eyebrow')}
+            {tx('eyebrow', t('contact.eyebrow'))}
           </p>
 
           <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-            {t('contact.heading')}{' '}
+            {tx('heading', t('contact.heading'))}{' '}
 
             <span className="bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-400 dark:to-blue-400">
-              {t('contact.headingHighlight')}
+              {tx('headingHighlight', t('contact.headingHighlight'))}
             </span>
           </h2>
 
           <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#C9A24B] to-[#9C7A3C] shadow-[0_0_18px_rgba(201,162,75,0.4)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-600 sm:text-lg dark:text-gray-400">
-            {t('contact.subtitle')}
+            {tx('subtitle', t('contact.subtitle'))}
           </p>
 
         </div>

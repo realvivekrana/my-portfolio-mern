@@ -4,6 +4,7 @@ import API from '../../utils/axios';
 import { resolveMediaUrl } from '../../utils/mediaUrl';
 import { optimizeImageUrl } from '../../utils/optimizeImage';
 import { trackResumeDownload } from '../../utils/analytics';
+import { usePortfolioContent } from '../../utils/usePortfolioContent';
 
 import {
   FaGithub,
@@ -11,6 +12,7 @@ import {
   FaReact,
   FaNodeJs,
   FaJs,
+  FaCode,
 } from 'react-icons/fa';
 
 import {
@@ -44,6 +46,8 @@ const defaultHero = {
 };
 
 function Hero() {
+  const { tx, content: homeContent } = usePortfolioContent('home');
+
   /*
   |--------------------------------------------------------------------------
   | Resume
@@ -88,7 +92,7 @@ function Hero() {
   |--------------------------------------------------------------------------
   */
 
-  const skills = [
+  const allSkills = [
     {
       name: 'React',
       icon: <FaReact />,
@@ -140,6 +144,47 @@ function Hero() {
       hideOnMobile: true,
     },
   ];
+
+  /*
+  |--------------------------------------------------------------------------
+  | Dynamic Tech Bubbles
+  |--------------------------------------------------------------------------
+  | Admin > Home me jo tech names save kiye hain wahi bubbles dikhte hain
+  | (max 6 — utni hi positions defined hain). Known names ka brand icon/color
+  | milta hai, unknown name par generic code icon. List khali ho to default 6.
+  |--------------------------------------------------------------------------
+  */
+
+  const normalizeName = (name) =>
+    String(name || '')
+      .toLowerCase()
+      .replace(/\.js$/, '')
+      .replace(/[^a-z0-9]/g, '');
+
+  const customBubbleNames = Array.isArray(homeContent?.techBubbles)
+    ? homeContent.techBubbles.filter(Boolean).slice(0, 6)
+    : [];
+
+  const skills =
+    customBubbleNames.length > 0
+      ? customBubbleNames.map((name) => {
+          const known = allSkills.find(
+            (item) => normalizeName(item.name) === normalizeName(name)
+          );
+
+          return {
+            ...(known || {
+              icon: <FaCode />,
+              color: 'text-indigo-500 dark:text-purple-300',
+              glow: 'shadow-indigo-400/50',
+              dotColor: 'bg-indigo-400 text-indigo-500',
+              ring: 'from-indigo-500 via-purple-400 to-blue-500',
+            }),
+            name,
+            hideOnMobile: false,
+          };
+        })
+      : allSkills;
 
   /*
   |--------------------------------------------------------------------------
@@ -387,7 +432,7 @@ function Hero() {
             <p className="mb-4 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold sm:text-sm uppercase tracking-[0.2em] text-indigo-600 dark:text-purple-300 lg:justify-start">
               <HiOutlineSparkles className="text-lg" />
 
-              Hello, I'm
+              {tx('greeting', "Hello, I'm")}
             </p>
 
             {/* Name */}
@@ -426,7 +471,7 @@ function Hero() {
                 href="#projects"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 dark:bg-gradient-to-r dark:from-[#C9A24B] dark:to-[#9C7A3C] dark:shadow-[0_10px_30px_rgba(201,162,75,0.4)] dark:hover:from-[#9a6ff8] dark:hover:to-[#4c8bfb] dark:hover:shadow-[0_16px_38px_rgba(201,162,75,0.55)] sm:w-auto"
               >
-                View My Work
+                {tx('viewWorkLabel', 'View My Work')}
 
                 <HiArrowRight className="text-xl transition-transform duration-300 group-hover:translate-x-1" />
               </a>
@@ -445,7 +490,7 @@ function Hero() {
                 >
                   <FaDownload className="text-sm transition-transform duration-300 group-hover:-translate-y-0.5" />
 
-                  Download Resume
+                  {tx('resumeLabel', 'Download Resume')}
                 </button>
 
                 <a
@@ -662,11 +707,11 @@ function Hero() {
 
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Currently
+                      {tx('currentlyLabel', 'Currently')}
                     </p>
 
                     <p className="text-sm font-bold text-gray-800 dark:text-white">
-                      Available for opportunities
+                      {tx('availabilityText', 'Available for opportunities')}
                     </p>
                   </div>
 

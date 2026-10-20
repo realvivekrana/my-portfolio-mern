@@ -2,6 +2,12 @@ const PortfolioContent = require('../models/PortfolioContent');
 const { logAudit } = require('../utils/auditLogger');
 
 const {
+  PAGE_TEXT_FIELDS,
+  PAGE_LIST_FIELDS,
+  PAGE_KEYS,
+} = require('../utils/pageContentFields');
+
+const {
   sanitizePortfolioMedia,
 } = require('../utils/mediaUrl');
 
@@ -237,11 +243,12 @@ const updatePortfolio = async (
     */
 
     if (about) {
+      const previousAbout =
+        portfolio.about?.toObject?.() ||
+        {};
+
       portfolio.about = {
-        ...(
-          portfolio.about?.toObject?.() ||
-          {}
-        ),
+        ...previousAbout,
         ...about,
       };
 
@@ -249,14 +256,14 @@ const updatePortfolio = async (
       |----------------------------------------------------------------------
       | CURRENT ROLE
       |----------------------------------------------------------------------
+      | Purana currentRole overwrite se PEHLE liya hua hai, warna partial
+      | update me company/duration jaisi fields kho jaati thi.
+      |----------------------------------------------------------------------
       */
 
       if (about.currentRole) {
         portfolio.about.currentRole = {
-          ...(
-            portfolio.about.currentRole?.toObject?.() ||
-            {}
-          ),
+          ...(previousAbout.currentRole || {}),
           ...about.currentRole,
         };
       }
@@ -581,6 +588,10 @@ const updatePortfolio = async (
                               skill.displayOrder
                             )
                           : skillIndex,
+
+                      isVisible:
+                        skill.isVisible !==
+                        false,
                     })
                   )
                 : [],
@@ -1001,11 +1012,12 @@ const updateAbout = async (
     const aboutData =
       req.body || {};
 
+    const previousAbout =
+      portfolio.about?.toObject?.() ||
+      {};
+
     portfolio.about = {
-      ...(
-        portfolio.about?.toObject?.() ||
-        {}
-      ),
+      ...previousAbout,
       ...aboutData,
     };
 
@@ -1013,16 +1025,15 @@ const updateAbout = async (
     |--------------------------------------------------------------------------
     | CURRENT ROLE
     |--------------------------------------------------------------------------
+    | Purana currentRole overwrite se pehle liya hua hai (merge bug fix).
+    |--------------------------------------------------------------------------
     */
 
     if (
       aboutData.currentRole
     ) {
       portfolio.about.currentRole = {
-        ...(
-          portfolio.about.currentRole?.toObject?.() ||
-          {}
-        ),
+        ...(previousAbout.currentRole || {}),
         ...aboutData.currentRole,
       };
     }
@@ -1305,6 +1316,142 @@ const updateSiteContent = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to update site content',
+      error: error.message,
+    });
+  }
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE PAGE CONTENT
+|--------------------------------------------------------------------------
+| PUT /api/portfolio/page-content/:page   (page = home | about | skills | contact)
+|
+| Body: { greeting: '...', techBubbles: [...] }  — sirf whitelisted fields.
+| Galat page, galat type ya zyada lambi value par 400 aata hai (500 nahi).
+|--------------------------------------------------------------------------
+*/
+
+const updatePageContent = async (req, res) => {
+  try {
+    const { page } = req.params;
+
+    if (!PAGE_KEYS.includes(page)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid page. Allowed: ${PAGE_KEYS.join(', ')}`,
+      });
+    }
+
+    const body = req.body;
+
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Request body must be an object.',
+      });
+    }
+
+    const textFields = PAGE_TEXT_FIELDS[page];
+    const listFields = PAGE_LIST_FIELDS[page] || {};
+    const changes = {};
+
+    for (const [field, max] of Object.entries(textFields)) {
+      if (body[field] === undefined) continue;
+
+      if (typeof body[field] !== 'string') {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" must be text.`,
+        });
+      }
+
+      const value = body[field].trim();
+
+      if (value.length > max) {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" can be at most ${max} characters.`,
+        });
+      }
+
+      changes[field] = value;
+    }
+
+    for (const [field, rule] of Object.entries(listFields)) {
+      if (body[field] === undefined) continue;
+
+      if (!Array.isArray(body[field])) {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" must be a list.`,
+        });
+      }
+
+      if (body[field].some((item) => typeof item !== 'string')) {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" items must be text.`,
+        });
+      }
+
+      const items = body[field]
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (items.length > rule.maxItems) {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" can have at most ${rule.maxItems} items.`,
+        });
+      }
+
+      if (items.some((item) => item.length > rule.maxLength)) {
+        return res.status(400).json({
+          success: false,
+          message: `"${field}" items can be at most ${rule.maxLength} characters.`,
+        });
+      }
+
+      changes[field] = items;
+    }
+
+    const portfolio = await getMainPortfolio();
+
+    const current =
+      portfolio.pageContent?.toObject?.() ||
+      portfolio.pageContent ||
+      {};
+
+    portfolio.pageContent = {
+      ...current,
+      [page]: {
+        ...(current[page] || {}),
+        ...changes,
+      },
+    };
+
+    await portfolio.save();
+
+    await logAudit({
+      req,
+      action: 'update',
+      resourceType: 'Portfolio',
+      resourceLabel: `Page content updated: ${page}`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Page content updated successfully',
+      data: portfolio.pageContent,
+    });
+  } catch (error) {
+    console.error('Update Page Content Error:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update page content',
       error: error.message,
     });
   }
@@ -1611,6 +1758,7 @@ module.exports = {
   updateSEO,
   updateSettings,
   updateSiteContent,
+  updatePageContent,
 
   updateProfileImage,
   removeProfileImage,

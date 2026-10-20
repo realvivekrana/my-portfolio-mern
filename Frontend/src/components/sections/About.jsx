@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import API from '../../utils/axios';
 import { useLanguage } from '../../context/LanguageContext';
+import { usePortfolioContent } from '../../utils/usePortfolioContent';
 
 import {
   FaCode,
@@ -12,7 +13,7 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 
-const quickStats = [
+const defaultQuickStats = [
   {
     value: '2+',
     label: 'Years Learning',
@@ -31,7 +32,7 @@ const quickStats = [
   },
 ];
 
-const expertise = [
+const defaultExpertise = [
   {
     icon: <FaCode />,
     title: 'MERN Stack Development',
@@ -52,7 +53,7 @@ const expertise = [
   },
 ];
 
-const strengths = [
+const defaultStrengths = [
   'Responsive Web Development',
   'React.js & Component Architecture',
   'REST API Integration',
@@ -61,8 +62,43 @@ const strengths = [
   'Git & GitHub Workflow',
 ];
 
+// siteContent.expertise[].icon (string key) -> React icon
+const expertiseIcons = {
+  code: <FaCode />,
+  lightbulb: <FaLightbulb />,
+  rocket: <FaRocket />,
+  briefcase: <FaBriefcase />,
+  graduation: <FaGraduationCap />,
+};
+
+const byOrder = (a, b) =>
+  Number(a?.displayOrder || 0) - Number(b?.displayOrder || 0);
+
 function About() {
   const { t } = useLanguage();
+  const { portfolio: portfolioData, tx } = usePortfolioContent('about');
+
+  // Admin > About me edit hone wale stats / expertise / strengths.
+  // Khali ho to default dikhte hain.
+  const siteContent = portfolioData?.siteContent || {};
+
+  const quickStats =
+    Array.isArray(siteContent.stats) && siteContent.stats.length > 0
+      ? [...siteContent.stats].sort(byOrder)
+      : defaultQuickStats;
+
+  const expertise =
+    Array.isArray(siteContent.expertise) && siteContent.expertise.length > 0
+      ? [...siteContent.expertise].sort(byOrder).map((item) => ({
+          ...item,
+          icon: expertiseIcons[item.icon] || <FaCode />,
+        }))
+      : defaultExpertise;
+
+  const strengths =
+    Array.isArray(siteContent.strengths) && siteContent.strengths.length > 0
+      ? siteContent.strengths
+      : defaultStrengths;
   const [experiences, setExperiences] = useState([]);
   const [education, setEducation] = useState([]);
   const [heroName, setHeroName] = useState('Vivek Rana');
@@ -181,20 +217,20 @@ function About() {
         <div className="mb-8 text-center sm:mb-10 md:mb-12">
 
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-purple-300 sm:text-sm sm:tracking-[0.2em]">
-            {t('about.eyebrow')}
+            {tx('eyebrow', t('about.eyebrow'))}
           </p>
 
           <h2 className="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            {t('about.heading')}{' '}
+            {tx('heading', t('about.heading'))}{' '}
             <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
-              {t('about.headingHighlight')}
+              {tx('headingHighlight', t('about.headingHighlight'))}
             </span>
           </h2>
 
           <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] shadow-[0_0_15px_rgba(201,162,75,0.5)] sm:mt-5 sm:w-16" />
 
           <p className="mx-auto mt-5 max-w-2xl px-1 text-sm leading-7 text-gray-400 sm:mt-6 sm:text-base sm:leading-8 md:text-lg">
-            {t('about.subtitle')}
+            {tx('subtitle', t('about.subtitle'))}
           </p>
         </div>
 

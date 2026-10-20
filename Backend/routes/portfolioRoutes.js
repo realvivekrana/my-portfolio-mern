@@ -15,6 +15,7 @@ const {
   updateSEO,
   updateSettings,
   updateSiteContent,
+  updatePageContent,
 
   updateProfileImage,
   removeProfileImage,
@@ -231,6 +232,22 @@ router.put(
   '/site-content',
   protect,
   updateSiteContent
+);
+
+/*
+|--------------------------------------------------------------------------
+| PAGE CONTENT (Home / About / Skills / Contact texts)
+|--------------------------------------------------------------------------
+|
+| PUT /api/portfolio/page-content/:page
+|
+|--------------------------------------------------------------------------
+*/
+
+router.put(
+  '/page-content/:page',
+  protect,
+  updatePageContent
 );
 
 /*

@@ -35,12 +35,17 @@ import {
   FaNewspaper,
   FaComments,
   FaArrowLeft,
+  FaHome,
+  FaInfoCircle,
+  FaCode,
+  FaAddressBook,
 } from 'react-icons/fa';
 
 import { useAuth } from '../context/AuthContext';
 import API from '../utils/axios';
 import ProjectForm from '../components/admin/ProjectForm';
 import ProfileManager from '../components/admin/ProfileManager';
+import PageContentManager from '../components/admin/PageContentManager';
 import ExperienceEducationManager from '../components/admin/ExperienceEducationManager';
 import AdminPasswordManager from '../components/admin/AdminPasswordManager';
 import AnalyticsManager from '../components/admin/AnalyticsManager';
@@ -83,6 +88,10 @@ function AdminDashboard() {
     useState('overview');
 
   const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
+  // Home/About/Skills/Contact editors me unsaved changes hain ya nahi
+  const [pageDirty, setPageDirty] =
     useState(false);
 
 
@@ -1455,6 +1464,30 @@ function AdminDashboard() {
     },
 
     {
+      id: 'home',
+      label: 'Home Page',
+      icon: <FaHome />,
+    },
+
+    {
+      id: 'about',
+      label: 'About Page',
+      icon: <FaInfoCircle />,
+    },
+
+    {
+      id: 'skills',
+      label: 'Skills Page',
+      icon: <FaCode />,
+    },
+
+    {
+      id: 'contact',
+      label: 'Contact Page',
+      icon: <FaAddressBook />,
+    },
+
+    {
       id: 'settings',
       label: 'Settings',
       icon: <FaCog />,
@@ -1471,6 +1504,18 @@ function AdminDashboard() {
   const handleNavigation = (
     section
   ) => {
+    if (
+      pageDirty &&
+      section !== activeSection &&
+      !window.confirm(
+        'Is page me unsaved changes hain. Bina save kiye chhod dein?'
+      )
+    ) {
+      return;
+    }
+
+    setPageDirty(false);
+
     setActiveSection(section);
 
     setSidebarOpen(false);
@@ -5046,6 +5091,21 @@ function AdminDashboard() {
 
 
           {/* =================================================
+              HOME / ABOUT / SKILLS / CONTACT PAGE CONTENT
+          ================================================== */}
+
+          {['home', 'about', 'skills', 'contact'].includes(
+            activeSection
+          ) && (
+            <PageContentManager
+              key={activeSection}
+              page={activeSection}
+              onDirtyChange={setPageDirty}
+            />
+          )}
+
+
+          {/* =================================================
               RESUME MANAGEMENT
           ================================================== */}
 
@@ -5574,6 +5634,18 @@ function AdminDashboard() {
                           </option>
                           <option value="resume">
                             Resume
+                          </option>
+                          <option value="home">
+                            Home Page
+                          </option>
+                          <option value="about">
+                            About Page
+                          </option>
+                          <option value="skills">
+                            Skills Page
+                          </option>
+                          <option value="contact">
+                            Contact Page
                           </option>
                         </select>
                       </div>

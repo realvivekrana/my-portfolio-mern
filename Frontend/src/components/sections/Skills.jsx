@@ -29,6 +29,7 @@ import {
 } from 'react-icons/hi';
 
 import API from '../../utils/axios';
+import { usePortfolioContent } from '../../utils/usePortfolioContent';
 
 /*
 |--------------------------------------------------------------------------
@@ -255,6 +256,7 @@ const defaultSkillCategories = [
 
 function Skills() {
   const { t } = useLanguage();
+  const { tx } = usePortfolioContent('skills');
   /*
   |--------------------------------------------------------------------------
   | STATE
@@ -431,13 +433,13 @@ function Skills() {
           <div className="mb-12 text-center sm:mb-16">
 
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-purple-300 sm:text-sm">
-              {t('skills.eyebrow')}
+              {tx('eyebrow', t('skills.eyebrow'))}
             </p>
 
             <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-              {t('skills.heading')}{' '}
+              {tx('heading', t('skills.heading'))}{' '}
               <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
-                {t('skills.headingHighlight')}
+                {tx('headingHighlight', t('skills.headingHighlight'))}
               </span>
             </h2>
 
@@ -545,21 +547,23 @@ function Skills() {
         <div className="mb-12 text-center sm:mb-16">
 
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-purple-300 sm:text-sm">
-            {t('skills.eyebrow')}
+            {tx('eyebrow', t('skills.eyebrow'))}
           </p>
 
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-            {t('skills.heading')}{' '}
+            {tx('heading', t('skills.heading'))}{' '}
             <span className="bg-gradient-to-r from-[#E6CC8E] via-[#C9A24B] to-[#9C7A3C] bg-clip-text text-transparent">
-              {t('skills.headingHighlight')}
+              {tx('headingHighlight', t('skills.headingHighlight'))}
             </span>
           </h2>
 
           <div className="mx-auto mt-5 h-1 w-16 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E6CC8E] to-[#9C7A3C] shadow-[0_0_18px_rgba(201,162,75,0.5)]" />
 
           <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-gray-400 sm:text-base sm:leading-8 md:text-lg">
-            A collection of technologies and tools I use to build modern,
-            responsive and scalable web applications.
+            {tx(
+              'subtitle',
+              'A collection of technologies and tools I use to build modern, responsive and scalable web applications.'
+            )}
           </p>
 
         </div>

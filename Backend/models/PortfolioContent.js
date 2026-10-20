@@ -1,5 +1,29 @@
 const mongoose = require('mongoose');
 
+const {
+  PAGE_TEXT_FIELDS,
+  PAGE_LIST_FIELDS,
+} = require('../utils/pageContentFields');
+
+// { home: { greeting: {type:String,...}, techBubbles: [String] }, ... }
+const buildPageContentSchema = () => {
+  const shape = {};
+
+  Object.keys(PAGE_TEXT_FIELDS).forEach((page) => {
+    shape[page] = {};
+
+    Object.keys(PAGE_TEXT_FIELDS[page]).forEach((field) => {
+      shape[page][field] = { type: String, trim: true, default: '' };
+    });
+
+    Object.keys(PAGE_LIST_FIELDS[page] || {}).forEach((field) => {
+      shape[page][field] = { type: [String], default: [] };
+    });
+  });
+
+  return shape;
+};
+
 /*
 |--------------------------------------------------------------------------
 | Portfolio Content Schema
@@ -637,6 +661,11 @@ const portfolioContentSchema = new mongoose.Schema(
                   type: Number,
                   default: 0,
                 },
+
+                isVisible: {
+                  type: Boolean,
+                  default: true,
+                },
               },
             ],
 
@@ -843,6 +872,18 @@ const portfolioContentSchema = new mongoose.Schema(
         },
       ],
     },
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAGE CONTENT (Home / About / Skills / Contact ke editable texts)
+    |--------------------------------------------------------------------------
+    | Admin → PUT /api/portfolio/page-content/:page → MongoDB
+    |       → GET /api/portfolio → Public site
+    | Khali field = frontend ka default (translated) text.
+    |--------------------------------------------------------------------------
+    */
+
+    pageContent: buildPageContentSchema(),
 
     /*
     |--------------------------------------------------------------------------

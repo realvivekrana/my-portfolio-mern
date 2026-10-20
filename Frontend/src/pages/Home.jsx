@@ -14,6 +14,7 @@ import SectionFallback from '../components/ui/SectionFallback';
 import StructuredData from '../components/seo/StructuredData';
 
 import API from '../utils/axios';
+import { isSectionOn } from '../utils/usePortfolioContent';
 import { trackPageView } from '../utils/analytics';
 
 /*
@@ -92,6 +93,9 @@ function Home() {
   const [checkingVisibility, setCheckingVisibility] =
     useState(false);
 
+  // Admin Home editor ke section on/off toggles (siteContent.sections)
+  const [portfolioData, setPortfolioData] = useState(null);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -167,6 +171,8 @@ function Home() {
         const response = await API.get('/portfolio');
 
         const portfolio = response.data?.data;
+
+        setPortfolioData(portfolio || null);
 
         /*
         |--------------------------------------------------------------------------
@@ -534,63 +540,77 @@ function Home() {
 
         {/* About */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <About />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'about') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <About />
+            </Suspense>
+          </section>
+        )}
 
         {/* Skills */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Skills />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'skills') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Skills />
+            </Suspense>
+          </section>
+        )}
 
         {/* Experience */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Experience />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'experience') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Experience />
+            </Suspense>
+          </section>
+        )}
 
         {/* Education */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Education />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'education') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Education />
+            </Suspense>
+          </section>
+        )}
 
         {/* Certifications */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Certifications />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'certifications') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Certifications />
+            </Suspense>
+          </section>
+        )}
 
         {/* Timeline (Experience + Education unified) */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Timeline />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'timeline') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Timeline />
+            </Suspense>
+          </section>
+        )}
 
         {/* Projects */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Projects />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'projects') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Projects />
+            </Suspense>
+          </section>
+        )}
 
         {/* GitHub Stats */}
 
-        {GITHUB_USERNAME && (
+        {GITHUB_USERNAME && isSectionOn(portfolioData, 'githubStats') && (
           <section className="w-full">
             <Suspense fallback={<SectionFallback />}>
               <GithubStats username={GITHUB_USERNAME} />
@@ -600,27 +620,33 @@ function Home() {
 
         {/* Testimonials */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Testimonials />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'testimonials') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Testimonials />
+            </Suspense>
+          </section>
+        )}
 
         {/* Blog Preview */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Blog />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'blog') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Blog />
+            </Suspense>
+          </section>
+        )}
 
         {/* Contact */}
 
-        <section className="w-full">
-          <Suspense fallback={<SectionFallback />}>
-            <Contact />
-          </Suspense>
-        </section>
+        {isSectionOn(portfolioData, 'contact') && (
+          <section className="w-full">
+            <Suspense fallback={<SectionFallback />}>
+              <Contact />
+            </Suspense>
+          </section>
+        )}
       </main>
 
       {/* =====================================================
@@ -635,9 +661,11 @@ function Home() {
           AI CHATBOT WIDGET
       ====================================================== */}
 
-      <Suspense fallback={null}>
-        <Chatbot />
-      </Suspense>
+      {isSectionOn(portfolioData, 'chatbot') && (
+        <Suspense fallback={null}>
+          <Chatbot />
+        </Suspense>
+      )}
     </div>
   );
 }
