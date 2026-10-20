@@ -10,6 +10,11 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
+  // CORS blocked origin — 500 ki jagah 403
+  if (message && message.startsWith('CORS policy')) {
+    statusCode = 403;
+  }
+
   // Mongoose bad ObjectId error
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
     statusCode = 404;

@@ -10,6 +10,7 @@ dotenv.config();
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
 
 const connectDB = require('./config/db');
 
@@ -36,6 +37,19 @@ const { initCronJobs } = require('./utils/cronJobs');
 // ======================================================
 // CONNECT TO MONGODB
 // ======================================================
+
+// Zaroori env variables missing ho to startup par hi saaf warning
+['MONGO_URI', 'JWT_SECRET', 'JWT_REFRESH_SECRET'].forEach((key) => {
+  if (!process.env[key]) {
+    console.error(`❌ Missing env variable: ${key}`);
+  }
+});
+
+['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET', 'GROQ_API_KEY', 'ADMIN_PIN'].forEach((key) => {
+  if (!process.env[key]) {
+    console.warn(`⚠️  Optional env variable not set: ${key}`);
+  }
+});
 
 connectDB();
 
@@ -281,19 +295,23 @@ app.use(
 // HEALTH CHECK
 // ======================================================
 
-app.get(
-  '/',
-  (req, res) => {
-    res.status(200).json({
-      success: true,
-      message:
-        '🚀 Portfolio API is running...',
-      environment:
-        process.env.NODE_ENV ||
-        'development',
-    });
-  }
-);
+const healthHandler = (req, res) => {
+  const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+  const dbState = states[mongoose.connection.readyState] || 'unknown';
+
+  res.status(200).json({
+    success: true,
+    message:
+      '🚀 Portfolio API is running...',
+    environment:
+      process.env.NODE_ENV ||
+      'development',
+    database: dbState,
+  });
+};
+
+app.get('/', healthHandler);
+app.get('/api/health', healthHandler);
 
 // ======================================================
 // PROJECT ROUTES
