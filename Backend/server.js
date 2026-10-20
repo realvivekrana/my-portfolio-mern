@@ -7,6 +7,23 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// ======================================================
+// CRASH GUARDS
+// ======================================================
+//
+// Node 15+ me koi bhi unhandled promise rejection poora process kill kar
+// deta hai — Render par yeh "backend baar-baar band ho jata hai" jaisa
+// dikhta hai. Ab error log hoga aur server chalta rehega.
+// ======================================================
+
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️  Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('⚠️  Uncaught exception:', error);
+});
+
 const cors = require('cors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -462,7 +479,7 @@ const PORT =
 // START SERVER
 // ======================================================
 
-app.listen(
+const server = app.listen(
   PORT,
   () => {
     console.log(
@@ -501,5 +518,62 @@ app.listen(
     // ==================================================
 
     initCronJobs();
+
+    // ==================================================
+    // RENDER KEEP-ALIVE (free tier cold-start se bachne ke liye)
+    // ==================================================
+    //
+    // Render free tier 15 min inactivity ke baad service so jaati hai aur
+    // agli request ~30-60 sec leti hai — frontend ko "backend kaam nahi
+    // kar raha" jaisa lagta hai. Server jab tak jaag raha hai, apne hi
+    // public /api/health ko har 10 min me ping karta hai taaki sota nahi.
+    //
+    // Band karna ho to env me KEEP_ALIVE=false. (Zyada reliable: UptimeRobot
+    // se bhi is URL ko 5 min me ping karwa do.)
+    // ==================================================
+
+    const keepAliveUrl = (
+      process.env.RENDER_EXTERNAL_URL || ''
+    ).replace(/\/$/, '');
+
+    if (keepAliveUrl && process.env.KEEP_ALIVE !== 'false') {
+      const KEEP_ALIVE_MS = 10 * 60 * 1000;
+
+      setInterval(() => {
+        fetch(`${keepAliveUrl}/api/health`).catch((error) => {
+          console.warn('Keep-alive ping failed:', error.message);
+        });
+      }, KEEP_ALIVE_MS).unref();
+
+      console.log(`💓 Keep-alive ping enabled -> ${keepAliveUrl}/api/health`);
+    }
   }
 );
+
+// Port pehle se use me ho (e.g. purana node process chal raha hai) to
+// saaf message do, silent crash nahi.
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(
+      `❌ Port ${PORT} already in use. Purana server band karo ya .env me PORT badlo.`
+    );
+  } else {
+    console.error('❌ Server error:', error);
+  }
+
+  process.exit(1);
+});
+
+// Render redeploy / restart par graceful shutdown (in-flight requests complete)
+const shutdown = (signal) => {
+  console.log(`🛑 ${signal} received, shutting down gracefully...`);
+
+  server.close(() => {
+    mongoose.connection.close(false).finally(() => process.exit(0));
+  });
+
+  setTimeout(() => process.exit(1), 10000).unref();
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
 const adminSchema = new mongoose.Schema(
@@ -27,27 +28,32 @@ const adminSchema = new mongoose.Schema(
     },
 
     // ==================================================
-    // REFRESH TOKEN (hashed)
+    // REFRESH SESSIONS (SHA-256 hashed, multi-device)
     // ==================================================
     //
-    // Refresh token kabhi bhi plain text me DB me store nahi hota —
-    // sirf uska bcrypt hash rakha jaata hai (password ki tarah).
-    // `select: false` hai isliye normal queries me yeh field
-    // automatically nahi aata — explicitly `.select('+refreshToken')`
-    // karna padega jab zaroorat ho (refresh/logout controllers me).
+    // FIX: Pehle refresh token ko bcrypt se hash kiya jaata tha. bcrypt
+    // sirf pehle 72 bytes padhta hai, aur JWT ke pehle 72 bytes (header +
+    // payload ka shuruaati hissa) har refresh token me ek jaise hote hain
+    // -> koi bhi purana/logout ho chuka token "valid" dikhta tha (revocation
+    // asal me kaam hi nahi karta tha), aur ek hi token DB me save hone se
+    // doosre device par login karte hi pehla device logout ho jaata.
+    //
+    // Ab: har login/refresh ka SHA-256 hash `refreshSessions` array me
+    // store hota hai (max 10 devices/sessions). Plain token kabhi save nahi.
+    // `select: false` -> normal queries me nahi aata.
     //
     // ==================================================
 
-    refreshToken: {
-      type: String,
+    refreshSessions: {
+      type: [
+        {
+          _id: false,
+          hash: { type: String, required: true },
+          expiresAt: { type: Date, required: true },
+        },
+      ],
       select: false,
-      default: null,
-    },
-
-    refreshTokenExpiresAt: {
-      type: Date,
-      select: false,
-      default: null,
+      default: [],
     },
   },
   {
@@ -71,35 +77,85 @@ adminSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 // ======================================================
-// SET REFRESH TOKEN (hash karke save karo)
+// REFRESH SESSION HELPERS (atomic MongoDB updates)
+// ======================================================
+//
+// Sab operations single atomic `updateOne` / `exists` calls hain (koi
+// read-modify-save nahi), isliye 2 tabs ek saath refresh karein to bhi
+// VersionError / race condition nahi aata.
 // ======================================================
 
-adminSchema.methods.setRefreshToken = async function (rawRefreshToken, expiresAt) {
-  const salt = await bcrypt.genSalt(10);
-  this.refreshToken = await bcrypt.hash(rawRefreshToken, salt);
-  this.refreshTokenExpiresAt = expiresAt;
-  await this.save({ validateBeforeSave: false });
+const MAX_REFRESH_SESSIONS = 10;
+
+// Refresh token rotate hone ke baad purana token itne ms tak chalta rehta
+// hai — multiple tabs / parallel requests ek saath refresh karein to
+// doosre ka refresh fail hokar admin ko logout na kare.
+const ROTATION_GRACE_MS = 30 * 1000;
+
+const hashToken = (rawToken) =>
+  crypto.createHash('sha256').update(String(rawToken)).digest('hex');
+
+// Naya session add karo (login / register / refresh ke baad)
+adminSchema.statics.addRefreshSession = async function (
+  adminId,
+  rawRefreshToken,
+  expiresAt
+) {
+  await this.updateOne(
+    { _id: adminId },
+    {
+      $push: {
+        refreshSessions: {
+          $each: [{ hash: hashToken(rawRefreshToken), expiresAt }],
+          $slice: -MAX_REFRESH_SESSIONS,
+        },
+      },
+    }
+  );
 };
 
-// ======================================================
-// VERIFY REFRESH TOKEN (raw token ko stored hash se compare karo)
-// ======================================================
+// Kya yeh raw refresh token abhi bhi valid session hai?
+adminSchema.statics.hasValidRefreshSession = async function (
+  adminId,
+  rawRefreshToken
+) {
+  const found = await this.exists({
+    _id: adminId,
+    refreshSessions: {
+      $elemMatch: {
+        hash: hashToken(rawRefreshToken),
+        expiresAt: { $gt: new Date() },
+      },
+    },
+  });
 
-adminSchema.methods.matchRefreshToken = async function (rawRefreshToken) {
-  if (!this.refreshToken) {
-    return false;
-  }
-  return await bcrypt.compare(rawRefreshToken, this.refreshToken);
+  return Boolean(found);
 };
 
-// ======================================================
-// CLEAR REFRESH TOKEN (logout par)
-// ======================================================
+// Rotation ke baad purane token ko sirf chhoti grace window tak valid rakho
+adminSchema.statics.expireRefreshSessionSoon = async function (
+  adminId,
+  rawRefreshToken
+) {
+  await this.updateOne(
+    { _id: adminId, 'refreshSessions.hash': hashToken(rawRefreshToken) },
+    {
+      $min: {
+        'refreshSessions.$.expiresAt': new Date(Date.now() + ROTATION_GRACE_MS),
+      },
+    }
+  );
+};
 
-adminSchema.methods.clearRefreshToken = async function () {
-  this.refreshToken = null;
-  this.refreshTokenExpiresAt = null;
-  await this.save({ validateBeforeSave: false });
+// Logout: yeh session turant hata do
+adminSchema.statics.removeRefreshSession = async function (
+  adminId,
+  rawRefreshToken
+) {
+  await this.updateOne(
+    { _id: adminId },
+    { $pull: { refreshSessions: { hash: hashToken(rawRefreshToken) } } }
+  );
 };
 
 module.exports = mongoose.model('Admin', adminSchema);

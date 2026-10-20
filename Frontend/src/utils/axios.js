@@ -70,6 +70,15 @@ API.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // GET requests ko latakne se bachao (uploads par timeout nahi lagta,
+    // kyunki badi image/PDF upload ko zyada time lag sakta hai)
+    if (
+      (config.method || 'get').toLowerCase() === 'get' &&
+      !config.timeout
+    ) {
+      config.timeout = GET_TIMEOUT_MS;
+    }
+
     // Let browser set multipart boundary for file uploads
     if (config.data instanceof FormData) {
       if (config.headers) {
@@ -150,6 +159,35 @@ const isAuthEndpoint = (url = '') =>
 
 /*
 |--------------------------------------------------------------------------
+| AUTO-RETRY FOR RENDER COLD STARTS (GET only)
+|--------------------------------------------------------------------------
+|
+| Render free tier backend 15 min inactivity ke baad so jaata hai; pehli
+| request ko jagne me 30-60 sec lag sakte hain — us beech network error ya
+| 502/503/504 aata hai aur site "toot gayi" jaisi dikhti thi. Ab sirf
+| GET (safe/idempotent) requests ko 3 baar, badhte gap ke saath, dobara
+| try kiya jaata hai. POST/PUT/DELETE kabhi auto-retry nahi hote (double
+| submit se bachne ke liye).
+|
+|--------------------------------------------------------------------------
+*/
+
+const RETRY_DELAYS_MS = [2000, 5000, 10000];
+const GET_TIMEOUT_MS = 30000;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const isTransientError = (error) => {
+  if (axios.isCancel(error)) return false;
+
+  // Server tak request pahunchi hi nahi (sleeping server / network / timeout)
+  if (!error.response) return true;
+
+  return [502, 503, 504].includes(error.response.status);
+};
+
+/*
+|--------------------------------------------------------------------------
 | RESPONSE INTERCEPTOR
 |--------------------------------------------------------------------------
 */
@@ -159,6 +197,24 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
+
+    // ---------------------------------------------------------
+    // Transient failure on a GET (cold start / network blip) —
+    // wait and retry before giving up.
+    // ---------------------------------------------------------
+    if (
+      originalRequest &&
+      (originalRequest.method || 'get').toLowerCase() === 'get' &&
+      isTransientError(error) &&
+      (originalRequest._retryCount || 0) < RETRY_DELAYS_MS.length
+    ) {
+      const attempt = originalRequest._retryCount || 0;
+      originalRequest._retryCount = attempt + 1;
+
+      await sleep(RETRY_DELAYS_MS[attempt]);
+
+      return API(originalRequest);
+    }
 
     const shouldAttemptRefresh =
       status === 401 &&

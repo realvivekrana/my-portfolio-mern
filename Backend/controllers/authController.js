@@ -22,30 +22,55 @@ const {
 //                   hai, har request ke saath nahi (bandwidth + safety).
 // ======================================================
 
+// FIX: Pehle sirf `NODE_ENV === 'production'` check hota tha. Agar Render par
+// NODE_ENV set nahi hai (ya "prod" jaisa kuch aur likha hai), to cookie
+// sameSite:'lax' + secure:false ban jaati thi — aur browser cross-site
+// (vercel.app -> onrender.com) request me use bhejta hi nahi -> 15 min baad
+// admin baar-baar logout. Ab HTTPS frontend/Render dikhte hi cross-site
+// settings (secure + sameSite none) apne aap lag jaati hain.
+const isCrossSiteHttps = () =>
+  process.env.NODE_ENV === 'production' ||
+  Boolean(process.env.RENDER) ||
+  Boolean(process.env.RENDER_EXTERNAL_URL) ||
+  /^https:\/\//i.test(process.env.FRONTEND_URL || '');
+
 const getRefreshCookieOptions = () => {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const crossSite = isCrossSiteHttps();
 
   return {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
+    secure: crossSite,
+    sameSite: crossSite ? 'none' : 'lax',
     path: '/api/auth',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days (JWT_REFRESH_EXPIRE se match rakho)
   };
+};
+
+// clearCookie ko `maxAge` nahi dena chahiye (Express deprecation warning,
+// Express 5 me ignore hoga) — isliye clear karte waqt maxAge hata dete hain.
+const getClearCookieOptions = () => {
+  const { maxAge, ...options } = getRefreshCookieOptions();
+  return options;
 };
 
 // ======================================================
 // ISSUE TOKENS (access token return karo, refresh token cookie me set karo)
 // ======================================================
 
-const issueTokens = async (res, admin) => {
+// `previousRefreshToken` sirf refresh ke time diya jaata hai — rotation ke
+// baad purana token chhoti grace window ke baad invalid ho jaata hai.
+const issueTokens = async (res, admin, previousRefreshToken = null) => {
   const accessToken = generateAccessToken(admin._id);
   const refreshToken = generateRefreshToken(admin._id);
 
   const decodedRefresh = jwt.decode(refreshToken);
   const expiresAt = new Date(decodedRefresh.exp * 1000);
 
-  await admin.setRefreshToken(refreshToken, expiresAt);
+  await Admin.addRefreshSession(admin._id, refreshToken, expiresAt);
+
+  if (previousRefreshToken) {
+    await Admin.expireRefreshSessionSoon(admin._id, previousRefreshToken);
+  }
 
   res.cookie('refreshToken', refreshToken, getRefreshCookieOptions());
 
@@ -277,7 +302,7 @@ const refreshAccessToken = async (req, res) => {
         process.env.JWT_REFRESH_SECRET
       );
     } catch (error) {
-      res.clearCookie('refreshToken', getRefreshCookieOptions());
+      res.clearCookie('refreshToken', getClearCookieOptions());
 
       return res.status(401).json({
         success: false,
@@ -289,12 +314,10 @@ const refreshAccessToken = async (req, res) => {
     // FIND ADMIN + STORED (HASHED) REFRESH TOKEN
     // ==================================================
 
-    const admin = await Admin.findById(decoded.id).select(
-      '+refreshToken +refreshTokenExpiresAt'
-    );
+    const admin = await Admin.findById(decoded.id);
 
     if (!admin) {
-      res.clearCookie('refreshToken', getRefreshCookieOptions());
+      res.clearCookie('refreshToken', getClearCookieOptions());
 
       return res.status(401).json({
         success: false,
@@ -303,24 +326,21 @@ const refreshAccessToken = async (req, res) => {
     }
 
     // ==================================================
-    // MATCH AGAINST STORED HASH
+    // CHECK TOKEN IS A LIVE SESSION (SHA-256 hash match + not expired)
     // ==================================================
     //
-    // Yeh check zaroori hai kyunki isse purane / logout-out ho chuke
-    // refresh tokens reject ho jaate hain, chahe unki JWT signature
-    // abhi bhi valid ho (revocation ka andar-se-support).
+    // Logout ho chuke ya rotate ho chuke (grace window ke baad) tokens
+    // yahan reject ho jaate hain, chahe JWT signature abhi valid ho.
     //
     // ==================================================
 
-    const isValidRefreshToken =
-      await admin.matchRefreshToken(incomingRefreshToken);
+    const isValidRefreshToken = await Admin.hasValidRefreshSession(
+      admin._id,
+      incomingRefreshToken
+    );
 
-    if (
-      !isValidRefreshToken ||
-      !admin.refreshTokenExpiresAt ||
-      admin.refreshTokenExpiresAt.getTime() < Date.now()
-    ) {
-      res.clearCookie('refreshToken', getRefreshCookieOptions());
+    if (!isValidRefreshToken) {
+      res.clearCookie('refreshToken', getClearCookieOptions());
 
       return res.status(401).json({
         success: false,
@@ -332,14 +352,17 @@ const refreshAccessToken = async (req, res) => {
     // ROTATE REFRESH TOKEN + ISSUE NEW ACCESS TOKEN
     // ==================================================
     //
-    // Rotation: har refresh call par ek NAYA refresh token bhi issue
-    // hota hai aur purana turant invalidate ho jaata hai. Isse agar
-    // koi purana refresh token chori bhi ho jaaye, woh reuse hote hi
-    // pakda jaayega (dono clients ka refresh fail hoga -> re-login).
+    // Har refresh par naya refresh token milta hai; purana 30 sec ki grace
+    // ke baad invalid. Grace window isliye ki 2 tabs ek saath refresh
+    // karein to doosra bhi chal jaaye (warna random logout hota).
     //
     // ==================================================
 
-    const newAccessToken = await issueTokens(res, admin);
+    const newAccessToken = await issueTokens(
+      res,
+      admin,
+      incomingRefreshToken
+    );
 
     res.status(200).json({
       success: true,
@@ -376,18 +399,14 @@ const logoutAdmin = async (req, res) => {
         const decoded = jwt.decode(incomingRefreshToken);
 
         if (decoded?.id) {
-          const admin = await Admin.findById(decoded.id);
-
-          if (admin) {
-            await admin.clearRefreshToken();
-          }
+          await Admin.removeRefreshSession(decoded.id, incomingRefreshToken);
         }
       } catch (error) {
         // Token already invalid/garbage — bas cookie clear karke aage badho
       }
     }
 
-    res.clearCookie('refreshToken', getRefreshCookieOptions());
+    res.clearCookie('refreshToken', getClearCookieOptions());
 
     res.status(200).json({
       success: true,

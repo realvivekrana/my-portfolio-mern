@@ -7,7 +7,24 @@ const notFound = (req, res, next) => {
 
 // Global error handler
 const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  // Response ka header pehle hi ja chuka ho (e.g. chatbot SSE stream) to
+  // dobara JSON bhejne par "Cannot set headers after they are sent" crash
+  // aata — aise me Express ke default handler ko de do.
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  // body-parser / multer jaise libraries `err.status` khud set karti hain
+  // (e.g. kharab JSON body = 400, bahut bada payload = 413). Pehle ye sab
+  // 500 ban jaate the.
+  const errorStatus = err.status || err.statusCode;
+
+  let statusCode =
+    res.statusCode !== 200
+      ? res.statusCode
+      : errorStatus >= 400 && errorStatus < 600
+      ? errorStatus
+      : 500;
   let message = err.message;
 
   // CORS blocked origin — 500 ki jagah 403

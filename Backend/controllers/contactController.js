@@ -2,6 +2,16 @@ const Contact = require('../models/Contact');
 
 const { sendEmail } = require('../utils/sendEmail');
 
+// Visitor ka diya hua text email ke HTML me jaata hai — escape na karein to
+// koi <script>/<img onerror> ya fake links daal kar admin ko phish kar sakta hai.
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 // @desc    Submit contact form
 // @route   POST /api/contact
 // @access  Public
@@ -41,15 +51,15 @@ const createContact = async (req, res) => {
     if (notifyEmail) {
       sendEmail({
         to: notifyEmail,
-        subject: `New Portfolio Contact: ${subject || 'No subject'}`,
+        subject: `New Portfolio Contact: ${String(subject || 'No subject').replace(/[\r\n]+/g, ' ').slice(0, 150)}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto;">
             <h2 style="color:#111;">📩 New Contact Form Submission</h2>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Subject:</strong> ${subject || '—'}</p>
+            <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+            <p><strong>Subject:</strong> ${escapeHtml(subject || '—')}</p>
             <p><strong>Message:</strong></p>
-            <p style="white-space: pre-wrap; background:#f5f5f5; padding:12px; border-radius:6px;">${message}</p>
+            <p style="white-space: pre-wrap; background:#f5f5f5; padding:12px; border-radius:6px;">${escapeHtml(message)}</p>
             <hr style="margin:20px 0; border:none; border-top:1px solid #eee;" />
             <p style="font-size:12px; color:#888;">Sent from your portfolio contact form at ${new Date().toLocaleString()}</p>
           </div>

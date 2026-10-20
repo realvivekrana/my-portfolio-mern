@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 /*
@@ -41,8 +42,10 @@ const generateAccessToken = (id) => {
 */
 
 const generateRefreshToken = (id) => {
+  // `jti` (random id) har refresh token ko unique banata hai — warna ek hi
+  // second me do token ek jaise ban jaate (same id + iat + exp).
   return jwt.sign(
-    { id },
+    { id, jti: crypto.randomBytes(12).toString('hex') },
     process.env.JWT_REFRESH_SECRET,
     {
       expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d',

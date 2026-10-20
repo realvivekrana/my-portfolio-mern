@@ -2,26 +2,34 @@ const nodemailer = require('nodemailer');
 
 /*
 |--------------------------------------------------------------------------
-| EMAIL TRANSPORTER
+| EMAIL SENDING
 |--------------------------------------------------------------------------
 |
-| SMTP-based transporter — kisi bhi provider ke saath kaam karega
-| (Gmail, Brevo, Zoho, Resend SMTP, etc.) bas .env me sahi
-| EMAIL_HOST / EMAIL_PORT / EMAIL_USER / EMAIL_PASS daal do.
+| Do tareeke supported hain, aur `sendEmail()` khud sahi wala chun leta hai:
 |
-| GMAIL use karna ho toh:
-|   1. Google Account -> Security -> 2-Step Verification ON karo.
-|   2. "App Passwords" bana ke woh (16-char) EMAIL_PASS me daalo —
-|      apna normal Gmail password NAHI chalega.
-|   3. EMAIL_HOST=smtp.gmail.com, EMAIL_PORT=465
+|  1. RESEND (HTTPS API)  -> agar .env me RESEND_API_KEY set hai.
+|     RECOMMENDED for Render: Render ke free tier par outbound SMTP ports
+|     (25 / 465 / 587) block rehte hain, isliye Gmail SMTP wahan chup-chaap
+|     fail ho jaata hai (email kabhi nahi aata). Resend normal HTTPS (443)
+|     use karta hai, isliye block nahi hota. Koi extra npm package nahi
+|     chahiye — seedha fetch se call hota hai.
+|     Setup: resend.com par free account -> API key -> .env me
+|       RESEND_API_KEY=re_xxx
+|       EMAIL_FROM=onboarding@resend.dev    (apna domain verify na ho to yahi)
+|       ADMIN_NOTIFY_EMAIL=<wahi email jisse Resend account bana hai>
+|     (onboarding@resend.dev se sirf apne Resend account ke email par mail
+|      jaati hai — admin notification ke liye bilkul kaafi hai.)
 |
-| RESEND use karna ho (Nodemailer transport ki jagah seedha Resend
-| API se bhejna ho) toh niche `sendEmailViaResend()` bhi diya hai —
-| bas .env me RESEND_API_KEY daal ke us function ko `sendEmail` ki
-| jagah export/import karo. Dono ek jaisa hi kaam karte hain.
+|  2. SMTP (Nodemailer)   -> RESEND_API_KEY na ho to EMAIL_HOST/USER/PASS.
+|     Gmail: 2-Step Verification ON -> App Password banao (normal password
+|     nahi chalega). EMAIL_HOST=smtp.gmail.com, EMAIL_PORT=465.
+|
+| Email configure na ho to app crash nahi hoti — bas email skip hota hai.
 |
 |--------------------------------------------------------------------------
 */
+
+const SMTP_TIMEOUT_MS = 10000;
 
 const createTransporter = () => {
   return nodemailer.createTransport({
@@ -32,12 +40,55 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    // Blocked port par connection bina timeout ke latak jaata tha
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS,
   });
 };
 
 /*
 |--------------------------------------------------------------------------
-| SEND EMAIL (Nodemailer / SMTP)
+| SEND VIA RESEND (HTTPS)
+|--------------------------------------------------------------------------
+*/
+
+const sendEmailViaResend = async ({ to, subject, html, text }) => {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️  Email not sent — RESEND_API_KEY not configured in .env');
+    return { skipped: true };
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+      text,
+    }),
+    signal: AbortSignal.timeout(SMTP_TIMEOUT_MS),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(
+      `Resend API error (${response.status}): ${data.message || data.name || 'unknown error'}`
+    );
+  }
+
+  return data;
+};
+
+/*
+|--------------------------------------------------------------------------
+| SEND EMAIL (auto: Resend -> SMTP)
 |--------------------------------------------------------------------------
 |
 | @param {Object} options
@@ -50,18 +101,13 @@ const createTransporter = () => {
 */
 
 const sendEmail = async ({ to, subject, html, text }) => {
-  // ======================================================
-  // SKIP SILENTLY IF EMAIL NOT CONFIGURED
-  // ======================================================
-  //
-  // Local development me agar EMAIL_* env vars set nahi hain, toh
-  // app crash nahi honi chahiye — bas email skip ho jaaye aur ek
-  // warning log ho jaaye.
-  // ======================================================
+  if (process.env.RESEND_API_KEY) {
+    return sendEmailViaResend({ to, subject, html, text });
+  }
 
   if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.warn(
-      '⚠️  Email not sent — EMAIL_HOST/EMAIL_USER/EMAIL_PASS not configured in .env'
+      '⚠️  Email not sent — configure RESEND_API_KEY, or EMAIL_HOST/EMAIL_USER/EMAIL_PASS in .env'
     );
     return { skipped: true };
   }
@@ -77,42 +123,6 @@ const sendEmail = async ({ to, subject, html, text }) => {
   });
 
   return info;
-};
-
-/*
-|--------------------------------------------------------------------------
-| SEND EMAIL VIA RESEND (alternative to Nodemailer/SMTP)
-|--------------------------------------------------------------------------
-|
-| Resend ka free tier SMTP se zyada reliable deliverability deta hai.
-| Use karna ho toh:
-|   1. npm install resend
-|   2. .env me RESEND_API_KEY daalo
-|   3. contactController.js me `sendEmail` ki jagah
-|      `sendEmailViaResend` import kar lo (same signature hai)
-|
-|--------------------------------------------------------------------------
-*/
-
-const sendEmailViaResend = async ({ to, subject, html, text }) => {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('⚠️  Email not sent — RESEND_API_KEY not configured in .env');
-    return { skipped: true };
-  }
-
-  // eslint-disable-next-line global-require
-  const { Resend } = require('resend');
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  const response = await resend.emails.send({
-    from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
-    to,
-    subject,
-    html,
-    text,
-  });
-
-  return response;
 };
 
 module.exports = {
