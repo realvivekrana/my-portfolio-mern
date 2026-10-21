@@ -172,7 +172,7 @@ const isAuthEndpoint = (url = '') =>
 |--------------------------------------------------------------------------
 */
 
-const RETRY_DELAYS_MS = [2000, 5000, 10000];
+const RETRY_DELAYS_MS = [4000, 12000];
 const GET_TIMEOUT_MS = 30000;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -324,6 +324,15 @@ API.get = (url, config = {}) => {
     !localStorage.getItem('adminToken');
 
   if (!isPublicCacheable) return originalGet(url, config);
+
+  // FIX: About / Experience / Timeline `params: { _t: Date.now() }` bhejte
+  // the, isliye har request ki cache key alag banti thi aur dedupe kabhi
+  // kaam nahi karta tha — Render ko ek saath 10+ requests jaati thi (429).
+  // Public cacheable GETs me `_t` hata do, taaki sab ek hi request share karein.
+  if (config.params && '_t' in config.params) {
+    const { _t, ...restParams } = config.params;
+    config = { ...config, params: restParams };
+  }
 
   const key = `${url}|${JSON.stringify(config.params || {})}`;
   const hit = getCache.get(key);
