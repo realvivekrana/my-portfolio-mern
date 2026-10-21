@@ -520,23 +520,26 @@ const server = app.listen(
     initCronJobs();
 
     // ==================================================
-    // RENDER KEEP-ALIVE (free tier cold-start se bachne ke liye)
+    // RENDER KEEP-ALIVE (OPTIONAL — default OFF)
     // ==================================================
     //
-    // Render free tier 15 min inactivity ke baad service so jaati hai aur
-    // agli request ~30-60 sec leti hai — frontend ko "backend kaam nahi
-    // kar raha" jaisa lagta hai. Server jab tak jaag raha hai, apne hi
-    // public /api/health ko har 10 min me ping karta hai taaki sota nahi.
+    // WARNING: Render free plan me poore workspace ko mahine ke sirf 750
+    // free instance hours milte hain, aur service jab tak chal rahi hai
+    // (sota nahi) tab tak hours kharch hote hain. Keep-alive se server 24/7
+    // jaagta rehta hai (~744 hrs/mahina) — to akela ek service hi saare free
+    // hours kha sakti hai, aur hours khatam hote hi Render saari free
+    // services ko mahine ke end tak SUSPEND kar deta hai
+    // ("This service has been suspended").
     //
-    // Band karna ho to env me KEEP_ALIVE=false. (Zyada reliable: UptimeRobot
-    // se bhi is URL ko 5 min me ping karwa do.)
+    // Isliye ab yeh default me BAND hai. Sirf tab chalu karo jab paid
+    // instance par ho: env me KEEP_ALIVE=true
     // ==================================================
 
     const keepAliveUrl = (
       process.env.RENDER_EXTERNAL_URL || ''
     ).replace(/\/$/, '');
 
-    if (keepAliveUrl && process.env.KEEP_ALIVE !== 'false') {
+    if (keepAliveUrl && process.env.KEEP_ALIVE === 'true') {
       const KEEP_ALIVE_MS = 10 * 60 * 1000;
 
       setInterval(() => {
